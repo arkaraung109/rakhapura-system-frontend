@@ -1,0 +1,161 @@
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>စာမေးပွဲစာရင်းပြင်ခြင်း</h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာသင်နှစ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="academicYear" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let a of academicYearList" [ngValue]="a.id">
+                                {{a.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('academicYear')!.invalid && form.get('academicYear')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('academicYear')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာမေးပွဲခေါင်းစဉ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="examTitle" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let e of examTitleList" [ngValue]="e.id">
+                                {{e.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('examTitle')!.invalid && form.get('examTitle')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('examTitle')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ဘာသာရပ်ကြီး<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="subjectType" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let s of subjectTypeList" [ngValue]="s.id">
+                                {{s.name}} ({{s.grade.name}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('subjectType')!.invalid && form.get('subjectType')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('subjectType')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ဖြေဆိုမည့်ရက်စွဲ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" formControlName="examDate" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('examDate')!.invalid && form.get('examDate')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('examDate')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စတင်မည့်အချိန်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="time" formControlName="startTime" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('startTime')!.invalid && form.get('startTime')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('startTime')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ပြီးဆုံးမည့်အချိန်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="time" formControlName="endTime" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('endTime')!.invalid && form.get('endTime')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('endTime')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>အောင်မှတ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="passMark" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('passMark')!.touched" class="col-sm-6" style="color: red">
+                        <div *ngIf="form.errors?.['requiredPassMarkError']">Field is required</div>
+                        <div *ngIf="form.errors?.['passMarkRangeError']">Must be between 1 and 100</div>
+                        <div *ngIf="form.errors?.['lessThanError']">Must be less than mark percentage</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ပေးမှတ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="markPercentage" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('markPercentage')!.touched" class="col-sm-6" style="color: red">
+                        <div *ngIf="form.errors?.['requiredMarkPercentageError']">Field is required</div>
+                        <div *ngIf="form.errors?.['markPercentageRangeError']">Must be between 1 and 100</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4 col-sm-6">
+                <button type="submit" class="bsearch btn">Update</button>
+                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+                <button type="button" class="bsearch btn" (click)="back()">Back</button>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+    </form>
+</div>

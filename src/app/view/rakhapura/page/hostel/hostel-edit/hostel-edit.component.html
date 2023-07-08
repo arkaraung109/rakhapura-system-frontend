@@ -1,0 +1,81 @@
+<div class="container-fluid hrow">
+  <div class="row">
+    <h4>တည်းခိုဆောင်စာရင်းပြင်ခြင်း</h4>
+  </div>
+</div>
+<div class="container-fluid">
+  <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+    autocomplete="off">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-sm-4">
+            <label>တည်းခိုဆောင်အမည်<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="name" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('name')!.invalid && form.get('name')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('name')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('name')!.errors?.['maxlength']">Must not exceed 300 characters</div>
+            <div *ngIf="form.get('name')!.errors?.['pattern']">Must not include special characters</div>
+            <div *ngIf="form.get('name')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>လိပ်စာ<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <textarea formControlName="address" autocomplete="off" maxlength="300" rows="3"
+              style="width: 100%"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('address')!.invalid && form.get('address')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('address')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('address')!.errors?.['maxlength']">Must not exceed 300 characters</div>
+            <div *ngIf="form.get('address')!.errors?.['pattern']">Must not include special characters</div>
+            <div *ngIf="form.get('address')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+            <div *ngIf="form.get('address')!.errors?.['linebreak']">Must not include line break</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>ဖုန်းနံပါတ်<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="phone" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('phone')!.invalid && form.get('phone')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('phone')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('phone')!.errors?.['maxlength']">Must not exceed 50 characters</div>
+            <div *ngIf="form.get('phone')!.errors?.['pattern']">Must be valid phone number</div>
+            <div *ngIf="form.get('phone')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-4"></div>
+      <div class="col-xs-4 col-sm-6">
+        <button type="submit" class="bsearch btn">Update</button>
+        <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+        <button type="button" class="bsearch btn" (click)="back()">Back</button>
+      </div>
+      <div class="col-xs-4"></div>
+    </div>
+  </form>
+</div>

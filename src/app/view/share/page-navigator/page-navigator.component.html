@@ -1,0 +1,9 @@
+<div style="align-content: center;">
+    <a id="previousPageBtn" (click)="previousPageBtnEvent()">&lt;&lt;</a>
+    &nbsp;
+    <input type="text" [size]="inputBoxSize" [maxlength]="inputBoxSize" (keydown.enter)="enter($event)"
+        [(ngModel)]="inputCurrentPage" />
+    &nbsp;
+    <a id="nextPageBtn" (click)="nextPageBtnEvent()">&gt;&gt;</a>
+    of {{inputTotalPageCount}}
+</div>

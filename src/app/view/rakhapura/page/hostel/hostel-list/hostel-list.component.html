@@ -1,0 +1,61 @@
+<div class="hrow">
+  <h4>တည်းခိုဆောင်စာရင်း</h4>
+</div>
+<form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+  autocomplete="off">
+  <div class="row">
+    <div class="col-sm-2">
+      <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;" autocomplete="off"
+        placeholder="Filter Search" />
+    </div>
+    <div class="col-sm-3">
+      <button class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
+      <button class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
+      style="color: red">
+      <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
+      <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+    </div>
+  </div>
+</form>
+<div class="container-fluid ttable">
+  <div class="row">
+    <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+      (matSortChange)="sortData($event)">
+      <thead>
+        <tr>
+          <th style="width: 80px" mat-sort-header="index">စဉ်</th>
+          <th style="width: 100px" mat-sort-header="name">တည်းခိုဆောင်အမည်</th>
+          <th style="width: 100px" mat-sort-header="remark">လိပ်စာ</th>
+          <th style="width: 100px" mat-sort-header="abbreviate">ဖုန်းနံပါတ်</th>
+          <th style="width: 100px">Action</th>
+          <th style="width: 100px">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let element of sortedData">
+          <td>{{element.index}}</td>
+          <td>{{element.name}}</td>
+          <td>{{element.address}}</td>
+          <td>{{element.phone}}</td>
+          <td>
+            <i class="fa fa-edit" (click)="edit(element.id)" *ngIf="userInfo.role.name === 'EXAM_ENTRY'"></i>
+            <i class="fa fa-trash" (click)="delete(element.id)" *ngIf="userInfo.role.name === 'EXAM_ENTRY'"></i>
+            <button class="bsearch btn" (click)="authorize(element.id, userInfo.id)"
+              *ngIf="userInfo.role.name === 'ADMIN'" [disabled]="element.authorizedStatus">Authorize</button>
+            <button class="bsearch btn" (click)="delete(element.id)" *ngIf="userInfo.role.name === 'ADMIN'"
+              [disabled]="element.authorizedStatus">Reject</button>
+          </td>
+          <td *ngIf="element.authorizedStatus">Authorized</td>
+          <td *ngIf="!element.authorizedStatus">Unauthorized</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+      (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
+  </div>
+</div>

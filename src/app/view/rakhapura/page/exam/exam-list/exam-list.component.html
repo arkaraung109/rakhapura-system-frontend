@@ -1,0 +1,94 @@
+<div class="hrow">
+  <h4>စာမေးပွဲစာရင်း</h4>
+</div>
+<form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+  autocomplete="off">
+  <div class="row">
+    <div class="col-sm-2">
+      <select formControlName="academicYear" class="fcontrol" style="margin: 20px 0px;">
+        <option [ngValue]="0">စာသင်နှစ်အားလုံး</option>
+        <option *ngFor="let a of academicYearList" [ngValue]="a.id">
+          {{a.name}}
+        </option>
+      </select>
+    </div>
+    <div class="col-sm-2">
+      <select formControlName="examTitle" class="fcontrol" style="margin: 20px 0px;">
+        <option [ngValue]="0">စာမေးပွဲခေါင်းစဉ်အားလုံး</option>
+        <option *ngFor="let e of examTitleList" [ngValue]="e.id">
+          {{e.name}}
+        </option>
+      </select>
+    </div>
+    <div class="col-sm-3">
+      <select formControlName="subjectType" class="fcontrol" style="margin: 20px 0px;">
+        <option [ngValue]="0">ဘာသာရပ်ကြီးအားလုံး</option>
+        <option *ngFor="let s of subjectTypeList" [ngValue]="s.id">
+          {{s.name}} ({{s.grade.name}})
+        </option>
+      </select>
+    </div>
+    <div class="col-sm-2">
+      <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;" autocomplete="off"
+        placeholder="Filter Search" />
+    </div>
+    <div class="col-sm-3">
+      <button class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
+      <button class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6"></div>
+    <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
+      style="color: red">
+      <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
+      <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+    </div>
+  </div>
+</form>
+<div class="container-fluid ttable">
+  <div class="row">
+    <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+      (matSortChange)="sortData($event)">
+      <thead>
+        <tr>
+          <th style="width: 30px" mat-sort-header="index">စဉ်</th>
+          <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
+          <th style="width: 150px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
+          <th style="width: 100px" mat-sort-header="subjectType">ဘာသာရပ်ကြီး</th>
+          <th style="width: 100px" mat-sort-header="examDate">ဖြေဆိုမည့်ရက်စွဲ</th>
+          <th style="width: 100px" mat-sort-header="time">ဖြေဆိုမည့်အချိန်</th>
+          <th style="width: 50px" mat-sort-header="passMark">အောင်မှတ်</th>
+          <th style="width: 70px" mat-sort-header="markPercentage">ပေးမှတ်</th>
+          <th style="width: 50px">Action</th>
+          <th style="width: 80px">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let element of sortedData">
+          <td>{{element.index}}</td>
+          <td>{{element.academicYear.name}}</td>
+          <td>{{element.examTitle.name}}</td>
+          <td>{{element.subjectType.name}}</td>
+          <td>{{element.examDate}}</td>
+          <td>{{element.time}}</td>
+          <td>{{element.passMark}}</td>
+          <td>{{element.markPercentage}}</td>
+          <td>
+            <i class="fa fa-edit" (click)="edit(element.id)" *ngIf="userInfo.role.name === 'EXAM_ENTRY'"></i>
+            <i class="fa fa-trash" (click)="delete(element.id)" *ngIf="userInfo.role.name === 'EXAM_ENTRY'"></i>
+            <button class="bsearch btn" (click)="authorize(element.id, userInfo.id)"
+              *ngIf="userInfo.role.name === 'ADMIN'" [disabled]="element.authorizedStatus">Authorize</button>
+            <button class="bsearch btn" (click)="delete(element.id)" *ngIf="userInfo.role.name === 'ADMIN'"
+              [disabled]="element.authorizedStatus">Reject</button>
+          </td>
+          <td *ngIf="element.authorizedStatus">Authorized</td>
+          <td *ngIf="!element.authorizedStatus">Unauthorized</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+      (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
+  </div>
+</div>

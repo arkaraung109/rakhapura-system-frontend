@@ -1,0 +1,28 @@
+input{
+    text-align: center;
+    border-radius: 10%;
+}
+
+a{
+    text-decoration: none;
+}
+
+a#previousPageBtn{
+    padding: 10px;
+    cursor: pointer;
+    font-size: medium;
+}
+
+a#nextPageBtn{
+    padding: 10px;
+    cursor: pointer;
+    font-size: medium;
+}
+
+a#previousPageBtn:hover{
+    font-weight: bold;
+}
+
+a#nextPageBtn:hover{
+    font-weight: bold;
+}

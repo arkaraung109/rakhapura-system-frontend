@@ -1,0 +1,23 @@
+<div class="container-fluid" style="height: 100%;">
+    <div class="row" style="height: 100%;">
+        <!-- main body start -->
+
+        <div class="col-md-2 lnav" style="overflow-y: scroll;">
+            <!-- left page start -->
+            <app-side-bar></app-side-bar>
+            <!-- left page end -->
+        </div>
+
+        <div class="col-md-10 bd" style="overflow-y: scroll; height: 100%;">
+            <!-- right page start -->
+            <app-header></app-header>
+
+            <!-- routing content start -->
+            <router-outlet></router-outlet>
+            <!-- routing content end -->
+
+            <!-- right page end -->
+        </div>
+        <!-- main body end -->
+    </div>
+</div>

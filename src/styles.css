@@ -1,0 +1,393 @@
+body{ 
+	font-family:Pyidaungsu; 
+}
+
+.txt-error{
+	color:red;
+	font-size:12px !important;
+}
+
+.lnav{
+	overflow: hidden;
+	position: fixed;
+	background: linear-gradient(to bottom, #ffffff 20%, #ebe6ff 100%);
+	padding: 0px;
+	padding-top:10px;
+	top:0px;
+	box-shadow: 3px 0px 3px gray;
+	overflow-y:auto;
+}
+.lnav img{
+	height: 120px;
+}
+.lnav ul{
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+.lnav .collapsible, li{
+	padding: 10px;
+	padding-left: 20px;
+	text-decoration: none;
+	display: block;
+	font-size: 14px;
+	color:#3300ff;
+	cursor: pointer;
+}
+.lnav .llout{
+	text-decoration: none;
+	display: block;
+	font-size: 14px;
+	color:#3300ff;
+	cursor: pointer;
+}
+.lnav .llout:hover{
+	text-decoration: none;
+	color:#3300ff;
+	background-color: #d6ccff;
+}
+.lnav .menu-item {
+  display: none;
+  overflow: hidden;
+}
+
+li.collapsible{
+	padding:100px;
+}
+
+
+.collapsible:hover, .menu-item a:hover {
+    background-color: #d6ccff;
+}
+
+.lnav .menu-item a{
+	padding: 8px;
+	padding-left:25px;
+	text-decoration: none;
+	display: block;
+	font-size: 12px;
+	color:#ff6600;
+	font-weight: bold;
+}
+
+.lnav .menu-item a:hover {
+  	background-color: #d6ccff;
+}
+
+.bd{
+	position: relative;
+	left:17%;
+	text-align: center;
+}
+
+.bd span{
+	font-size: 20px;
+	font-weight: bold;
+}
+.bd .m1{
+	color:#ff0000;
+}
+.bd .m3{
+	color:#3300ff;
+}
+.bd .userrow{
+	margin-top:10px;
+}
+
+.bd .trow{
+	text-align: center;
+	padding: 10px;
+	border-bottom: 1px solid blue;
+	box-shadow: 0px 3px 3px lightgray;
+}
+
+.bd1{
+	position: relative; 
+	text-align: center;
+}
+
+.bd1 span{
+	font-size: 20px;
+	font-weight: bold;
+}
+.bd1 .m1{
+	color:#ff0000;
+}
+.bd1 .m3{
+	color:#3300ff;
+}
+.bd1 .userrow{
+	margin-top:10px;
+}
+
+.bd1 .trow{
+	text-align: center;
+	padding: 10px;
+	border-bottom: 1px solid blue;
+	box-shadow: 0px 3px 3px lightgray;
+}
+
+.trow hr{
+	height: 3px;
+	width:90%;
+	background: #3300ff;
+}
+/*for data table start*/
+.hrow{
+	margin:20px 0px 30px 0px;
+}
+.hrow h4{
+	color:#ff6600;
+	text-align: left;
+	margin-bottom: 30px;
+}
+.hrow select{
+	border-bottom-color: #669999;
+	padding:0px 15px;
+	font-size: 16px;	
+}
+.hrow select:hover{
+	border-bottom-color: #3300ff;
+}
+i{
+	font-size: 16px;
+}
+
+.bsearch{
+	background: #eff5f5;
+	color:#3300ff;
+	padding: 5px;  
+	margin:5px 5px 5px 5px;  
+	font-size: 16px;
+	width:100px;
+	text-align: center;
+	border:2px solid #0e0823;
+}
+.bsearch:hover{
+	background: #d6ccff;
+	color:#3300ff;
+}
+
+.ttable{
+	margin-top: 2%;
+	border:1px solid #669999;
+	border-radius: 10px;
+	box-shadow: 2px 2px 2px #669999;
+	font-size: 14px;
+}
+.fcontrol{
+	border-top:none;
+	border-left:none;
+	border-right: none;
+	border-radius: 0px;
+	padding: 0px;
+	margin:0px;
+	border-bottom-color: #669999;
+	width: 100%;
+}		
+.fcontrol:hover{
+	border:none;
+	border-bottom:2px solid #3300ff; 
+}
+.ttable .row{
+	margin:5px 0px;
+}
+.exptable{
+	box-shadow: 2px 2px 2px #669999;
+	text-align: left;
+}
+.exptable th{
+	text-align: center;
+	background: #eff5f5;
+	color:#3300ff;
+}
+
+/*data table css start*/
+.fa{
+	color: #3300ff;
+	font-size: 16px;
+	margin:3px;
+}
+.s_asc, .s_dsc{
+	color:#669999;
+	font-size: 10px;
+	float:right;
+	display: none;
+}
+/*for form*/
+form *{
+	text-align: left;
+	font-size: 14px;
+	margin-top:3px;
+}
+form{
+	margin-bottom: 20px;
+}
+
+/*for login page*/
+.loginp{
+	background: linear-gradient(to bottom, #ffffff 30%, #ebe6ff 100%);
+	text-align: center;
+	position: fixed;
+	height: 100%;
+}
+.loginp h2{
+	color:#ff6600;
+}
+.llogo img{
+	width: 20%;
+}
+.lbtn{
+	text-align: center;
+}
+
+.menubar{
+	display: none;
+}
+.sidenav span{
+	display: none;
+}
+
+
+@media screen and (max-width: 2000px) {
+	.lnav{
+		position: relative;
+		overflow:hidden;
+		height: calc(100vh);
+	}
+	.bd{
+		left:0px;
+	} 
+}
+
+
+@media screen and (max-width: 1000px) {
+	.lnav{
+		position: relative;
+		overflow:hidden;
+		height: calc(100vh);
+	}
+	.bd{
+		left:0px;
+	}
+	.lnav img{
+		height: 100px;
+	}
+	.ttbale{
+		font-size: 14px;
+	}
+	.llogo img{
+		width: 30%;
+	}
+	.hrow h4{
+		font-size: 16px;
+	}
+	.hrow span{
+		font-size: 18px;
+	}
+	.loginp{
+		overflow:auto;
+	}
+
+	/*for side*/
+	.menubar{
+		display: block;
+		font-size: 20px;
+		color:#3300ff;
+	}
+	.sidenav {
+		height: 100;
+		width: 0;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background: linear-gradient(to bottom, #ffffff 30%, #ebe6ff 100%);
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 15px;
+	 }
+
+
+	.sidenav span {
+		padding: 8px 8px 8px 32px;
+		text-decoration: none;
+		font-size: 25px;
+		color:#3300ff;
+		display: block;
+		transition: 0.3s;
+	}
+	.sidenav span:hover {
+	    color:#000000;
+	    cursor:pointer;
+	}
+
+	.sidenav .closebtn {
+	  	position: absolute;
+	  	top: 0;
+	  	right: 25px;
+	  	font-size: 36px;
+	  	margin-left: 50px;
+	  	margin-bottom: 10px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.lnav{
+		position: relative;
+		height: 150px;
+		overflow-y: auto;
+	}
+
+	.lnav .collapsible, li{
+  		font-size: 14px;
+  	}
+  	.lnav .menu-item a{
+  		font-size:14px;
+  	}
+  	.bd span{
+  		font-size: 18px;
+  	}
+  	.llogo img{
+		width: 40%;
+	}
+	.hrow h4{
+		font-size: 16px;
+	}
+	.hrow{
+		text-align: left;
+	}
+	.hrow div{
+		margin-bottom: 5px;
+	}
+
+}
+@media screen and (max-width: 480px) {
+	.lnav .menu-item i{
+		color:#ff6600;
+	}
+	.lnav img{
+		height: 70px;
+		margin-bottom: 20px;
+	}
+	.lnav .collapsible, li{
+  		font-size: 14px;
+  		padding-left: 5px;
+  	}
+  	.llogo img{
+		width: 50%;
+	}
+
+}
+
+select{
+	max-width:100%;
+	min-width:100%;
+}
+
+table#myTable{ 
+	max-height:100px;
+	overflow-y:auto;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

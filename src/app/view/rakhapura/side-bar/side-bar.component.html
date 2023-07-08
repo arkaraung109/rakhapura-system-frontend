@@ -1,0 +1,18 @@
+<!-- left nav bar start -->
+<div class="row" style="text-align: center">
+  <img src="assets/img/rlogo.jpg" /><br />
+  <span class="menubar" style="font-size: 30px; cursor: pointer" (click)="openNav()">
+    &#9776; Show Menu
+  </span>
+</div>
+<div>
+  <ul class="sidenav" #sidenav id="mySidenav">
+    <span href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</span>
+    <br>
+    <app-menu *ngFor="let menuElement of menulist" [menu]="menuElement"></app-menu>
+    <li class="collapsible">
+      <a (click)="logout()" class="llout"><i class="fa fa-sign-out" style="margin-right: 5px"></i>Logout</a>
+    </li>
+  </ul>
+</div>
+<!-- left nav bar end -->

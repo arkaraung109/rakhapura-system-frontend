@@ -1,0 +1,79 @@
+<div class="container-fluid hrow">
+  <div class="row">
+    <h4>အတန်းစာရင်းပြင်ခြင်း</h4>
+  </div>
+</div>
+<div class="container-fluid">
+  <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+    autocomplete="off">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-sm-4">
+            <label>အတန်း<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="name" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('name')!.invalid && form.get('name')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('name')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('name')!.errors?.['maxlength']">Must not exceed 300 characters</div>
+            <div *ngIf="form.get('name')!.errors?.['pattern']">Must not include special characters</div>
+            <div *ngIf="form.get('name')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>မှတ်ချက်<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="remark" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('remark')!.invalid && form.get('remark')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('remark')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('remark')!.errors?.['maxlength']">Must not exceed 20 characters</div>
+            <div *ngIf="form.get('remark')!.errors?.['pattern']">Must not include special characters</div>
+            <div *ngIf="form.get('remark')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>အတိုကောက်<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="abbreviate" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('abbreviate')!.invalid && form.get('abbreviate')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('abbreviate')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('abbreviate')!.errors?.['maxlength']">Must not exceed 30 characters</div>
+            <div *ngIf="form.get('abbreviate')!.errors?.['pattern']">Must not include special characters</div>
+            <div *ngIf="form.get('abbreviate')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-4"></div>
+      <div class="col-xs-4 col-sm-6">
+        <button type="submit" class="bsearch btn">Update</button>
+        <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+        <button type="button" class="bsearch btn" (click)="back()">Back</button>
+      </div>
+      <div class="col-xs-4"></div>
+    </div>
+  </form>
+</div>
