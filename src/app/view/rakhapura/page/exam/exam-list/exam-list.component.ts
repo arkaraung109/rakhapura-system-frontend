@@ -113,7 +113,7 @@ export class ExamListComponent implements OnInit {
         case 'examTitle':
           return this.compare(a.examTitle.name, b.examTitle.name, isAsc);
         case 'subjectType':
-          return this.compare(a.subjectType.name, b.subjectType.name, isAsc);
+          return this.compare(a.subjectType.name + " (" + a.subjectType.grade.name + ")", b.subjectType.name + " (" + b.subjectType.grade.name + ")", isAsc);
         case 'examDate':
           return this.compare(a.examDate, b.examDate, isAsc);
         case 'time':

@@ -40,7 +40,7 @@ import { SaveAnotherDialogComponent } from './save-another-dialog/save-another-d
     BrowserAnimationsModule, //toastr required animations module
     ToastrModule.forRoot({
       /*ref : https://www.npmjs.com/package/ngx-toastr*/
-      timeOut: 2000,
+      timeOut: 4000,
       newestOnTop: true,
       positionClass: 'toast-bottom-right',
       preventDuplicates: false,

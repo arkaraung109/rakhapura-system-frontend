@@ -6,6 +6,7 @@ import { environment } from 'src/environment/environment';
 import { PaginationResponse } from '../model/PaginationResponse';
 import { PaginationOrder } from '../common/PaginationOrder';
 import { ApiResponse } from '../model/ApiResponse';
+import { DataResponse } from '../model/DataResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,8 @@ export class StudentClassService {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-classes/segment/search?page=${page}&order=${order}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&studentClass=${studentClass}&keyword=${keyword}`, { responseType: "json" });
   }
 
-  save(studentClassDto: StudentClass): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.baseUrl}/student-classes`, studentClassDto, { responseType: "json" });
+  save(studentClassDto: StudentClass, idList: string[]): Observable<DataResponse> {
+    return this.http.post<DataResponse>(`${environment.baseUrl}/student-classes?idList=${idList}`, studentClassDto, { responseType: "json" });
   }
 
   update(studentClassDto: StudentClass, id: string): Observable<ApiResponse> {

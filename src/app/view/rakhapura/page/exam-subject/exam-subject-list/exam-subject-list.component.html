@@ -2,9 +2,9 @@
     <h4>ဘာသာရပ်ခွဲစာမေးပွဲအမှတ်ပေးစာရင်း</h4>
 </div>
 <div class="container-fluid ttable">
-    <div class="row">
-        <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
-            enctype="multipart/form-data" autocomplete="off">
+    <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
             <div class="col-sm-2">
                 <select formControlName="academicYear" class="fcontrol" style="margin: 20px 0px;">
                     <option [ngValue]="0">စာသင်နှစ်အားလုံး</option>
@@ -21,9 +21,9 @@
                     </option>
                 </select>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <select formControlName="subjectType" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="0">ဘာသာရပ်ကြီးအားလုံး</option>
+                    <option [ngValue]="0">ဘာသာရပ်ကြီးစာမေးပွဲအားလုံး</option>
                     <option *ngFor="let st of subjectTypeList" [ngValue]="st.id">
                         {{st.name}} ({{st.grade.name}})
                     </option>
@@ -37,6 +37,8 @@
                     </option>
                 </select>
             </div>
+        </div>
+        <div class="row">
             <div class="col-sm-2">
                 <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;"
                     autocomplete="off" placeholder="Filter Search" />
@@ -53,8 +55,8 @@
                     <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
     <div class="row">
         <table class="table table-bordered exptable table-responsive" id="myTable" matSort
             (matSortChange)="sortData($event)">
@@ -63,8 +65,7 @@
                     <th style="width: 80px" mat-sort-header="index">စဉ်</th>
                     <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
                     <th style="width: 100px" mat-sort-header="examTitle">စာ‌မေးပွဲခေါင်းစဉ်</th>
-                    <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
-                    <th style="width: 100px" mat-sort-header="subjectType">ဘာသာရပ်ကြီး</th>
+                    <th style="width: 200px" mat-sort-header="subjectType">ဘာသာရပ်ကြီးစာမေးပွဲ</th>
                     <th style="width: 100px" mat-sort-header="subject">ဘာသာရပ်ခွဲ</th>
                     <th style="width: 100px" mat-sort-header="passMark">ဘာသာရပ်ခွဲအောင်မှတ်</th>
                     <th style="width: 100px" mat-sort-header="markPercentage">ဘာသာရပ်ခွဲပေးမှတ်</th>
@@ -77,8 +78,7 @@
                     <td>{{element.index}}</td>
                     <td>{{element.exam.academicYear.name}}</td>
                     <td>{{element.exam.examTitle.name}}</td>
-                    <td>{{element.exam.subjectType.grade.name}}</td>
-                    <td>{{element.exam.subjectType.name}}</td>
+                    <td>{{element.exam.subjectType.name}} ({{element.exam.subjectType.grade.name}})</td>
                     <td>{{element.subject.name}}</td>
                     <td>{{element.passMark}}</td>
                     <td>{{element.markPercentage}}</td>

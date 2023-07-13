@@ -1,7 +1,44 @@
 <div class="hrow">
-    <h4>ဖြေဆိုမည့်စာသင်သားများအား အခန်းနေရာချထားခြင်းစာရင်း</h4>
+    <h4>စာမေးပွဲဖြေဆိုခွင့်ကဒ်ထုတ်ခြင်း</h4>
 </div>
 <div class="container-fluid ttable">
+    <div class="row">
+        <form [formGroup]="submitForm" (ngSubmit)="submit()" accept-charset="utf-8" htmlEscape="true"
+            enctype="multipart/form-data" autocomplete="off">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>စာမေးပွဲကျင်းပသည့်အကြိမ်<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" formControlName="examHoldingTimes" class="fcontrol" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="submittedForm || submitForm.get('examHoldingTimes')!.invalid && submitForm.get('examHoldingTimes')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['required']">Field is required</div>
+                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['pattern']">Must be between 1 and 200</div>
+                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4 col-sm-6">
+                    <button type="submit" class="bsearch btn">Generate</button>
+                    <button type="button" class="bsearch btn" (click)="resetForm()">Reset</button>
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
+        </form>
+    </div>
+    <hr>
     <div class="row">
         <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
@@ -56,12 +93,13 @@
         </form>
     </div>
     <div class="row">
-        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;">Export to
-            Excel</button>
         <table class="table table-bordered exptable table-responsive" id="myTable" matSort
             (matSortChange)="sortData($event)">
             <thead>
                 <tr>
+                    <th style="width: 50px">
+                        <input type="checkbox" class="fcontrol" (change)="checkUncheckAll()" [(ngModel)]="isCheckAll">
+                    </th>
                     <th style="width: 80px" mat-sort-header="index">စဉ်</th>
                     <th style="width: 100px" mat-sort-header="regNo">ခုံနံပါတ်</th>
                     <th style="width: 100px" mat-sort-header="name">အမည်</th>
@@ -70,11 +108,14 @@
                     <th style="width: 100px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
                     <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
                     <th style="width: 100px" mat-sort-header="class">အခန်း</th>
-                    <th style="width: 80px" *ngIf="userInfo.role.name === 'STUDENT_ENTRY'">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let element of sortedData">
+                    <td>
+                        <input type="checkbox" class="fcontrol" (change)="isAllSelected($event, element.id)"
+                            [(ngModel)]="element.check" value="{{element.id}}">
+                    </td>
                     <td>{{element.index}}</td>
                     <td *ngIf="element.regNo">{{element.regNo}}</td>
                     <td *ngIf="!element.regNo">-</td>
@@ -84,10 +125,6 @@
                     <td>{{element.examTitle.name}}</td>
                     <td>{{element.studentClass.grade.name}}</td>
                     <td>{{element.studentClass.name}}</td>
-                    <td *ngIf="userInfo.role.name === 'STUDENT_ENTRY'">
-                        <i class="fa fa-edit" (click)="edit(element.id)"></i>
-                        <i class="fa fa-trash" (click)="delete(element.id)"></i>
-                    </td>
                 </tr>
             </tbody>
         </table>

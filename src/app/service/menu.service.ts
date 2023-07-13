@@ -116,36 +116,6 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာသင်သား',
-        items: [
-          {
-            title: 'အသစ်သွင်းခြင်း',
-            url: '/app/student/create',
-            permissions: [{ name: UserPermission.STUDENT_ENTRY }]
-          },
-          {
-            title: 'စာရင်းကြည့်ခြင်း',
-            url: '/app/student/list',
-            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }]
-          }
-        ]
-      },
-      {
-        title: 'စာမေးပွဲဖြေဆိုမည့်စာသင်သား',
-        items: [
-          {
-            title: 'အခန်းနေရာချထားခြင်း',
-            url: '/app/student-class/create',
-            permissions: [{ name: UserPermission.STUDENT_ENTRY }]
-          },
-          {
-            title: 'စာရင်းကြည့်ခြင်း',
-            url: '/app/student-class/list',
-            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }]
-          }
-        ]
-      },
-      {
         title: 'ဘာသာရပ်ကြီး',
         items: [
           {
@@ -206,7 +176,37 @@ export class MenuService {
         ]
       },
       {
-        title: 'ရောက်ရှိဖြေဆိုမည့်စာသင်သား',
+        title: 'စာသင်သား',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/student/create',
+            permissions: [{ name: UserPermission.STUDENT_ENTRY }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/student/list',
+            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }]
+          }
+        ]
+      },
+      {
+        title: 'ဖြေဆိုမည့်စာသင်သားများအား အခန်းနေရာချထားခြင်း',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/student-class/create',
+            permissions: [{ name: UserPermission.STUDENT_ENTRY }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/student-class/list',
+            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }]
+          }
+        ]
+      },
+      {
+        title: 'ဖြေဆိုရန်ရောက်ရှိသည့်စာသင်သား',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',
@@ -216,7 +216,32 @@ export class MenuService {
           {
             title: 'စာရင်းကြည့်ခြင်း',
             url: '/app/arrival/list',
-            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }]
+            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }, { name: UserPermission.ATTENDANCE_ENTRY }]
+          }
+        ]
+      },
+      {
+        title: 'စာမေးပွဲဖြေဆိုခွင့်ကဒ်ထုတ်ခြင်း',
+        items: [
+          {
+            title: 'အသစ်ထုတ်ယူခြင်း',
+            url: '/app/student-card/create',
+            permissions: [{ name: UserPermission.EXAM_ENTRY }]
+          }
+        ]
+      },
+      {
+        title: 'စာမေးပွဲဖြေဆိုခဲ့သည့်စာသင်သား',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/attendance/create',
+            permissions: [{ name: UserPermission.ATTENDANCE_ENTRY }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/attendance/list',
+            permissions: [{ name: UserPermission.ATTENDANCE_ENTRY }, { name: UserPermission.ADMIN }, { name: UserPermission.EXAM_MARK_ENTRY }]
           }
         ]
       }

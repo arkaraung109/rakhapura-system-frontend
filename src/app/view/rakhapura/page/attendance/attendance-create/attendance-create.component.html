@@ -1,5 +1,5 @@
 <div class="hrow">
-    <h4>ဖြေဆိုမည့်စာသင်သားများအား အခန်းနေရာချထားခြင်းစာရင်း</h4>
+    <h4>စာမေးပွဲဖြေဆိုခဲ့သည့်စာသင်သားစာရင်းသွင်းခြင်း</h4>
 </div>
 <div class="container-fluid ttable">
     <div class="row">
@@ -21,19 +21,11 @@
                     </option>
                 </select>
             </div>
-            <div class="col-sm-2">
-                <select formControlName="grade" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="0">အတန်းအားလုံး</option>
-                    <option *ngFor="let g of gradeList" [ngValue]="g.id">
-                        {{g.name}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <select formControlName="class" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="'All'">အခန်းအားလုံး</option>
-                    <option *ngFor="let c of classList" [ngValue]="c">
-                        {{c}}
+            <div class="col-sm-3">
+                <select formControlName="subjectType" class="fcontrol" style="margin: 20px 0px;">
+                    <option [ngValue]="0">ဘာသာရပ်ကြီးစာမေးပွဲအားလုံး</option>
+                    <option *ngFor="let s of subjectTypeList" [ngValue]="s.id">
+                        {{s.name}} ({{s.grade.name}})
                     </option>
                 </select>
             </div>
@@ -56,38 +48,37 @@
         </form>
     </div>
     <div class="row">
-        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;">Export to
-            Excel</button>
+        <button class="btn btn-search" (click)="submit()" style="float: right; margin-bottom: 10px;">Make As Present</button>
         <table class="table table-bordered exptable table-responsive" id="myTable" matSort
             (matSortChange)="sortData($event)">
             <thead>
                 <tr>
+                    <th style="width: 50px">
+                        <input type="checkbox" class="fcontrol" (change)="checkUncheckAll()" [(ngModel)]="isCheckAll">
+                    </th>
                     <th style="width: 80px" mat-sort-header="index">စဉ်</th>
                     <th style="width: 100px" mat-sort-header="regNo">ခုံနံပါတ်</th>
                     <th style="width: 100px" mat-sort-header="name">အမည်</th>
                     <th style="width: 100px" mat-sort-header="fatherName">အဖအမည်</th>
                     <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
                     <th style="width: 100px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
-                    <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
-                    <th style="width: 100px" mat-sort-header="class">အခန်း</th>
-                    <th style="width: 80px" *ngIf="userInfo.role.name === 'STUDENT_ENTRY'">Action</th>
+                    <th style="width: 200px" mat-sort-header="subjectType">ဘာသာရပ်ကြီးစာမေးပွဲ</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let element of sortedData">
-                    <td>{{element.index}}</td>
-                    <td *ngIf="element.regNo">{{element.regNo}}</td>
-                    <td *ngIf="!element.regNo">-</td>
-                    <td>{{element.student.name}}</td>
-                    <td>{{element.student.fatherName}}</td>
-                    <td>{{element.studentClass.academicYear.name}}</td>
-                    <td>{{element.examTitle.name}}</td>
-                    <td>{{element.studentClass.grade.name}}</td>
-                    <td>{{element.studentClass.name}}</td>
-                    <td *ngIf="userInfo.role.name === 'STUDENT_ENTRY'">
-                        <i class="fa fa-edit" (click)="edit(element.id)"></i>
-                        <i class="fa fa-trash" (click)="delete(element.id)"></i>
+                    <td>
+                        <input type="checkbox" class="fcontrol" (change)="isAllSelected($event, element.id)"
+                            [(ngModel)]="element.check" value="{{element.id}}">
                     </td>
+                    <td>{{element.index}}</td>
+                    <td *ngIf="element.studentClass.regNo">{{element.studentClass.regNo}}</td>
+                    <td *ngIf="!element.studentClass.regNo">-</td>
+                    <td>{{element.studentClass.student.name}}</td>
+                    <td>{{element.studentClass.student.fatherName}}</td>
+                    <td>{{element.exam.academicYear.name}}</td>
+                    <td>{{element.exam.examTitle.name}}</td>
+                    <td>{{element.exam.subjectType.name}} ({{element.exam.subjectType.grade.name}})</td>
                 </tr>
             </tbody>
         </table>

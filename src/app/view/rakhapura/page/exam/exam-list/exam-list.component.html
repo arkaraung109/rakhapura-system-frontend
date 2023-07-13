@@ -20,7 +20,7 @@
         </option>
       </select>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-2">
       <select formControlName="subjectType" class="fcontrol" style="margin: 20px 0px;">
         <option [ngValue]="0">ဘာသာရပ်ကြီးအားလုံး</option>
         <option *ngFor="let s of subjectTypeList" [ngValue]="s.id">
@@ -53,11 +53,11 @@
       <thead>
         <tr>
           <th style="width: 30px" mat-sort-header="index">စဉ်</th>
-          <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
+          <th style="width: 80px" mat-sort-header="academicYear">စာသင်နှစ်</th>
           <th style="width: 150px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
-          <th style="width: 100px" mat-sort-header="subjectType">ဘာသာရပ်ကြီး</th>
-          <th style="width: 100px" mat-sort-header="examDate">ဖြေဆိုမည့်ရက်စွဲ</th>
-          <th style="width: 100px" mat-sort-header="time">ဖြေဆိုမည့်အချိန်</th>
+          <th style="width: 200px" mat-sort-header="subjectType">ဘာသာရပ်ကြီး</th>
+          <th style="width: 80px" mat-sort-header="examDate">ဖြေဆိုမည့်ရက်စွဲ</th>
+          <th style="width: 90px" mat-sort-header="time">ဖြေဆိုမည့်အချိန်</th>
           <th style="width: 50px" mat-sort-header="passMark">အောင်မှတ်</th>
           <th style="width: 70px" mat-sort-header="markPercentage">ပေးမှတ်</th>
           <th style="width: 50px">Action</th>
@@ -69,7 +69,7 @@
           <td>{{element.index}}</td>
           <td>{{element.academicYear.name}}</td>
           <td>{{element.examTitle.name}}</td>
-          <td>{{element.subjectType.name}}</td>
+          <td>{{element.subjectType.name}} ({{element.subjectType.grade.name}})</td>
           <td>{{element.examDate}}</td>
           <td>{{element.time}}</td>
           <td>{{element.passMark}}</td>

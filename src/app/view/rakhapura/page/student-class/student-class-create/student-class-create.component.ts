@@ -21,9 +21,9 @@ import { Class } from 'src/app/model/Class';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { StudentClass } from 'src/app/model/StudentClass';
 import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
-import { ApiResponse } from 'src/app/model/ApiResponse';
 import { StudentClassService } from 'src/app/service/student-class.service';
 import { HttpCode } from 'src/app/common/HttpCode';
+import { DataResponse } from 'src/app/model/DataResponse';
 
 @Component({
   selector: 'app-student-class-create',
@@ -109,10 +109,7 @@ export class StudentClassCreateComponent implements OnInit {
     });
 
     if(localStorage.getItem("status") === "created") {
-      this.toastrService.success("Successfully Created.");
-    }
-    else if(localStorage.getItem("status") === "duplicated") {
-      this.toastrService.warning("Duplicate record.", "Some records already exist.");
+      this.toastrService.success(localStorage.getItem("message")!);
     }
 
     localStorage.removeItem("status");
@@ -176,44 +173,50 @@ export class StudentClassCreateComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
         if(this.idList.length == 0) {
-          this.toastrService.warning("Please check students for assigning at first.", "Not Finished Yet.");
+          this.toastrService.warning("Please check students first.", "Not Finished Yet.");
           return;
         }
         let examTitleId = this.submitForm.get('examTitle')!.value;
         let academicYearId = this.submitForm.get('academicYear')!.value
         let classId = this.submitForm.get('class')!.value;
 
-        for(let i = 0; i < this.idList.length; i++) {
-          let requestBody: StudentClass = new StudentClass();
-          requestBody.examTitle.id = examTitleId;
-          requestBody.studentClass.academicYear.id = academicYearId;
-          requestBody.studentClass.id = classId;
-          requestBody.student.id = this.idList[i];
-          this.studentClassService.save(requestBody).subscribe({
-            next: (res: ApiResponse) => {
-              if(res.status == HttpCode.CREATED) {
-                if(localStorage.getItem("status") != "duplicated") {
-                  localStorage.setItem("status", "created");
-                }
-                this.router.navigate(['/app/student-class/create']).then(() => {
-                  location.reload();
-                });
-              }
-            },
-            error: (err) => {
-              if(err.status == HttpErrorCode.CONFLICT) {
-                localStorage.setItem("status", "duplicated");
-                this.router.navigate(['/app/student-class/create']).then(() => {
-                  location.reload();
-                });
-              } else if(err.status == HttpErrorCode.FORBIDDEN) {
-                this.toastrService.error("Forbidden", "Failed action");
-              } else {
-                this.toastrService.error("Failed to save new record", "Failed action");
-              }
+        let requestBody: StudentClass = new StudentClass();
+        requestBody.examTitle.id = examTitleId;
+        requestBody.studentClass.academicYear.id = academicYearId;
+        requestBody.studentClass.id = classId;
+        this.studentClassService.save(requestBody, this.idList).subscribe({
+          next: (res: DataResponse) => {
+            if(res.status == HttpCode.CREATED) {
+              localStorage.setItem("status", "created");
+              let size = res.createdCount;
+              let message = "Successfully Created ";
+              message += size > 1 ? size + " Records" : size + " Record";
+              localStorage.setItem("message", message);
+              this.router.navigate(['/app/student-class/create']).then(() => {
+                location.reload();
+              });
             }
-          });
-        }
+          },
+          error: (err) => {
+            if(err.status == HttpErrorCode.CONFLICT) {
+              if(err.error.createdCount != 0) {
+                let size = err.error.createdCount;
+                let message = "Successfully Created ";
+                message += size > 1 ? size + " Records" : size + " Record";
+                this.toastrService.success(message);
+              }
+              if(err.error.errorCount != 0) {
+                let size = err.error.errorCount;
+                let message = size > 1 ? size + " records already exist." : size + " record already exists.";
+                this.toastrService.warning("Duplicate Record.", message);
+              }
+            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+              this.toastrService.error("Forbidden", "Failed action");
+            } else {
+              this.toastrService.error("Failed to save new record", "Failed action");
+            }
+          }
+        });
       } else {
         this.matDialog.closeAll();
       }

@@ -14,25 +14,26 @@ import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
 import { PaginationResponse } from 'src/app/model/PaginationResponse';
 import { AcademicYearService } from 'src/app/service/academic-year.service';
-import { ArrivalService } from 'src/app/service/arrival.service';
 import { ClassService } from 'src/app/service/class.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
+import { StudentCardService } from 'src/app/service/student-card.service';
 import { StudentClassService } from 'src/app/service/student-class.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({
-  selector: 'app-arrival-create',
-  templateUrl: './arrival-create.component.html',
-  styleUrls: ['./arrival-create.component.css']
+  selector: 'app-student-card-create',
+  templateUrl: './student-card-create.component.html',
+  styleUrls: ['./student-card-create.component.css']
 })
-export class ArrivalCreateComponent implements OnInit {
+export class StudentCardCreateComponent implements OnInit {
 
   pageData: PaginationResponse = new PaginationResponse();
   currentPage: number = 1;
   sortedData: any[] = [];
   dataList: any[] = [];
   submitted = false;
+  submittedForm = false;
   isCheckAll = false;
   @ViewChild(MatSort) sort!: MatSort;
   examTitleList!: ExamTitle[];
@@ -45,6 +46,14 @@ export class ArrivalCreateComponent implements OnInit {
   searchedClass!: string;
   keyword!: string;
   idList: string[] = [];
+
+  submitForm: FormGroup = new FormGroup({
+    examHoldingTimes: new FormControl('', [
+      Validators.required, 
+      Validators.pattern("^([1-9]|[1-9][0-9]|1[0-9][0-9]|200)$"),
+      whiteSpaceValidator()
+    ])
+  });
 
   form: FormGroup = new FormGroup({
     examTitle: new FormControl(0),
@@ -61,9 +70,8 @@ export class ArrivalCreateComponent implements OnInit {
     private examTitleService: ExamTitleService, 
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService, 
-    private studentClassService: StudentClassService, 
-    private arrivalService: ArrivalService,
+    private classService: ClassService,  
+    private studentCardService: StudentCardService,
     private toastrService: ToastrService,
     private router: Router, 
     private matDialog: MatDialog
@@ -83,7 +91,7 @@ export class ArrivalCreateComponent implements OnInit {
       this.classList = data;
     });
 
-    this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+    this.studentCardService.fetchPageSegment(this.currentPage).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -92,11 +100,15 @@ export class ArrivalCreateComponent implements OnInit {
       }
     });
 
-    if(localStorage.getItem("status") === "created") {
-      this.toastrService.success(localStorage.getItem("message")!);
+    if(localStorage.getItem("status_created") === "created") {
+      this.toastrService.success(localStorage.getItem("message_created")!);
+    }
+    if(localStorage.getItem("status_error") === "error") {
+      this.toastrService.warning("Not Existing Record.", localStorage.getItem("message_error")!);
     }
 
-    localStorage.removeItem("status");
+    localStorage.removeItem("status_created");
+    localStorage.removeItem("status_error");
   }
 
   sortData(sort: Sort) {
@@ -136,6 +148,11 @@ export class ArrivalCreateComponent implements OnInit {
   }
 
   submit() {
+    this.submittedForm = true;
+    if(this.submitForm.invalid) {
+      return;
+    }
+
     const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
       width: '300px'
     });
@@ -147,15 +164,15 @@ export class ArrivalCreateComponent implements OnInit {
           return;
         }
 
-        this.arrivalService.save(this.idList).subscribe({
+        this.studentCardService.save(this.idList, this.submitForm.get('examHoldingTimes')!.value).subscribe({
             next: (res: DataResponse) => {
               if(res.status == HttpCode.CREATED) {
-                localStorage.setItem("status", "created");
+                localStorage.setItem("status_created", "created");
                 let size = res.createdCount;
-                let message = "Successfully Arrived ";
+                let message = "Successfully Generated ";
                 message += size > 1 ? size + " Records" : size + " Record";
-                localStorage.setItem("message", message);
-                this.router.navigate(['/app/arrival/create']).then(() => {
+                localStorage.setItem("message_created", message);
+                this.router.navigate(['/app/student-card/create']).then(() => {
                   location.reload();
                 });
               }
@@ -163,16 +180,21 @@ export class ArrivalCreateComponent implements OnInit {
             error: (err) => {
               if(err.status === HttpErrorCode.NOT_FOUND) {
                 if(err.error.createdCount != 0) {
+                  localStorage.setItem("status_created", "created");
                   let size = err.error.createdCount;
-                  let message = "Successfully Arrived ";
+                  let message = "Successfully Generated ";
                   message += size > 1 ? size + " Records" : size + " Record";
-                  this.toastrService.success(message);
+                  localStorage.setItem("message_created", message);
                 }
                 if(err.error.errorCount != 0) {
+                  localStorage.setItem("status_error", "error");
                   let size = err.error.errorCount;
-                  let message = size > 1 ? size + " records do not exist." : size + " record does not exist.";
-                  this.toastrService.warning("Not Found Record.", message);
+                  let message = size > 1 ? size + " students have no exam existing for their grade." : size + " student has no exam existing for his grade.";
+                  localStorage.setItem("message_error", message);
                 }
+                this.router.navigate(['/app/student-card/create']).then(() => {
+                  location.reload();
+                });
               } else if(err.status == HttpErrorCode.FORBIDDEN) {
                 this.toastrService.error("Forbidden", "Failed action");
               } else {
@@ -238,7 +260,7 @@ export class ArrivalCreateComponent implements OnInit {
     }
     
     if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+      this.studentCardService.fetchPageSegment(this.currentPage).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -248,7 +270,7 @@ export class ArrivalCreateComponent implements OnInit {
         }
       });
     } else {
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -260,6 +282,11 @@ export class ArrivalCreateComponent implements OnInit {
     }
   }
 
+  resetForm() {
+    this.submitForm.reset();
+    this.submittedForm = false;
+  }
+
   reset() {
     location.reload();
   }
@@ -268,7 +295,7 @@ export class ArrivalCreateComponent implements OnInit {
     this.currentPage = currentPageEnterValue;
 
     if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+      this.studentCardService.fetchPageSegment(this.currentPage).subscribe({
         next: (res: PaginationResponse) => {
           if(res.totalElements == 0) {this.currentPage = 0}
           this.pageData = res;
@@ -294,7 +321,7 @@ export class ArrivalCreateComponent implements OnInit {
         }
       });
     } else { 
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           if(res.totalElements == 0) {this.currentPage = 0}
           this.pageData = res;

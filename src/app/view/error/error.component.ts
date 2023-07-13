@@ -35,8 +35,8 @@ export class ErrorComponent implements OnInit {
           this.returnRoute = '/auth';
           break;
         }
-        case `${HttpErrorCode.METHOD_NOT_FOUND}`: {
-          this.errorCode = `${HttpErrorCode.METHOD_NOT_FOUND}`;
+        case `${HttpErrorCode.NOT_FOUND}`: {
+          this.errorCode = `${HttpErrorCode.NOT_FOUND}`;
           this.errorMessage = "Page not found";
           this.returnRoute = '/';
           break;

@@ -23,6 +23,8 @@ import { SubjectModule } from './page/subject/subject.module';
 import { StudentClassModule } from './page/student-class/student-class.module';
 import { ExamSubjectModule } from './page/exam-subject/exam-subject.module';
 import { ArrivalModule } from './page/arrival/arrival.module';
+import { StudentCardModule } from './page/student-card/student-card.module';
+import { AttendanceModule } from './page/attendance/attendance.module';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { ArrivalModule } from './page/arrival/arrival.module';
     SubjectModule,
     StudentClassModule,
     ExamSubjectModule,
-    ArrivalModule
+    ArrivalModule,
+    StudentCardModule,
+    AttendanceModule
   ]
 })
 export class RakhapuraModule { }

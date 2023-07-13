@@ -13,20 +13,24 @@ import { DataResponse } from 'src/app/model/DataResponse';
 import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
 import { PaginationResponse } from 'src/app/model/PaginationResponse';
+import { SubjectType } from 'src/app/model/SubjectType';
 import { AcademicYearService } from 'src/app/service/academic-year.service';
 import { ArrivalService } from 'src/app/service/arrival.service';
+import { AttendanceService } from 'src/app/service/attendance.service';
 import { ClassService } from 'src/app/service/class.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
 import { StudentClassService } from 'src/app/service/student-class.service';
+import { SubjectTypeService } from 'src/app/service/subject-type.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
+
 @Component({
-  selector: 'app-arrival-create',
-  templateUrl: './arrival-create.component.html',
-  styleUrls: ['./arrival-create.component.css']
+  selector: 'app-attendance-create',
+  templateUrl: './attendance-create.component.html',
+  styleUrls: ['./attendance-create.component.css']
 })
-export class ArrivalCreateComponent implements OnInit {
+export class AttendanceCreateComponent implements OnInit {
 
   pageData: PaginationResponse = new PaginationResponse();
   currentPage: number = 1;
@@ -37,20 +41,17 @@ export class ArrivalCreateComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   examTitleList!: ExamTitle[];
   academicYearList!: AcademicYear[];
-  gradeList!: Grade[];
-  classList!: String[];
+  subjectTypeList!: SubjectType[];
   searchedExamTitle!: number;
   searchedAcademicYear!: number;
-  searchedGrade!: number;
-  searchedClass!: string;
+  searchedSubjectType!: number;
   keyword!: string;
   idList: string[] = [];
 
   form: FormGroup = new FormGroup({
     examTitle: new FormControl(0),
     academicYear: new FormControl(0),
-    grade: new FormControl(0),
-    class: new FormControl('All'),
+    subjectType: new FormControl(0),
     keyword: new FormControl('', [
       Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
@@ -60,10 +61,8 @@ export class ArrivalCreateComponent implements OnInit {
   constructor(
     private examTitleService: ExamTitleService, 
     private academicYearSerivce: AcademicYearService,
-    private gradeService: GradeService,
-    private classService: ClassService, 
-    private studentClassService: StudentClassService, 
-    private arrivalService: ArrivalService,
+    private subjectTypeService: SubjectTypeService,
+    private attendanceService: AttendanceService,
     private toastrService: ToastrService,
     private router: Router, 
     private matDialog: MatDialog
@@ -76,14 +75,11 @@ export class ArrivalCreateComponent implements OnInit {
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
     });
-    this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
-      this.gradeList = data;
-    });
-    this.classService.fetchDistinctAll().subscribe(data => {
-      this.classList = data;
+    this.subjectTypeService.fetchAllByAuthorizedStatus().subscribe(data => {
+      this.subjectTypeList = data;
     });
 
-    this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+    this.attendanceService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -112,19 +108,17 @@ export class ArrivalCreateComponent implements OnInit {
         case 'index':
           return this.compare(a.index, b.index, isAsc);
         case 'regNo':
-          return this.compare(a.regNo, b.regNo, isAsc);
+          return this.compare(a.studentClass.regNo, b.studentClass.regNo, isAsc);
         case 'name':
-          return this.compare(a.name, b.name, isAsc);
+          return this.compare(a.studentClass.student.name, b.studentClass.student.name, isAsc);
         case 'fatherName':
-          return this.compare(a.fatherName, b.fatherName, isAsc);
+          return this.compare(a.studentClass.student.fatherName, b.studentClass.student.fatherName, isAsc);
         case 'academicYear':
-          return this.compare(a.studentClass.academicYear.name, b.studentClass.academicYear.name, isAsc);
+          return this.compare(a.exam.academicYear.name, b.exam.academicYear.name, isAsc);
         case 'examTitle':
-          return this.compare(a.examTitle.name, b.examTitle.name, isAsc);
-        case 'grade':
-          return this.compare(a.studentClass.grade.name, b.studentClass.grade.name, isAsc);
-        case 'class':
-          return this.compare(a.studentClass.name, b.studentClass.name, isAsc);
+          return this.compare(a.exam.examTitle.name, b.exam.examTitle.name, isAsc);
+        case 'subjectType':
+          return this.compare(a.exam.subjectType.name + " (" + a.exam.subjectType.grade.name + ")", b.exam.subjectType.name + " (" + b.exam.subjectType.grade.name + ")", isAsc);
         default:
           return 0;
       }
@@ -147,15 +141,15 @@ export class ArrivalCreateComponent implements OnInit {
           return;
         }
 
-        this.arrivalService.save(this.idList).subscribe({
+        this.attendanceService.save(this.idList).subscribe({
             next: (res: DataResponse) => {
               if(res.status == HttpCode.CREATED) {
                 localStorage.setItem("status", "created");
                 let size = res.createdCount;
-                let message = "Successfully Arrived ";
+                let message = "Successfully Make As Present ";
                 message += size > 1 ? size + " Records" : size + " Record";
                 localStorage.setItem("message", message);
-                this.router.navigate(['/app/arrival/create']).then(() => {
+                this.router.navigate(['/app/attendance/create']).then(() => {
                   location.reload();
                 });
               }
@@ -164,7 +158,7 @@ export class ArrivalCreateComponent implements OnInit {
               if(err.status === HttpErrorCode.NOT_FOUND) {
                 if(err.error.createdCount != 0) {
                   let size = err.error.createdCount;
-                  let message = "Successfully Arrived ";
+                  let message = "Successfully Make As Present ";
                   message += size > 1 ? size + " Records" : size + " Record";
                   this.toastrService.success(message);
                 }
@@ -230,15 +224,14 @@ export class ArrivalCreateComponent implements OnInit {
     this.idList = [];
     this.searchedExamTitle = this.form.get('examTitle')!.value;
     this.searchedAcademicYear = this.form.get('academicYear')!.value;
-    this.searchedGrade = this.form.get('grade')!.value;
-    this.searchedClass = this.form.get('class')!.value;
+    this.searchedSubjectType = this.form.get('subjectType')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
     if(this.form.invalid) {
       return;
     }
     
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedSubjectType == 0 && this.keyword === '') {
+      this.attendanceService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -248,7 +241,7 @@ export class ArrivalCreateComponent implements OnInit {
         }
       });
     } else {
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      this.attendanceService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -267,8 +260,8 @@ export class ArrivalCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedSubjectType == 0 && this.keyword === '')) {
+      this.attendanceService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
         next: (res: PaginationResponse) => {
           if(res.totalElements == 0) {this.currentPage = 0}
           this.pageData = res;
@@ -294,7 +287,7 @@ export class ArrivalCreateComponent implements OnInit {
         }
       });
     } else { 
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      this.attendanceService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           if(res.totalElements == 0) {this.currentPage = 0}
           this.pageData = res;

@@ -125,7 +125,7 @@ export class ExamSubjectListComponent implements OnInit {
         case 'grade':
           return this.compare(a.exam.subjectType.grade.name, b.exam.subjectType.grade.name, isAsc);
         case 'subjectType':
-          return this.compare(a.exam.subjectType.name, b.exam.subjectType.name, isAsc);
+          return this.compare(a.exam.subjectType.name + " (" + a.exam.subjectType.grade.name + ")", b.exam.subjectType.name + " (" + b.exam.subjectType.grade.name + ")", isAsc);
         case 'subject':
           return this.compare(a.subject.name, b.subject.name, isAsc);
         case 'passMark':

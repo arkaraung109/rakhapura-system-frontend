@@ -16,6 +16,8 @@ import { SubjectComponent } from './page/subject/subject.component';
 import { StudentClassComponent } from './page/student-class/student-class.component';
 import { ExamSubjectComponent } from './page/exam-subject/exam-subject.component';
 import { ArrivalComponent } from './page/arrival/arrival.component';
+import { StudentCardComponent } from './page/student-card/student-card.component';
+import { AttendanceComponent } from './page/attendance/attendance.component';
 
 const routes: Routes = [
   {
@@ -204,12 +206,40 @@ const routes: Routes = [
     component: ArrivalComponent,
     canActivateChild: [AuthGuard],
     data: {
-      allowedRoles: [UserPermission.ADMIN, UserPermission.STUDENT_ENTRY]
+      allowedRoles: [UserPermission.ADMIN, UserPermission.STUDENT_ENTRY, UserPermission.ATTENDANCE_ENTRY]
     },
     children: [
       {
         path: '',
         loadChildren: () => import('./page/arrival/arrival.module').then(m => m.ArrivalModule)
+      },
+    ]
+  },
+  {
+    path: 'student-card',
+    component: StudentCardComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.EXAM_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/student-card/student-card.module').then(m => m.StudentCardModule)
+      },
+    ]
+  },
+  {
+    path: 'attendance',
+    component: AttendanceComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN, UserPermission.ATTENDANCE_ENTRY, UserPermission.EXAM_MARK_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/attendance/attendance.module').then(m => m.AttendanceModule)
       },
     ]
   }
