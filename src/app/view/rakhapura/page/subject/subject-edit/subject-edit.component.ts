@@ -20,6 +20,8 @@ export class SubjectEditComponent implements OnInit {
 
   submitted = false;
   id!: number;
+  currentPage!: number;
+  keyword!: string;
   oldSubject: Subject = new Subject();
   
   form: FormGroup = new FormGroup({
@@ -42,7 +44,10 @@ export class SubjectEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.keyword = params['keyword'];
     });
+    
     this.subjectService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
       this.oldSubject.name = data.name;
@@ -95,7 +100,13 @@ export class SubjectEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/subject/list']);
+    this.router.navigate(['/app/subject/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

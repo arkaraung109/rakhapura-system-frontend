@@ -20,6 +20,8 @@ export class HostelEditComponent implements OnInit {
 
   submitted = false;
   id!: number;
+  currentPage!: number;
+  keyword!: string;
   oldHostel: Hostel = new Hostel();
 
   form: FormGroup = new FormGroup({
@@ -54,7 +56,10 @@ export class HostelEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.keyword = params['keyword'];
     });
+    
     this.hostelService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
       this.form.get('address')!.setValue(data.address);
@@ -115,7 +120,13 @@ export class HostelEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/hostel/list']);
+    this.router.navigate(['/app/hostel/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

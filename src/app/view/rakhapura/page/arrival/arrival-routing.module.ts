@@ -24,7 +24,7 @@ const routes: Routes = [
     component: ArrivalListComponent,
     canActivate: [AuthGuard],
     data: {
-      allowedRoles: [UserPermission.ADMIN, UserPermission.STUDENT_ENTRY, UserPermission.ATTENDANCE_ENTRY]
+      allowedRoles: [UserPermission.ADMIN, UserPermission.STUDENT_ENTRY]
     }
   }
 ];

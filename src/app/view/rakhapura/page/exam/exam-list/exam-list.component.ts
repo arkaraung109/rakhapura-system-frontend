@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { HttpCode } from 'src/app/common/HttpCode';
 import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
@@ -61,11 +61,22 @@ export class ExamListComponent implements OnInit {
     private examService: ExamService, 
     private userService: UserService, 
     private toastrService: ToastrService, 
+    private route: ActivatedRoute, 
     private router: Router, 
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = params['currentPage'];
+      }
+      this.searchedAcademicYear = params['searchedAcademicYear'] == undefined ? 0 : params['searchedAcademicYear'];
+      this.searchedExamTitle = params['searchedExamTitle'] == undefined ? 0 : params['searchedExamTitle'];
+      this.searchedSubjectType = params['searchedSubjectType'] == undefined ? 0 : params['searchedSubjectType'];
+      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+    });
+
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
     });
@@ -75,14 +86,32 @@ export class ExamListComponent implements OnInit {
     this.subjectTypeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.subjectTypeList = data;
     });
-    this.examService.fetchPageSegment(this.currentPage).subscribe({
-      next: (res: PaginationResponse) => {
-        this.setDataInCurrentPage(res);
-      },
-      error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
-      }
-    });
+
+    if(this.searchedAcademicYear == 0 && this.searchedExamTitle == 0 && this.searchedSubjectType == 0 && this.keyword === '') {
+      this.examService.fetchPageSegment(this.currentPage).subscribe({
+        next: (res: PaginationResponse) => {
+          this.setDataInCurrentPage(res);
+        },
+        error: (err) => {
+          this.toastrService.error("Error message", "Something went wrong.");
+        }
+      });
+    } else {
+      this.submitted = true;
+      this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+        next: (res: PaginationResponse) => {
+          this.setDataInCurrentPage(res);
+          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+        },
+        error: (err) => {
+          this.toastrService.error("Error message", "Something went wrong.");
+        }
+      });
+      this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
+      this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
+      this.form.get('subjectType')!.setValue(+this.searchedSubjectType);
+      this.form.get('keyword')!.setValue(this.keyword);
+    }
 
     if(localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
@@ -205,7 +234,12 @@ export class ExamListComponent implements OnInit {
         } else {
           this.router.navigate(['/app/exam/edit'], {
             queryParams: {
-                id: id
+              id: id,
+              currentPage: this.currentPage,
+              searchedAcademicYear: this.searchedAcademicYear,
+              searchedExamTitle: this.searchedExamTitle,
+              searchedSubjectType: this.searchedSubjectType,
+              keyword: this.keyword
             },
             skipLocationChange: true
           });

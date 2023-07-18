@@ -1,5 +1,6 @@
 import { Class } from "./Class";
 import { ExamTitle } from "./ExamTitle";
+import { Hostel } from "./Hostel";
 import { Student } from "./Student";
 
 export class StudentClass {
@@ -10,5 +11,6 @@ export class StudentClass {
     createdTimestamp!: string;
     examTitle: ExamTitle = new ExamTitle();
     studentClass: Class = new Class();
+    hostel!: Hostel;
     student: Student = new Student();
 }

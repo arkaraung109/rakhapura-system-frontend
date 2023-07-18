@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { HttpCode } from 'src/app/common/HttpCode';
 import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
@@ -55,25 +55,52 @@ export class ClassListComponent implements OnInit {
     private classService: ClassService, 
     private userService: UserService, 
     private toastrService: ToastrService, 
+    private route: ActivatedRoute, 
     private router: Router, 
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = params['currentPage'];
+      }
+      this.searchedAcademicYear = params['searchedAcademicYear'] == undefined ? 0 : params['searchedAcademicYear'];
+      this.searchedGrade = params['searchedGrade'] == undefined ? 0 : params['searchedGrade'];
+      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+    });
+
     this.academicYearService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
     });
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
     });
-    this.classService.fetchPageSegment(this.currentPage).subscribe({
-      next: (res: PaginationResponse) => {
-        this.setDataInCurrentPage(res);
-      },
-      error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
-      }
-    });
+
+    if(this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.keyword === '') {
+      this.classService.fetchPageSegment(this.currentPage).subscribe({
+        next: (res: PaginationResponse) => {
+          this.setDataInCurrentPage(res);
+        },
+        error: (err) => {
+          this.toastrService.error("Error message", "Something went wrong.");
+        }
+      });
+    } else {
+      this.submitted = true;
+      this.classService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
+        next: (res: PaginationResponse) => {
+          this.setDataInCurrentPage(res);
+          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+        },
+        error: (err) => {
+          this.toastrService.error("Error message", "Something went wrong.");
+        }
+      });
+      this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
+      this.form.get('grade')!.setValue(+this.searchedGrade);
+      this.form.get('keyword')!.setValue(this.keyword);
+    }
 
     if(localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
@@ -187,7 +214,11 @@ export class ClassListComponent implements OnInit {
         } else {
           this.router.navigate(['/app/class/edit'], {
             queryParams: {
-                id: id
+                id: id,
+                currentPage: this.currentPage,
+                searchedAcademicYear: this.searchedAcademicYear,
+                searchedGrade: this.searchedGrade,
+                keyword: this.keyword
             },
             skipLocationChange: true
           });

@@ -20,6 +20,8 @@ export class ExamTitleEditComponent implements OnInit {
 
   submitted = false;
   id!: number;
+  currentPage!: number;
+  keyword!: string;
   oldExamTitle: ExamTitle = new ExamTitle();
 
   form: FormGroup = new FormGroup({
@@ -42,7 +44,10 @@ export class ExamTitleEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.keyword = params['keyword'];
     });
+    
     this.examTitleService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
       this.oldExamTitle.name = data.name;
@@ -95,7 +100,13 @@ export class ExamTitleEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/exam-title/list']);
+    this.router.navigate(['/app/exam-title/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
   
 }

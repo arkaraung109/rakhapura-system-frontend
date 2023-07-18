@@ -1,1 +1,90 @@
-<p>attendance-detail works!</p>
+<div class="hrow">
+    <h4>ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</h4>
+</div>
+<div class="container-fluid ttable">
+    <div class="row">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>ခုံနံပါတ်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentClass.regNo}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>စာသင်သားအမည်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentClass.student.name}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>အဖအမည်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentClass.student.fatherName}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>စာသင်နှစ်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentClass.studentClass.academicYear.name}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>စာမေးပွဲခေါင်းစဉ်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentClass.examTitle.name}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>အတန်း</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentClass.studentClass.grade.name}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4"></div>
+                    <div class="col-xs-4 col-sm-6">
+                      <button type="button" class="bsearch btn" (click)="back()">Back</button>
+                    </div>
+                    <div class="col-xs-4"></div>
+                  </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+            (matSortChange)="sortData($event)" style="width: 50%; margin: 20px auto 50px;">
+            <caption style="text-align: center; color: red"><h4>ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</h4></caption>
+            <thead>
+                <tr>
+                    <th style="width: 80px" mat-sort-header="index">စဉ်</th>
+                    <th style="width: 100px" mat-sort-header="subjectType">ဘာသာရပ်ကြီးစာမေးပွဲ</th>
+                    <th style="width: 100px">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let element of sortedData">
+                    <td>{{element.index}}</td>
+                    <td>{{element.exam.subjectType.name}}</td>
+                    <td><a style="cursor: pointer" (click)="addStudentExam(element.exam.id)">အမှတ်စာရင်းသွင်းရန်</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+    </div>
+</div>

@@ -17,7 +17,6 @@ import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { ExamService } from 'src/app/service/exam.service';
 import { SubjectTypeService } from 'src/app/service/subject-type.service';
 import { lessThanValidator } from 'src/app/validator/less-than.validator';
-import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({
   selector: 'app-exam-edit',
@@ -31,6 +30,11 @@ export class ExamEditComponent implements OnInit {
   examTitleList!: ExamTitle[];
   subjectTypeList!: SubjectType[];
   id!: number;
+  currentPage!: number;
+  searchedAcademicYear!: number;
+  searchedExamTitle!: number;
+  searchedSubjectType!: number;
+  keyword!: string;
   oldExam: Exam = new Exam();
   
   form: FormGroup = new FormGroup({
@@ -68,6 +72,15 @@ export class ExamEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.searchedAcademicYear = params['searchedAcademicYear'];
+      this.searchedExamTitle = params['searchedExamTitle'];
+      this.searchedSubjectType = params['searchedSubjectType'];
+      this.keyword = params['keyword'];
+    });
+
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
     });
@@ -77,9 +90,7 @@ export class ExamEditComponent implements OnInit {
     this.subjectTypeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.subjectTypeList = data;
     });
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-    });
+
     this.examService.fetchById(this.id).subscribe(data => {
       this.form.get('academicYear')!.setValue(data.academicYear.id);
       this.form.get('examTitle')!.setValue(data.examTitle.id);
@@ -161,7 +172,16 @@ export class ExamEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/exam/list']);
+    this.router.navigate(['/app/exam/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedAcademicYear: this.searchedAcademicYear,
+        searchedExamTitle: this.searchedExamTitle,
+        searchedSubjectType: this.searchedSubjectType,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

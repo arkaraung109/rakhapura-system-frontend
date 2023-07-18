@@ -70,7 +70,6 @@
                     <th style="width: 100px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
                     <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
                     <th style="width: 100px" mat-sort-header="class">အခန်း</th>
-                    <th style="width: 100px" *ngIf="userInfo.role.name === 'ADMIN' || userInfo.role.name === 'ATTENDANCE_ENTRY'">တက်ရောက်ထားသောစာမေးပွဲများ</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,7 +83,6 @@
                     <td>{{element.examTitle.name}}</td>
                     <td>{{element.studentClass.grade.name}}</td>
                     <td>{{element.studentClass.name}}</td>
-                    <td style="text-align: center" *ngIf="userInfo.role.name === 'ADMIN' || userInfo.role.name === 'ATTENDANCE_ENTRY'"><i class="fa fa-eye" (click)="viewAttendanceDetail(element.id)"></i></td>
                 </tr>
             </tbody>
         </table>

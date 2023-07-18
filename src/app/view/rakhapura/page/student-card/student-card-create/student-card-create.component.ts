@@ -18,7 +18,6 @@ import { ClassService } from 'src/app/service/class.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
 import { StudentCardService } from 'src/app/service/student-card.service';
-import { StudentClassService } from 'src/app/service/student-class.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({

@@ -28,6 +28,9 @@ export class StudentEditComponent implements OnInit {
   submitted = false;
   regionList!: Region[];
   id!: string;
+  currentPage!: number;
+  searchedRegion!: number;
+  keyword!: string;
   oldStudent: Student = new Student();
 
   form: FormGroup = new FormGroup({
@@ -110,6 +113,12 @@ export class StudentEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.searchedRegion = params['searchedRegion'];
+      this.keyword = params['keyword'];
+    });   
     this.regionService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.regionList = data;
     });  
@@ -212,7 +221,25 @@ export class StudentEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/student/list']);
+    if(this.searchedRegion == 0 && this.keyword === '') {
+      this.router.navigate(['app/student/list'], {
+        queryParams: {
+          currentPage: this.currentPage,
+          searchedRegion: this.searchedRegion,
+          keyword: this.keyword
+        },
+        skipLocationChange: true
+      });
+    } else {
+      this.router.navigate(['app/student/list'], {
+        queryParams: {
+          currentPage: this.currentPage,
+          searchedRegion: this.searchedRegion,
+          keyword: this.keyword
+        },
+        skipLocationChange: true
+      });
+    }
   }
 
 }

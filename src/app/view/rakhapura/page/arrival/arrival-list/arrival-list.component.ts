@@ -206,15 +206,6 @@ export class ArrivalListComponent implements OnInit {
     });
   }
 
-  viewAttendanceDetail(id: number) {
-    this.router.navigate(['/app/attendance/detail'], {
-      queryParams: {
-          id: id
-      },
-      skipLocationChange: true
-    });
-  }
-
   setDataInCurrentPage(res: PaginationResponse) {
     if(res.totalElements == 0) {this.currentPage = 0}
     this.pageData = res;

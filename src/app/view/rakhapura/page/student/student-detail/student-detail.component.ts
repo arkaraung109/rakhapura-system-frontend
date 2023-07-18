@@ -48,18 +48,14 @@ export class StudentDetailComponent implements OnInit {
   }
 
   back() {
-    if(this.searchedRegion == 0 && this.keyword === '') {
-      this.router.navigate(['app/student/list']);
-    } else {
-      this.router.navigate(['app/student/list'], {
-        queryParams: {
-          currentPage: this.currentPage,
-          searchedRegion: this.searchedRegion,
-          keyword: this.keyword
-        },
-        skipLocationChange: true
-      });
-    }
+    this.router.navigate(['app/student/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedRegion: this.searchedRegion,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

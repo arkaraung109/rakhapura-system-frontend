@@ -57,16 +57,18 @@ export class StudentListComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.currentPage = params['currentPage'] == undefined ? 1 : this.currentPage;
-      this.searchedRegion = params['searchedRegion'];
-      this.keyword = params['keyword'];
+      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = params['currentPage'];
+      }
+      this.searchedRegion = params['searchedRegion'] == undefined ? 0 : params['searchedRegion'];
+      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
     });
 
     this.regionService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.regionList = data;
     });
 
-    if(this.searchedRegion == undefined && this.keyword === undefined) {
+    if(this.searchedRegion == 0 && this.keyword === '') {
       this.studentService.fetchPageSegment(this.currentPage).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
@@ -75,9 +77,8 @@ export class StudentListComponent implements OnInit {
           this.toastrService.error("Error message", "Something went wrong.");
         }
       });
-      this.searchedRegion = 0;
-      this.keyword = '';
     } else {
+      this.submitted = true;
       this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
@@ -198,7 +199,10 @@ export class StudentListComponent implements OnInit {
   edit(id: string) {  
     this.router.navigate(['/app/student/edit'], {
       queryParams: {
-          id: id
+          id: id,
+          currentPage: this.currentPage,
+          searchedRegion: this.searchedRegion,
+          keyword: this.keyword
       },
       skipLocationChange: true
     });

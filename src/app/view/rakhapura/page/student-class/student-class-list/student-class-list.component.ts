@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
@@ -68,11 +68,23 @@ export class StudentClassListComponent implements OnInit {
     private studentClassService: StudentClassService, 
     private userService: UserService, 
     private toastrService: ToastrService,
+    private route: ActivatedRoute, 
     private router: Router, 
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = params['currentPage'];
+      }
+      this.searchedExamTitle = params['searchedExamTitle'] == undefined ? 0 : params['searchedExamTitle'];
+      this.searchedAcademicYear = params['searchedAcademicYear'] == undefined ? 0 : params['searchedAcademicYear'];
+      this.searchedGrade = params['searchedGrade'] == undefined ? 0 : params['searchedGrade'];
+      this.searchedClass = params['searchedClass'] == undefined ? '' : params['searchedClass'];
+      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+    });
+
     this.examTitleService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.examTitleList = data;
     });
@@ -86,14 +98,32 @@ export class StudentClassListComponent implements OnInit {
       this.classList = data;
     });
 
-    this.studentClassService.fetchPageSegment(this.currentPage).subscribe({
-      next: (res: PaginationResponse) => {
-        this.setDataInCurrentPage(res);
-      },
-      error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
-      }
-    });
+    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === '' && this.keyword === '') {
+      this.studentClassService.fetchPageSegment(this.currentPage).subscribe({
+        next: (res: PaginationResponse) => {
+          this.setDataInCurrentPage(res);
+        },
+        error: (err) => {
+          this.toastrService.error("Error message", "Something went wrong.");
+        }
+      });
+    } else {
+      this.submitted = true;
+      this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+        next: (res: PaginationResponse) => {
+          this.setDataInCurrentPage(res);
+          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+        },
+        error: (err) => {
+          this.toastrService.error("Error message", "Something went wrong.");
+        }
+      });
+      this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
+      this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
+      this.form.get('grade')!.setValue(+this.searchedGrade);
+      this.form.get('class')!.setValue(this.searchedClass);
+      this.form.get('keyword')!.setValue(this.keyword);
+    }
 
     if(localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
@@ -215,7 +245,13 @@ export class StudentClassListComponent implements OnInit {
         } else {
           this.router.navigate(['/app/student-class/edit'], {
             queryParams: {
-                id: id
+                id: id,
+                currentPage: this.currentPage,
+                searchedExamTitle: this.searchedExamTitle,
+                searchedAcademicYear: this.searchedAcademicYear,
+                searchedGrade: this.searchedGrade,
+                searchedClass: this.searchedClass,
+                keyword: this.keyword
             },
             skipLocationChange: true
           });

@@ -33,6 +33,12 @@ export class ExamSubjectEditComponent implements OnInit {
   subjectList: Subject[] = [];
   oldSubjectTypeList: SubjectType[] = [];
   id!: number;
+  currentPage!: number;
+  searchedAcademicYear!: number;
+  searchedExamTitle!: number;
+  searchedSubjectType!: number;
+  searchedSubject!: number;
+  keyword!: string;
   subjectId!: number;
   
   oldExamSubject: ExamSubject = new ExamSubject();
@@ -67,6 +73,16 @@ export class ExamSubjectEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.searchedAcademicYear = params['searchedAcademicYear'];
+      this.searchedExamTitle = params['searchedExamTitle'];
+      this.searchedSubjectType = params['searchedSubjectType'];
+      this.searchedSubject = params['searchedSubject'];
+      this.keyword = params['keyword'];
+    });
+    
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
     });
@@ -76,9 +92,7 @@ export class ExamSubjectEditComponent implements OnInit {
     this.subjectService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.subjectList = data;
     });  
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-    });
+
     this.examSubjectService.fetchById(this.id).subscribe(data => {
       this.form.get('academicYear')!.setValue(data.exam.academicYear.id);
       this.form.get('examTitle')!.setValue(data.exam.examTitle.id);
@@ -202,7 +216,17 @@ export class ExamSubjectEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/exam-subject/list']);
+    this.router.navigate(['/app/exam-subject/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedAcademicYear: this.searchedAcademicYear,
+        searchedExamTitle: this.searchedExamTitle,
+        searchedSubjectType: this.searchedSubjectType,
+        searchedSubject: this.searchedSubject,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

@@ -20,13 +20,15 @@ export class AcademicYearEditComponent implements OnInit {
 
   submitted = false;
   id!: number;
+  currentPage!: number;
+  keyword!: string;
   oldAcademicYear: AcademicYear = new AcademicYear();
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
       Validators.required, 
       Validators.maxLength(30), 
-      Validators.pattern("(^2[0-9]{3}-2[0-9]{3})|(\u1042[\u1040-\u1049]{3}-\u1042[\u1040-\u1049]{3})$"),
+      Validators.pattern("(^2[0-9]{3}-2[0-9]{3})$"),
       whiteSpaceValidator()
     ])
   });
@@ -39,9 +41,11 @@ export class AcademicYearEditComponent implements OnInit {
     private matDialog: MatDialog
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void { 
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.keyword = params['keyword'];
     });
     this.academicYearService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
@@ -95,7 +99,13 @@ export class AcademicYearEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/academic-year/list']);
+    this.router.navigate(['app/academic-year/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

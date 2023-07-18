@@ -62,7 +62,6 @@ export class ArrivalCreateComponent implements OnInit {
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
     private classService: ClassService, 
-    private studentClassService: StudentClassService, 
     private arrivalService: ArrivalService,
     private toastrService: ToastrService,
     private router: Router, 

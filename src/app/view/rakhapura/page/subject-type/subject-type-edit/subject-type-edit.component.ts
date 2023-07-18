@@ -23,6 +23,9 @@ export class SubjectTypeEditComponent implements OnInit {
   submitted = false;
   gradeList!: Grade[];
   id!: number;
+  currentPage!: number;
+  searchedGrade!: number;
+  keyword!: string;
   oldSubjectType: SubjectType = new SubjectType();
   
   form: FormGroup = new FormGroup({
@@ -47,12 +50,17 @@ export class SubjectTypeEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.searchedGrade = params['searchedGrade'];
+      this.keyword = params['keyword'];
+    });
+
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
     });
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-    });
+    
     this.subjectTypeService.fetchById(this.id).subscribe(data => {
       this.form.get('grade')!.setValue(data.grade.id);
       this.form.get('name')!.setValue(data.name);
@@ -109,7 +117,14 @@ export class SubjectTypeEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/subject-type/list']);
+    this.router.navigate(['/app/subject-type/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedGrade: this.searchedGrade,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

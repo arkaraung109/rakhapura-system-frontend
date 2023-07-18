@@ -26,6 +26,10 @@ export class ClassEditComponent implements OnInit {
   yearList!: AcademicYear[];
   gradeList!: Grade[];
   id!: number;
+  currentPage!: number;
+  searchedAcademicYear!: number;
+  searchedGrade!: number;
+  keyword!: string;
   oldClass: Class = new Class();
   
   form: FormGroup = new FormGroup({
@@ -54,15 +58,21 @@ export class ClassEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.searchedAcademicYear = params['searchedAcademicYear'];
+      this.searchedGrade = params['searchedGrade'];
+      this.keyword = params['keyword'];
+    });
+
     this.academicYearService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.yearList = data;
     });
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
     });
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-    });
+    
     this.classService.fetchById(this.id).subscribe(data => {
       this.form.get('academicYear')!.setValue(data.academicYear.id);
       this.form.get('grade')!.setValue(data.grade.id);
@@ -123,7 +133,15 @@ export class ClassEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/class/list']);
+    this.router.navigate(['/app/class/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedAcademicYear: this.searchedAcademicYear,
+        searchedGrade: this.searchedGrade,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

@@ -20,6 +20,8 @@ export class GradeEditComponent implements OnInit {
 
   submitted = false;
   id!: number;
+  currentPage!: number;
+  keyword!: string;
   oldGrade: Grade = new Grade();
 
   form: FormGroup = new FormGroup({
@@ -54,6 +56,8 @@ export class GradeEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.keyword = params['keyword'];
     });
     this.gradeService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
@@ -115,7 +119,13 @@ export class GradeEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/grade/list']);
+    this.router.navigate(['/app/grade/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
   
 }

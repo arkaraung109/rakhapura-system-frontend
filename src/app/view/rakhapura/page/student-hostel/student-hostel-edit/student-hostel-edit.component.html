@@ -1,0 +1,94 @@
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>စာသင်သားများအား တည်းခိုဆောင်နေရာချထားခြင်းအားပြင်ခြင်း</h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>တည်းခိုဆောင်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="hostel" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let h of hostelList" [ngValue]="h.id">
+                                {{h.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('hostel')!.invalid && form.get('hostel')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('hostel')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ခုံနံပါတ်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label *ngIf="regNo">{{regNo}}</label>
+                        <label *ngIf="!regNo">-</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာသင်သားအမည်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentName}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>အဖအမည်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{fatherName}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာသင်နှစ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{academicYear}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာမေးပွဲခေါင်းစဉ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{examTitle}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>အတန်း<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{grade}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4 col-sm-6">
+                <button type="submit" class="bsearch btn">Update</button>
+                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+                <button type="button" class="bsearch btn" (click)="back()">Back</button>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+    </form>
+</div>

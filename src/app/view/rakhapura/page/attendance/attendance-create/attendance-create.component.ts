@@ -79,7 +79,7 @@ export class AttendanceCreateComponent implements OnInit {
       this.subjectTypeList = data;
     });
 
-    this.attendanceService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+    this.attendanceService.fetchNotPresentPageSegment(this.currentPage, PaginationOrder.DESC).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -231,7 +231,7 @@ export class AttendanceCreateComponent implements OnInit {
     }
     
     if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedSubjectType == 0 && this.keyword === '') {
-      this.attendanceService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+      this.attendanceService.fetchNotPresentPageSegment(this.currentPage, PaginationOrder.DESC).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -241,7 +241,7 @@ export class AttendanceCreateComponent implements OnInit {
         }
       });
     } else {
-      this.attendanceService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+      this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           this.setDataInCurrentPage(res);
           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -261,7 +261,7 @@ export class AttendanceCreateComponent implements OnInit {
     this.currentPage = currentPageEnterValue;
 
     if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedSubjectType == 0 && this.keyword === '')) {
-      this.attendanceService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+      this.attendanceService.fetchNotPresentPageSegment(this.currentPage, PaginationOrder.DESC).subscribe({
         next: (res: PaginationResponse) => {
           if(res.totalElements == 0) {this.currentPage = 0}
           this.pageData = res;
@@ -287,7 +287,7 @@ export class AttendanceCreateComponent implements OnInit {
         }
       });
     } else { 
-      this.attendanceService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+      this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
         next: (res: PaginationResponse) => {
           if(res.totalElements == 0) {this.currentPage = 0}
           this.pageData = res;

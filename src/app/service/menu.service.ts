@@ -216,7 +216,22 @@ export class MenuService {
           {
             title: 'စာရင်းကြည့်ခြင်း',
             url: '/app/arrival/list',
-            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }, { name: UserPermission.ATTENDANCE_ENTRY }]
+            permissions: [{ name: UserPermission.STUDENT_ENTRY }, { name: UserPermission.ADMIN }]
+          }
+        ]
+      },
+      {
+        title: 'စာသင်သားများအား တည်းခိုဆောင်နေရာချထားခြင်း',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/student-hostel/create',
+            permissions: [{ name: UserPermission.HOSTEL_ATTENDANCE_ENTRY }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/student-hostel/list',
+            permissions: [{ name: UserPermission.HOSTEL_ATTENDANCE_ENTRY }, { name: UserPermission.ADMIN }]
           }
         ]
       },

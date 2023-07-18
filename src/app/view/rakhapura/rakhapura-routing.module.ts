@@ -18,6 +18,7 @@ import { ExamSubjectComponent } from './page/exam-subject/exam-subject.component
 import { ArrivalComponent } from './page/arrival/arrival.component';
 import { StudentCardComponent } from './page/student-card/student-card.component';
 import { AttendanceComponent } from './page/attendance/attendance.component';
+import { StudentHostelComponent } from './page/student-hostel/student-hostel.component';
 
 const routes: Routes = [
   {
@@ -206,7 +207,7 @@ const routes: Routes = [
     component: ArrivalComponent,
     canActivateChild: [AuthGuard],
     data: {
-      allowedRoles: [UserPermission.ADMIN, UserPermission.STUDENT_ENTRY, UserPermission.ATTENDANCE_ENTRY]
+      allowedRoles: [UserPermission.ADMIN, UserPermission.STUDENT_ENTRY]
     },
     children: [
       {
@@ -240,6 +241,20 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./page/attendance/attendance.module').then(m => m.AttendanceModule)
+      },
+    ]
+  },
+  {
+    path: 'student-hostel',
+    component: StudentHostelComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN, UserPermission.HOSTEL_ATTENDANCE_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/student-hostel/student-hostel.module').then(m => m.StudentHostelModule)
       },
     ]
   }

@@ -25,6 +25,7 @@ import { ExamSubjectModule } from './page/exam-subject/exam-subject.module';
 import { ArrivalModule } from './page/arrival/arrival.module';
 import { StudentCardModule } from './page/student-card/student-card.module';
 import { AttendanceModule } from './page/attendance/attendance.module';
+import { StudentHostelModule } from './page/student-hostel/student-hostel.module';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { AttendanceModule } from './page/attendance/attendance.module';
     ExamSubjectModule,
     ArrivalModule,
     StudentCardModule,
-    AttendanceModule
+    AttendanceModule,
+    StudentHostelModule
   ]
 })
 export class RakhapuraModule { }

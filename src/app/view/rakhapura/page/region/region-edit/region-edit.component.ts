@@ -20,6 +20,8 @@ export class RegionEditComponent implements OnInit {
 
   submitted = false;
   id!: number;
+  currentPage!: number;
+  keyword!: string;
   oldRegion: Region = new Region();
 
   form: FormGroup = new FormGroup({
@@ -42,6 +44,8 @@ export class RegionEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.keyword = params['keyword'];
     });
     this.regionService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
@@ -95,7 +99,13 @@ export class RegionEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/region/list']);
+    this.router.navigate(['/app/region/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }

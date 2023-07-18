@@ -21,11 +21,19 @@
                     </option>
                 </select>
             </div>
-            <div class="col-sm-3">
-                <select formControlName="subjectType" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="0">ဘာသာရပ်ကြီးစာမေးပွဲအားလုံး</option>
-                    <option *ngFor="let s of subjectTypeList" [ngValue]="s.id">
-                        {{s.name}} ({{s.grade.name}})
+            <div class="col-sm-2">
+                <select formControlName="grade" class="fcontrol" style="margin: 20px 0px;">
+                    <option [ngValue]="0">အတန်းအားလုံး</option>
+                    <option *ngFor="let g of gradeList" [ngValue]="g.id">
+                        {{g.name}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <select formControlName="class" class="fcontrol" style="margin: 20px 0px;">
+                    <option [ngValue]="'All'">အခန်းအားလုံး</option>
+                    <option *ngFor="let c of classList" [ngValue]="c">
+                        {{c}}
                     </option>
                 </select>
             </div>
@@ -60,8 +68,9 @@
                     <th style="width: 100px" mat-sort-header="fatherName">အဖအမည်</th>
                     <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
                     <th style="width: 100px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
-                    <th style="width: 200px" mat-sort-header="subjectType">ဘာသာရပ်ကြီးစာမေးပွဲ</th>
-                    <th style="width: 100px" *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY'">Action</th>
+                    <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
+                    <th style="width: 100px" mat-sort-header="class">အခန်း</th>
+                    <th style="width: 100px">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -73,8 +82,9 @@
                     <td>{{element.studentClass.student.fatherName}}</td>
                     <td>{{element.exam.academicYear.name}}</td>
                     <td>{{element.exam.examTitle.name}}</td>
-                    <td>{{element.exam.subjectType.name}} ({{element.exam.subjectType.grade.name}})</td>
-                    <td *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY'"><a (click)="addScore(element.id)">အမှတ်စာရင်းသွင်းရန်</a></td>
+                    <td>{{element.studentClass.studentClass.grade.name}}</td>
+                    <td>{{element.studentClass.studentClass.name}}</td>
+                    <td><a style="cursor: pointer" (click)="viewAttendanceDetail(element.studentClass.id, element.id)">ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</a></td>
                 </tr>
             </tbody>
         </table>

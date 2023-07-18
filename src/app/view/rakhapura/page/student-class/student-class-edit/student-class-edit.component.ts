@@ -32,6 +32,12 @@ export class StudentClassEditComponent implements OnInit {
   classList!: Class[];
   oldClassList!: Class[];
   id!: string;
+  currentPage!: number;
+  searchedExamTitle!: number;
+  searchedAcademicYear!: number;
+  searchedGrade!: number;
+  searchedClass!: string;
+  keyword!: string;
   studentId!: string;
   oldStudentClass: StudentClass = new StudentClass();
   studentName!: string;
@@ -65,6 +71,16 @@ export class StudentClassEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.currentPage = params['currentPage'];
+      this.searchedExamTitle = params['searchedExamTitle'];
+      this.searchedAcademicYear = params['searchedAcademicYear'];
+      this.searchedGrade = params['searchedGrade'];
+      this.searchedClass = params['searchedClass'];
+      this.keyword = params['keyword'];
+    });
+
     this.examTitleService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.examTitleList = data;
     });  
@@ -74,9 +90,7 @@ export class StudentClassEditComponent implements OnInit {
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
     });
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-    });
+
     this.studentClassService.fetchById(this.id).subscribe(data => {
       this.form.get('examTitle')!.setValue(data.examTitle.id);
       this.form.get('academicYear')!.setValue(data.studentClass.academicYear.id);
@@ -162,7 +176,17 @@ export class StudentClassEditComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/app/student-class/list']);
+    this.router.navigate(['/app/student-class/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedExamTitle: this.searchedExamTitle,
+        searchedAcademicYear: this.searchedAcademicYear,
+        searchedGrade: this.searchedGrade,
+        searchedClass: this.searchedClass,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }
