@@ -26,30 +26,30 @@ export class GradeEditComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     remark: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(20), 
+      Validators.required,
+      Validators.maxLength(20),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     abbreviate: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(15), 
+      Validators.required,
+      Validators.maxLength(15),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private gradeService: GradeService, 
+    private gradeService: GradeService,
     private toastrService: ToastrService,
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -69,9 +69,9 @@ export class GradeEditComponent implements OnInit {
     });
   }
 
-  update():void{
+  update(): void {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -80,25 +80,25 @@ export class GradeEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Grade = new Grade();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.remark = this.form.get('remark')!.value.trim();
         requestBody.abbreviate = this.form.get('abbreviate')!.value.trim();
-    
+
         this.gradeService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");
@@ -127,5 +127,5 @@ export class GradeEditComponent implements OnInit {
       skipLocationChange: true
     });
   }
-  
+
 }

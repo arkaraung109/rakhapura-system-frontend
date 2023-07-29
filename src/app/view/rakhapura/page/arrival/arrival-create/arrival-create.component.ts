@@ -18,7 +18,6 @@ import { ArrivalService } from 'src/app/service/arrival.service';
 import { ClassService } from 'src/app/service/class.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
-import { StudentClassService } from 'src/app/service/student-class.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({
@@ -39,11 +38,11 @@ export class ArrivalCreateComponent implements OnInit {
   academicYearList!: AcademicYear[];
   gradeList!: Grade[];
   classList!: String[];
-  searchedExamTitle!: number;
-  searchedAcademicYear!: number;
-  searchedGrade!: number;
-  searchedClass!: string;
-  keyword!: string;
+  searchedExamTitle: number = 0;
+  searchedAcademicYear: number = 0;
+  searchedGrade: number = 0;
+  searchedClass: string = "All";
+  keyword: string = "";
   idList: string[] = [];
 
   form: FormGroup = new FormGroup({
@@ -56,15 +55,15 @@ export class ArrivalCreateComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService, 
+    private classService: ClassService,
     private arrivalService: ArrivalService,
     private toastrService: ToastrService,
-    private router: Router, 
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -82,7 +81,7 @@ export class ArrivalCreateComponent implements OnInit {
       this.classList = data;
     });
 
-    this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -91,7 +90,7 @@ export class ArrivalCreateComponent implements OnInit {
       }
     });
 
-    if(localStorage.getItem("status") === "created") {
+    if (localStorage.getItem("status") === "created") {
       this.toastrService.success(localStorage.getItem("message")!);
     }
 
@@ -100,7 +99,7 @@ export class ArrivalCreateComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -140,82 +139,82 @@ export class ArrivalCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
-        if(this.idList.length == 0) {
+      if (result) {
+        if (this.idList.length == 0) {
           this.toastrService.warning("Please check students first.", "Not Finished Yet.");
           return;
         }
 
         this.arrivalService.save(this.idList).subscribe({
-            next: (res: DataResponse) => {
-              if(res.status == HttpCode.CREATED) {
-                localStorage.setItem("status", "created");
-                let size = res.createdCount;
+          next: (res: DataResponse) => {
+            if (res.status == HttpCode.CREATED) {
+              localStorage.setItem("status", "created");
+              let size = res.createdCount;
+              let message = "Successfully Arrived ";
+              message += size > 1 ? size + " Records" : size + " Record";
+              localStorage.setItem("message", message);
+              this.router.navigate(['/app/arrival/create']).then(() => {
+                location.reload();
+              });
+            }
+          },
+          error: (err) => {
+            if (err.status === HttpErrorCode.NOT_FOUND) {
+              if (err.error.createdCount != 0) {
+                let size = err.error.createdCount;
                 let message = "Successfully Arrived ";
                 message += size > 1 ? size + " Records" : size + " Record";
-                localStorage.setItem("message", message);
-                this.router.navigate(['/app/arrival/create']).then(() => {
-                  location.reload();
-                });
+                this.toastrService.success(message);
               }
-            },
-            error: (err) => {
-              if(err.status === HttpErrorCode.NOT_FOUND) {
-                if(err.error.createdCount != 0) {
-                  let size = err.error.createdCount;
-                  let message = "Successfully Arrived ";
-                  message += size > 1 ? size + " Records" : size + " Record";
-                  this.toastrService.success(message);
-                }
-                if(err.error.errorCount != 0) {
-                  let size = err.error.errorCount;
-                  let message = size > 1 ? size + " records do not exist." : size + " record does not exist.";
-                  this.toastrService.warning("Not Found Record.", message);
-                }
-              } else if(err.status == HttpErrorCode.FORBIDDEN) {
-                this.toastrService.error("Forbidden", "Failed action");
-              } else {
-                this.toastrService.error("Failed to save new record", "Failed action");
+              if (err.error.errorCount != 0) {
+                let size = err.error.errorCount;
+                let message = size > 1 ? size + " records do not exist." : size + " record does not exist.";
+                this.toastrService.warning("Not Found Record.", message);
               }
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
+              this.toastrService.error("Forbidden", "Failed action");
+            } else {
+              this.toastrService.error("Failed to save new record", "Failed action");
             }
-          });
+          }
+        });
       } else {
         this.matDialog.closeAll();
       }
     });
   }
 
-  checkUncheckAll() { 
+  checkUncheckAll() {
     let isExist = false;
     let index = 0;
 
-    for(let i = 0; i < this.sortedData.length; i++) {
+    for (let i = 0; i < this.sortedData.length; i++) {
       this.sortedData[i].check = this.isCheckAll;
-      for(let j = 0; j < this.idList.length; j++) {
-        if(this.idList[j] == this.sortedData[i].id) {
+      for (let j = 0; j < this.idList.length; j++) {
+        if (this.idList[j] == this.sortedData[i].id) {
           isExist = true;
           index = j;
           break;
         }
       }
-      if(!isExist) {
+      if (!isExist) {
         this.idList.push(this.sortedData[i].id);
       }
-      if(!this.sortedData[i].check) {
+      if (!this.sortedData[i].check) {
         this.idList.splice(index, 1);
-      } 
+      }
     }
   }
 
   isAllSelected(event: any, id: string) {
-    this.isCheckAll = this.sortedData.every(function(item: any) {
+    this.isCheckAll = this.sortedData.every(function (item: any) {
       return item.check == true;
     });
-    if(event.target.checked) {
+    if (event.target.checked) {
       this.idList.push(id);
     } else {
-      for(let i = 0; i < this.idList.length; i++) {
-        if(this.idList[i] == id) {
+      for (let i = 0; i < this.idList.length; i++) {
+        if (this.idList[i] == id) {
           this.idList.splice(i, 1);
         }
       }
@@ -232,31 +231,19 @@ export class ArrivalCreateComponent implements OnInit {
     this.searchedGrade = this.form.get('grade')!.value;
     this.searchedClass = this.form.get('class')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
@@ -266,68 +253,40 @@ export class ArrivalCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, false).subscribe({
-        next: (res: PaginationResponse) => {
-          if(res.totalElements == 0) {this.currentPage = 0}
-          this.pageData = res;
-          let pageSize = res.pageSize;
-          let i = (this.currentPage - 1) * pageSize;
-          this.dataList = this.pageData.elements.map(data => {
-            let obj = {'index': ++i, ...data};
-            for(let j = 0; j < this.idList.length; j++) {
-              if(data.id == this.idList[j]) {
-                obj.check = true;
-              }
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        if (res.totalElements == 0) { this.currentPage = 0 }
+        this.pageData = res;
+        let pageSize = res.pageSize;
+        let i = (this.currentPage - 1) * pageSize;
+        this.dataList = this.pageData.elements.map(data => {
+          let obj = { 'index': ++i, ...data };
+          for (let j = 0; j < this.idList.length; j++) {
+            if (data.id == this.idList[j]) {
+              obj.check = true;
             }
-            return obj;
-          });
-          this.sortedData = [...this.dataList];
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-          this.isCheckAll = this.sortedData.every(function(item: any) {
-            return item.check == true;
-          });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          if(res.totalElements == 0) {this.currentPage = 0}
-          this.pageData = res;
-          let pageSize = res.pageSize;
-          let i = (this.currentPage - 1) * pageSize;
-          this.dataList = this.pageData.elements.map(data => {
-            let obj = {'index': ++i, ...data};
-            for(let j = 0; j < this.idList.length; j++) {
-              if(data.id == this.idList[j]) {
-                obj.check = true;
-              }
-            }
-            return obj;
-          });
-          this.sortedData = [...this.dataList];
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-          this.isCheckAll = this.sortedData.every(function(item: any) {
-            return item.check == true;
-          });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+          }
+          return obj;
+        });
+        this.sortedData = [...this.dataList];
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+        this.isCheckAll = this.sortedData.every(function (item: any) {
+          return item.check == true;
+        });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, 'check': false, ...data};
+      let obj = { 'index': ++i, 'check': false, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

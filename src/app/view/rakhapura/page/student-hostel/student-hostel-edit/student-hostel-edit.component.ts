@@ -3,14 +3,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ExamTitleService } from 'src/app/service/exam-title.service';
-import { AcademicYearService } from 'src/app/service/academic-year.service';
-import { GradeService } from 'src/app/service/grade.service';
-import { ClassService } from 'src/app/service/class.service';
-import { ExamTitle } from 'src/app/model/ExamTitle';
-import { AcademicYear } from 'src/app/model/AcademicYear';
-import { Grade } from 'src/app/model/Grade';
-import { Class } from 'src/app/model/Class';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { StudentClass } from 'src/app/model/StudentClass';
 import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
@@ -56,8 +48,8 @@ export class StudentHostelEditComponent implements OnInit {
     private studentClassService: StudentClassService,
     private studentHostelService: StudentHostelService,
     private toastrService: ToastrService,
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -91,7 +83,7 @@ export class StudentHostelEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -100,22 +92,22 @@ export class StudentHostelEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: StudentClass = new StudentClass();
         requestBody.hostel = new Hostel();
         requestBody.hostel.id = this.form.get('hostel')!.value;
-    
+
         this.studentHostelService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.FORBIDDEN) {
+            if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Used For Student Card", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");

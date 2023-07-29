@@ -1,0 +1,46 @@
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>ဘာသာရပ်ခွဲရမှတ်စာရင်း</h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+            (matSortChange)="sortData($event)" style="margin: 20px auto 50px;">
+            <caption style="text-align: center; color: red">
+                <h4>ဘာသာရပ်ကြီးစာမေးပွဲ - {{subjectType.name}} ({{subjectType.grade.name}})</h4>
+                <button type="button" class="bsearch btn" (click)="back()" style="margin-bottom: 20px;">Back</button>
+            </caption>
+            <thead>
+                <tr>
+                    <th style="width: 80px" mat-sort-header="index">စဉ်</th>
+                    <th style="width: 100px" mat-sort-header="subject">ဘာသာရပ်ခွဲ</th>
+                    <th style="width: 100px" mat-sort-header="mark">ရမှတ်</th>
+                    <th style="width: 100px" mat-sort-header="passMark">အောင်မှတ်</th>
+                    <th style="width: 100px" mat-sort-header="markPercentage">ပေးမှတ်</th>
+                    <th style="width: 100px" mat-sort-header="moderatedMark">ကုစားမှတ်</th>
+                    <th style="width: 100px" mat-sort-header="result">အောင်/ရှုံး</th>
+                    <th style="width: 100px" *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY'">ကုစားပေးခြင်း</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let element of sortedData">
+                    <td>{{element.index}}</td>
+                    <td>{{element.examSubject.subject.name}}</td>
+                    <td [ngStyle]="{'color': element.pass ? 'green' : 'red'}"><b>{{element.mark}}</b></td>
+                    <td>{{element.examSubject.passMark}}</td>
+                    <td>{{element.examSubject.markPercentage}}</td>
+                    <td>{{element.moderatedMark}}</td>
+                    <td
+                        [ngStyle]="{'color': element.result === 'ရှုံး' ? 'red' : element.result === 'အောင်' ? 'green' : 'orange'}">
+                        <b>{{element.result}}</b>
+                    </td>
+                    <td *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' && !element.pass"><a style="cursor: pointer"
+                            (click)="moderate(element.id)">ကုစားပေးရန်</a></td>
+                    <td *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' && element.pass"></td>
+                </tr>
+            </tbody>
+        </table>
+        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+    </div>
+</div>

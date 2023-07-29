@@ -23,35 +23,35 @@ export class HostelCreateComponent {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     address: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     phone: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(50), 
+      Validators.required,
+      Validators.maxLength(50),
       Validators.pattern("^(09-[0-9]{7,9})|(09\\s*[0-9]{7,9})|(\u1040\u1049-[\u1040-\u1049]{7,9})|(\u1040\u1049\\s*[\u1040-\u1049]{7,9})$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private hostelService: HostelService, 
-    private toastrService: ToastrService, 
-    private router: Router, 
+    private hostelService: HostelService,
+    private toastrService: ToastrService,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
   save() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -60,20 +60,20 @@ export class HostelCreateComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Hostel = new Hostel();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.address = this.form.get('address')!.value.trim();
         requestBody.phone = this.form.get('phone')!.value.trim();
-    
+
         this.hostelService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
               dialogRef.afterClosed().subscribe(result => {
-                if(result) {
+                if (result) {
                   this.router.navigate(['/app/hostel/create']).then(() => {
                     this.reset();
                   });
@@ -81,13 +81,13 @@ export class HostelCreateComponent {
                   this.back();
                 }
               });
-              this.toastrService.success("Successfully Created.");  
+              this.toastrService.success("Successfully Created.");
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");

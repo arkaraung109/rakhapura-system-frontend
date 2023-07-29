@@ -18,20 +18,12 @@ export class SubjectTypeService {
     return this.http.get<SubjectType>(`${environment.baseUrl}/subject-types/${id}`, { responseType: "json" });
   }
 
-  fetchDistinctAll(): Observable<String[]> {
-    return this.http.get<String[]>(`${environment.baseUrl}/subject-types/distinct`, { responseType: "json" });
-  }
-
   fetchAllByAuthorizedStatus(): Observable<SubjectType[]> {
     return this.http.get<SubjectType[]>(`${environment.baseUrl}/subject-types/authorized`, { responseType: "json" });
   }
 
   fetchAllFilteredByGrade(gradeId: number): Observable<SubjectType[]> {
     return this.http.get<SubjectType[]>(`${environment.baseUrl}/subject-types/filter?gradeId=${gradeId}`, { responseType: "json" });
-  }
-
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/subject-types/segment?page=${page}&order=${order}`, { responseType: "json" });
   }
 
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, gradeId: number, keyword: string): Observable<PaginationResponse> {

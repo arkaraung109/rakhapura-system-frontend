@@ -26,22 +26,22 @@ export class AcademicYearEditComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(30), 
+      Validators.required,
+      Validators.maxLength(30),
       Validators.pattern("(^2[0-9]{3}-2[0-9]{3})$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private academicYearService: AcademicYearService, 
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private academicYearService: AcademicYearService,
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
       this.currentPage = params['currentPage'];
@@ -64,23 +64,23 @@ export class AcademicYearEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: AcademicYear = new AcademicYear();
         requestBody.name = this.form.get('name')!.value.trim();
-    
+
         this.academicYearService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");
@@ -90,7 +90,7 @@ export class AcademicYearEditComponent implements OnInit {
       } else {
         this.matDialog.closeAll();
       }
-    });  
+    });
   }
 
   reset() {

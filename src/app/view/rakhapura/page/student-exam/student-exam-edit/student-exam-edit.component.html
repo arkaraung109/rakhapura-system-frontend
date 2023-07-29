@@ -1,0 +1,61 @@
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>ဘာသာရပ်ခွဲရမှတ်စာရင်းပြင်ခြင်း</h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <div *ngIf="examSubjectList.length == 0">
+        <h4>ဤဘာသာရပ်ကြီးစာမေးပွဲအတွက် ဘာသာရပ်ခွဲထည့်သွင်းထားခြင်းမရှိပါ</h4>
+    </div>
+    <div *ngIf="examSubjectList.length == 0"><button type="button" class="bsearch btn" (click)="back()">Back</button>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" *ngIf="examSubjectList.length != 0" autocomplete="off">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6" formArrayName="markList">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>ဘာသာရပ်ကြီးစာမေးပွဲ</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{subjectType.name}} ({{subjectType.grade.name}})</label>
+                    </div>
+                </div>
+                <div *ngFor="let element of markList.controls; let i = index">
+                    <div [formGroupName]="i">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>{{examSubjectList[i].subject.name}} (ဘာသာရပ်ခွဲရမှတ်)<span>*</span></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" formControlName="mark" class="fcontrol" autocomplete="off" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6"></div>
+                            <div *ngIf="submitted || markList.controls[i].get('mark')!.invalid && markList.controls[i].get('mark')!.touched"
+                                class="col-sm-6" style="color: red">
+                                <div *ngIf="markList.controls[i].get('mark')!.errors?.['required']">Field is required
+                                </div>
+                                <div *ngIf="markList.controls[i].get('mark')!.errors?.['rangeError']">Must be between 1
+                                    and full mark
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4 col-sm-6">
+                <button type="submit" class="bsearch btn">Update</button>
+                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+                <button type="button" class="bsearch btn" (click)="back()">Back</button>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+    </form>
+</div>

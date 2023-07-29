@@ -35,8 +35,8 @@ export class StudentEditComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
@@ -47,33 +47,33 @@ export class StudentEditComponent implements OnInit {
       Validators.required
     ]),
     nationality: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     nrc: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;?%$\"\\\\]*$"),
       whiteSpaceValidator(),
       spaceValidator()
     ]),
     fatherName: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     motherName: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     address: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
@@ -81,34 +81,31 @@ export class StudentEditComponent implements OnInit {
       Validators.required
     ]),
     monasteryName: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     monasteryHeadmaster: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     monasteryTownship: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private academicYearSerivce: AcademicYearService,
-    private gradeService: GradeService,
     private regionService: RegionService,
-    private classService: ClassService,
     private studentService: StudentService,
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -118,10 +115,10 @@ export class StudentEditComponent implements OnInit {
       this.currentPage = params['currentPage'];
       this.searchedRegion = params['searchedRegion'];
       this.keyword = params['keyword'];
-    });   
+    });
     this.regionService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.regionList = data;
-    });  
+    });
     this.route.queryParams.subscribe(params => {
       this.id = params['id'];
     });
@@ -155,7 +152,7 @@ export class StudentEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -164,7 +161,7 @@ export class StudentEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Student = new Student();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.dob = this.form.get('dob')!.value;
@@ -178,20 +175,20 @@ export class StudentEditComponent implements OnInit {
         requestBody.monasteryName = this.form.get('monasteryName')!.value.trim();
         requestBody.monasteryHeadmaster = this.form.get('monasteryHeadmaster')!.value.trim();
         requestBody.monasteryTownship = this.form.get('monasteryTownship')!.value.trim();
-    
+
         this.studentService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");
@@ -221,7 +218,7 @@ export class StudentEditComponent implements OnInit {
   }
 
   back() {
-    if(this.searchedRegion == 0 && this.keyword === '') {
+    if (this.searchedRegion == 0 && this.keyword === '') {
       this.router.navigate(['app/student/list'], {
         queryParams: {
           currentPage: this.currentPage,

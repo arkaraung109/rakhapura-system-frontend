@@ -27,8 +27,8 @@ export class StudentCreateComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
@@ -39,33 +39,33 @@ export class StudentCreateComponent implements OnInit {
       Validators.required
     ]),
     nationality: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     nrc: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;?%$\"\\\\]*$"),
       whiteSpaceValidator(),
       spaceValidator()
     ]),
     fatherName: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     motherName: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     address: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
@@ -73,20 +73,20 @@ export class StudentCreateComponent implements OnInit {
       Validators.required
     ]),
     monasteryName: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     monasteryHeadmaster: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     monasteryTownship: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
@@ -108,16 +108,16 @@ export class StudentCreateComponent implements OnInit {
 
   save() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
+
     const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
       width: '300px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Student = new Student();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.dob = this.form.get('dob')!.value;
@@ -131,15 +131,15 @@ export class StudentCreateComponent implements OnInit {
         requestBody.monasteryName = this.form.get('monasteryName')!.value.trim();
         requestBody.monasteryHeadmaster = this.form.get('monasteryHeadmaster')!.value.trim();
         requestBody.monasteryTownship = this.form.get('monasteryTownship')!.value.trim();
-        
+
         this.studentService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
               dialogRef.afterClosed().subscribe(result => {
-                if(result) {
+                if (result) {
                   this.router.navigate(['/app/student/create']).then(() => {
                     this.reset();
                   });
@@ -147,13 +147,13 @@ export class StudentCreateComponent implements OnInit {
                   this.back();
                 }
               });
-              this.toastrService.success("Successfully Created.");              
+              this.toastrService.success("Successfully Created.");
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");

@@ -22,10 +22,6 @@ export class GradeService {
     return this.http.get<Grade[]>(`${environment.baseUrl}/grades/authorized`, { responseType: "json" });
   } 
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/grades/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/grades/segment/search?page=${page}&order=${order}&keyword=${keyword}`, { responseType: "json" });
   }

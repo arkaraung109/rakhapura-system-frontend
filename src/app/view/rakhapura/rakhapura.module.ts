@@ -26,6 +26,8 @@ import { ArrivalModule } from './page/arrival/arrival.module';
 import { StudentCardModule } from './page/student-card/student-card.module';
 import { AttendanceModule } from './page/attendance/attendance.module';
 import { StudentHostelModule } from './page/student-hostel/student-hostel.module';
+import { StudentExamModule } from './page/student-exam/student-exam.module';
+import { StudentExamModerateModule } from './page/student-exam-moderate/student-exam-moderate.module';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,9 @@ import { StudentHostelModule } from './page/student-hostel/student-hostel.module
     ArrivalModule,
     StudentCardModule,
     AttendanceModule,
-    StudentHostelModule
+    StudentHostelModule,
+    StudentExamModule,
+    StudentExamModerateModule
   ]
 })
 export class RakhapuraModule { }

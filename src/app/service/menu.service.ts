@@ -259,6 +259,21 @@ export class MenuService {
             permissions: [{ name: UserPermission.ATTENDANCE_ENTRY }, { name: UserPermission.ADMIN }, { name: UserPermission.EXAM_MARK_ENTRY }]
           }
         ]
+      },
+      {
+        title: 'စာမေးပွဲအမှတ်စာရင်း',
+        items: [
+          {
+            title: 'ရမှတ်စာရင်းကြည့်ခြင်း',
+            url: '/app/student-exam/list',
+            permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
+          },
+          {
+            title: 'ကုစားစာရင်းကြည့်ခြင်း',
+            url: '/app/student-exam-moderate/list',
+            permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
+          }
+        ]
       }
     ];
 

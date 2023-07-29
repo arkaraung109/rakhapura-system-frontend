@@ -33,7 +33,7 @@ const routes: Routes = [
     component: AttendanceDetailComponent,
     canActivate: [AuthGuard],
     data: {
-      allowedRoles: [UserPermission.ADMIN, UserPermission.ATTENDANCE_ENTRY]
+      allowedRoles: [UserPermission.ADMIN, UserPermission.ATTENDANCE_ENTRY, UserPermission.EXAM_MARK_ENTRY]
     }
   }
 ];

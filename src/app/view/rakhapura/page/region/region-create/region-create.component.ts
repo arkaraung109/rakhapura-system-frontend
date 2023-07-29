@@ -23,23 +23,23 @@ export class RegionCreateComponent {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(30), 
+      Validators.required,
+      Validators.maxLength(30),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private regionService: RegionService, 
-    private toastrService: ToastrService, 
-    private router: Router, 
+    private regionService: RegionService,
+    private toastrService: ToastrService,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
   save() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -48,18 +48,18 @@ export class RegionCreateComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Region = new Region();
         requestBody.name = this.form.get('name')!.value.trim();
-    
+
         this.regionService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
               dialogRef.afterClosed().subscribe(result => {
-                if(result) {
+                if (result) {
                   this.router.navigate(['/app/region/create']).then(() => {
                     this.reset();
                   });
@@ -67,13 +67,13 @@ export class RegionCreateComponent {
                   this.back();
                 }
               });
-              this.toastrService.success("Successfully Created.");  
+              this.toastrService.success("Successfully Created.");
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");

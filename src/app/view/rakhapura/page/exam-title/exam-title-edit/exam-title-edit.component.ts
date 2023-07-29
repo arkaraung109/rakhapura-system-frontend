@@ -26,18 +26,18 @@ export class ExamTitleEditComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(200), 
+      Validators.required,
+      Validators.maxLength(200),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private examTitleService: ExamTitleService, 
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private examTitleService: ExamTitleService,
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -47,7 +47,7 @@ export class ExamTitleEditComponent implements OnInit {
       this.currentPage = params['currentPage'];
       this.keyword = params['keyword'];
     });
-    
+
     this.examTitleService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
       this.oldExamTitle.name = data.name;
@@ -56,7 +56,7 @@ export class ExamTitleEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -65,23 +65,23 @@ export class ExamTitleEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: ExamTitle = new ExamTitle();
         requestBody.name = this.form.get('name')!.value.trim();
-    
+
         this.examTitleService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");
@@ -108,5 +108,5 @@ export class ExamTitleEditComponent implements OnInit {
       skipLocationChange: true
     });
   }
-  
+
 }

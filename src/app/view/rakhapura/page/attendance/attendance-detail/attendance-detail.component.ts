@@ -1,10 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
 import { StudentClass } from 'src/app/model/StudentClass';
 import { AttendanceService } from 'src/app/service/attendance.service';
+import { ExamSubjectService } from 'src/app/service/exam-subject.service';
+import { ExamService } from 'src/app/service/exam.service';
 import { StudentClassService } from 'src/app/service/student-class.service';
+import { StudentExamService } from 'src/app/service/student-exam.service';
 import { UserService } from 'src/app/service/user.service';
 
 @Component({
@@ -14,57 +18,85 @@ import { UserService } from 'src/app/service/user.service';
 })
 export class AttendanceDetailComponent implements OnInit {
 
+  searched = false;
   userInfo!: ApplicationUser;
   sortedData: any[] = [];
   dataList: any[] = [];
   @ViewChild(MatSort) sort!: MatSort;
   studentClass: StudentClass = new StudentClass();
   studentClassId!: string;
-  attendanceId!: string;
   currentPage!: number;
   searchedExamTitle!: number;
   searchedAcademicYear!: number;
   searchedGrade!: number;
-  searchedClass!: string;
   keyword!: string;
+  totalPassMark: number = 0;
+  totalMarkPercentage: number = 0;
 
   constructor(
+    private examService: ExamService,
+    private examSubjectService: ExamSubjectService,
     private studentClassService: StudentClassService,
     private attendanceService: AttendanceService,
+    private studentExamService: StudentExamService,
     private userService: UserService,
-    private route: ActivatedRoute, 
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
     private router: Router,
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.studentClassId = params['studentClassId'];
-      this.attendanceId = params['attendanceId'];
       this.currentPage = params['currentPage'];
       this.searchedExamTitle = params['searchedExamTitle'];
       this.searchedAcademicYear = params['searchedAcademicYear'];
       this.searchedGrade = params['searchedGrade'];
-      this.searchedClass = params['searchedClass'];
       this.keyword = params['keyword'];
-    }); 
+      this.searched = params['searched'];
+    });
     this.studentClassService.fetchById(this.studentClassId).subscribe(data => {
       this.studentClass = data;
     });
-    this.attendanceService.fetchByStudentClassId(this.studentClassId).subscribe(data => {
-      let i = 0;
-      this.dataList = data.map(data => {
-        let obj = {'index': ++i, ...data};
-        return obj;
-      });
-      this.sortedData = [...this.dataList];
+    this.attendanceService.fetchByPresentStudentClass(this.studentClassId).subscribe(data => {
+      this.sortedData = [...data];
+      for (let i = 0; i < this.sortedData.length; i++) {
+        this.studentExamService.fetchTotalMark(this.sortedData[i].id).subscribe(mark => {
+          this.sortedData[i].index = i + 1;
+
+          if (mark == null) {
+            this.sortedData[i].mark = '-';
+          } else {
+            this.sortedData[i].mark = mark;
+          }
+
+          this.studentExamService.fetchResult(this.sortedData[i].id).subscribe(result => {
+            if (this.sortedData[i].mark != '-') {
+              if ((this.sortedData[i].mark >= this.sortedData[i].exam.passMark) && (result == 1)) {
+                this.sortedData[i].result = 'အောင်';
+              } else {
+                this.sortedData[i].result = 'ရှုံး';
+              }
+            }
+          });
+        });
+      }
+      this.dataList = [...this.sortedData];
     });
 
+    if (localStorage.getItem("status") === "created") {
+      this.toastrService.success("Successfully Created.");
+    } else if (localStorage.getItem("status") === "updated") {
+      this.toastrService.success("Successfully Updated.");
+    }
+
+    localStorage.removeItem("status");
     this.userInfo = this.userService.fetchUserProfileInfo();
   }
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -76,6 +108,14 @@ export class AttendanceDetailComponent implements OnInit {
           return this.compare(a.index, b.index, isAsc);
         case 'subjectType':
           return this.compare(a.exam.subjectType.name, b.exam.subjectType.name, isAsc);
+        case 'mark':
+          return this.compare(a.mark, b.mark, isAsc);
+        case 'passMark':
+          return this.compare(a.exam.passMark, b.exam.passMark, isAsc);
+        case 'markPercentage':
+          return this.compare(a.exam.markPercentage, b.exam.markPercentage, isAsc);
+        case 'result':
+          return this.compare(a.result, b.result, isAsc);
         default:
           return 0;
       }
@@ -86,20 +126,87 @@ export class AttendanceDetailComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  addStudentExam(examId: number) {
-    this.router.navigate(['app/student-exam/create'], {
-      queryParams: {
-        studentClassId: this.studentClassId,
-        attendanceId: this.attendanceId,
-        examId: examId,
-        currentPage: this.currentPage,
-        searchedExamTitle: this.searchedExamTitle,
-        searchedAcademicYear: this.searchedAcademicYear,
-        searchedGrade: this.searchedGrade,
-        searchedClass: this.searchedClass,
-        keyword: this.keyword
-      },
-      skipLocationChange: true
+  navigateToSaveForm(attendanceId: string, examId: number) {
+    this.studentExamService.fetchByAttendance(attendanceId).subscribe(data => {
+      this.examService.fetchById(examId).subscribe(exam => {
+        this.examSubjectService.fetchAllByAuthorizedExam(exam.id).subscribe(examSubjectList => {
+          for (let examSubject of examSubjectList) {
+            this.totalPassMark += examSubject.passMark;
+            this.totalMarkPercentage += examSubject.markPercentage;
+          }
+          if (this.totalPassMark < exam.passMark) {
+            this.toastrService.warning("Action Needed", "Sum of pass mark of subjects does not match with its exam's pass mark.");
+          }
+          if (this.totalMarkPercentage < exam.markPercentage) {
+            this.toastrService.warning("Action Needed", "Sum of mark percentage of subjects does not match with its exam's mark percentage.");
+          }
+          if (data.length != 0) {
+            this.toastrService.warning("Already Created", "You cannot save anymore.");
+          }
+          if (this.totalPassMark == exam.passMark && this.totalMarkPercentage == exam.markPercentage && data.length == 0) {
+            this.router.navigate(['app/student-exam/create'], {
+              queryParams: {
+                attendanceId: attendanceId,
+                examId: examId,
+                studentClassId: this.studentClassId,
+                currentPage: this.currentPage,
+                searchedExamTitle: this.searchedExamTitle,
+                searchedAcademicYear: this.searchedAcademicYear,
+                searchedGrade: this.searchedGrade,
+                keyword: this.keyword,
+                searched: this.searched
+              },
+              skipLocationChange: true
+            });
+          }
+        });
+      });
+    });
+  }
+
+  navigateToEditForm(attendanceId: string, examId: number) {
+    this.studentExamService.fetchByAttendance(attendanceId).subscribe(data => {
+      if (data.length == 0) {
+        this.toastrService.warning("Please add score in this exam first.");
+      } else {
+        this.router.navigate(['app/student-exam/edit'], {
+          queryParams: {
+            attendanceId: attendanceId,
+            examId: examId,
+            studentClassId: this.studentClassId,
+            currentPage: this.currentPage,
+            searchedExamTitle: this.searchedExamTitle,
+            searchedAcademicYear: this.searchedAcademicYear,
+            searchedGrade: this.searchedGrade,
+            keyword: this.keyword,
+            searched: this.searched
+          },
+          skipLocationChange: true
+        });
+      }
+    });
+  }
+
+  navigateToDetail(attendanceId: string, examId: number) {
+    this.studentExamService.fetchByAttendance(attendanceId).subscribe(data => {
+      if (data.length == 0) {
+        this.toastrService.warning("Please add score in this exam first.");
+      } else {
+        this.router.navigate(['app/student-exam/detail'], {
+          queryParams: {
+            attendanceId: attendanceId,
+            examId: examId,
+            studentClassId: this.studentClassId,
+            currentPage: this.currentPage,
+            searchedExamTitle: this.searchedExamTitle,
+            searchedAcademicYear: this.searchedAcademicYear,
+            searchedGrade: this.searchedGrade,
+            keyword: this.keyword,
+            searched: this.searched
+          },
+          skipLocationChange: true
+        });
+      }
     });
   }
 
@@ -110,8 +217,8 @@ export class AttendanceDetailComponent implements OnInit {
         searchedExamTitle: this.searchedExamTitle,
         searchedAcademicYear: this.searchedAcademicYear,
         searchedGrade: this.searchedGrade,
-        searchedClass: this.searchedClass,
-        keyword: this.keyword
+        keyword: this.keyword,
+        searched: this.searched
       },
       skipLocationChange: true
     });

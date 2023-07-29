@@ -30,10 +30,6 @@ export class ClassService {
     return this.http.get<Class[]>(`${environment.baseUrl}/classes/filter?academicYearId=${academicYearId}&gradeId=${gradeId}`, { responseType: "json" });
   }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/classes/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, academicYearId: number, gradeId: number, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/classes/segment/search?page=${page}&order=${order}&academicYearId=${academicYearId}&gradeId=${gradeId}&keyword=${keyword}`, { responseType: "json" });
   }

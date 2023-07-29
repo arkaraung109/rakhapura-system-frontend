@@ -13,20 +13,10 @@ import { ApiResponse } from '../model/ApiResponse';
 })
 export class StudentHostelService {
 
-  constructor(private http: HttpClient) { }
-
-  
-
-  fetchNotPresentPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-hostels/segment/not-present?page=${page}&order=${order}`, { responseType: "json" });
-  }
+  constructor(private http: HttpClient) { }  
 
   fetchNotPresentPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, examTitleId: number, academicYearId: number, gradeId: number, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-hostels/segment/not-present/search?page=${page}&order=${order}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&keyword=${keyword}`, { responseType: "json" });
-  }
-
-  fetchPresentPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-hostels/segment/present?page=${page}&order=${order}`, { responseType: "json" });
   }
 
   fetchPresentPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, examTitleId: number, academicYearId: number, gradeId: number, hostelId: number, keyword: string): Observable<PaginationResponse> {
@@ -45,8 +35,8 @@ export class StudentHostelService {
     return this.http.delete<ApiResponse>(`${environment.baseUrl}/student-hostels/${id}`, { responseType: "json" });
   }
 
-  exportToExcel(): Observable<any> {
-    return this.http.get<any>(`${environment.baseUrl}/student-hostels/export-to-excel`, { responseType: "arraybuffer" as "json" });
+  exportToExcel(examTitleId: number, academicYearId: number, gradeId: number, hostelId: number, keyword: string): Observable<any> {
+    return this.http.get<any>(`${environment.baseUrl}/student-hostels/export-to-excel?examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&hostelId=${hostelId}&keyword=${keyword}`, { responseType: "arraybuffer" as "json" });
   }
 
 }

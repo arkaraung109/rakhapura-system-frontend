@@ -22,10 +22,6 @@ export class AcademicYearService {
     return this.http.get<AcademicYear[]>(`${environment.baseUrl}/academic-years/authorized`, { responseType: "json" });
   }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/academic-years/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/academic-years/segment/search?page=${page}&order=${order}&keyword=${keyword}`, { responseType: "json" });
   }

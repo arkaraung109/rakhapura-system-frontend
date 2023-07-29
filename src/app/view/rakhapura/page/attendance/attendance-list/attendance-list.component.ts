@@ -1,25 +1,18 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
-import { PaginationOrder } from 'src/app/common/PaginationOrder';
 import { AcademicYear } from 'src/app/model/AcademicYear';
-import { ApplicationUser } from 'src/app/model/ApplicationUser';
-import { Class } from 'src/app/model/Class';
+import { CustomPaginationResponse } from 'src/app/model/CustomPaginationResponse';
 import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
-import { PaginationResponse } from 'src/app/model/PaginationResponse';
-import { SubjectType } from 'src/app/model/SubjectType';
+import { TableHeader } from 'src/app/model/TableHeader';
 import { AcademicYearService } from 'src/app/service/academic-year.service';
 import { AttendanceService } from 'src/app/service/attendance.service';
-import { ClassService } from 'src/app/service/class.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
-import { SubjectTypeService } from 'src/app/service/subject-type.service';
-import { UserService } from 'src/app/service/user.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({
@@ -29,170 +22,108 @@ import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 })
 export class AttendanceListComponent implements OnInit {
 
-  pageData: PaginationResponse = new PaginationResponse();
+  searched = false;
+  valid = false;
+  pageData: CustomPaginationResponse = new CustomPaginationResponse();
   currentPage: number = 1;
-  userInfo!: ApplicationUser;
-  sortedData: any[] = [];
   dataList: any[] = [];
-  submitted = false;
-  @ViewChild(MatSort) sort!: MatSort;
-  examTitleList!: ExamTitle[];
   academicYearList!: AcademicYear[];
+  examTitleList!: ExamTitle[];
   gradeList!: Grade[];
-  classList!: String[];
-  searchedExamTitle!: number;
-  searchedAcademicYear!: number;
-  searchedGrade!: number;
-  searchedClass!: string;
-  keyword!: string;
+  searchedAcademicYear: number = 0;
+  searchedExamTitle: number = 0;
+  searchedGrade: number = 0;
+  keyword: string = "";
+  tableHeader: TableHeader = new TableHeader();
 
   form: FormGroup = new FormGroup({
-    examTitle: new FormControl(0),
-    academicYear: new FormControl(0),
-    grade: new FormControl(0),
-    class: new FormControl('All'),
+    academicYear: new FormControl('', [
+      Validators.required
+    ]),
+    examTitle: new FormControl('', [
+      Validators.required
+    ]),
+    grade: new FormControl('', [
+      Validators.required
+    ]),
     keyword: new FormControl('', [
       Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
     private academicYearSerivce: AcademicYearService,
+    private examTitleService: ExamTitleService,
     private gradeService: GradeService,
-    private classService: ClassService,
     private attendanceService: AttendanceService,
-    private userService: UserService,
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private router: Router,
     private toastrService: ToastrService,
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
-        this.currentPage = params['currentPage'];
+      if (params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = Number(params['currentPage']);
       }
-      this.searchedExamTitle = params['searchedExamTitle'] == undefined ? 0 : params['searchedExamTitle'];
       this.searchedAcademicYear = params['searchedAcademicYear'] == undefined ? 0 : params['searchedAcademicYear'];
+      this.searchedExamTitle = params['searchedExamTitle'] == undefined ? 0 : params['searchedExamTitle'];
       this.searchedGrade = params['searchedGrade'] == undefined ? 0 : params['searchedGrade'];
-      this.searchedClass = params['searchedClass'] == undefined ? '' : params['searchedClass'];
-      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+      this.keyword = params['keyword'] == undefined ? '' : params['keyword'];
+      this.searched = params['searched'] == undefined ? false : Boolean(params['searched']);
     });
 
-    this.examTitleService.fetchAllByAuthorizedStatus().subscribe(data => {
-      this.examTitleList = data;
-    });
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
+    });
+    this.examTitleService.fetchAllByAuthorizedStatus().subscribe(data => {
+      this.examTitleList = data;
     });
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
     });
-    this.classService.fetchDistinctAll().subscribe(data => {
-      this.classList = data;
-    });
 
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === '' && this.keyword === '') {
-      this.attendanceService.fetchPresentPageSegment(this.currentPage, PaginationOrder.DESC).subscribe({
-        next: (res: PaginationResponse) => {
+    if (this.searched) {
+      this.valid = true;
+      this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
+        next: (res: CustomPaginationResponse) => {
           this.setDataInCurrentPage(res);
+          this.tableHeader = res.tableHeader;
         },
         error: (err) => {
           this.toastrService.error("Error message", "Something went wrong.");
         }
       });
-    } else {
-      this.submitted = true;
-      this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-      this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
+
       this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
+      this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
       this.form.get('grade')!.setValue(+this.searchedGrade);
-      this.form.get('class')!.setValue(this.searchedClass);
       this.form.get('keyword')!.setValue(this.keyword);
     }
-
-    this.userInfo = this.userService.fetchUserProfileInfo();
-  }
-
-  sortData(sort: Sort) {
-    let data = [...this.dataList];
-    
-    if (!sort.active || sort.direction === '') {
-      this.sortedData = data;
-      return;
-    }
-    this.sortedData = data.sort((a, b) => {
-      let isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'index':
-          return this.compare(a.index, b.index, isAsc);
-        case 'regNo':
-          return this.compare(a.studentClass.regNo, b.studentClass.regNo, isAsc);
-        case 'name':
-          return this.compare(a.studentClass.student.name, b.studentClass.student.name, isAsc);
-        case 'fatherName':
-          return this.compare(a.studentClass.student.fatherName, b.studentClass.student.fatherName, isAsc);
-        case 'academicYear':
-          return this.compare(a.exam.academicYear.name, b.exam.academicYear.name, isAsc);
-        case 'examTitle':
-          return this.compare(a.exam.examTitle.name, b.exam.examTitle.name, isAsc);
-        case 'grade':
-          return this.compare(a.studentClass.studentClass.grade.name, b.studentClass.studentClass.grade.name, isAsc);
-        case 'class':
-          return this.compare(a.studentClass.studentClass.name, b.studentClass.studentClass.name, isAsc);
-        default:
-          return 0;
-      }
-    });
-  }
-
-  compare(a: number | string, b: number | string, isAsc: boolean) {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   search() {
-    this.submitted = true;
+    this.searched = true;
     this.currentPage = 1;
-    this.searchedExamTitle = this.form.get('examTitle')!.value;
     this.searchedAcademicYear = this.form.get('academicYear')!.value;
+    this.searchedExamTitle = this.form.get('examTitle')!.value;
     this.searchedGrade = this.form.get('grade')!.value;
-    this.searchedClass = this.form.get('class')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.attendanceService.fetchPresentPageSegment(this.currentPage, PaginationOrder.DESC).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.valid = true;
+    this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
+      next: (res: CustomPaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.tableHeader = res.tableHeader;
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
@@ -202,33 +133,20 @@ export class AttendanceListComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.attendanceService.fetchPresentPageSegment(this.currentPage, PaginationOrder.DESC).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+    this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
+      next: (res: CustomPaginationResponse) => {
+        this.setDataInCurrentPage(res);
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   exportToExcel() {
-    this.attendanceService.exportToExcel().subscribe({
+    this.attendanceService.exportToExcel(this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
       next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         let filename = 'attendance_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
@@ -239,32 +157,30 @@ export class AttendanceListComponent implements OnInit {
     });
   }
 
-  viewAttendanceDetail(studentClassId: string, attendanceId: string) {
+  viewAttendanceDetail(studentClassId: string) {
     this.router.navigate(['/app/attendance/detail'], {
       queryParams: {
-          studentClassId: studentClassId,
-          attendanceId: attendanceId,
-          currentPage: this.currentPage,
-          searchedExamTitle: this.searchedExamTitle,
-          searchedAcademicYear: this.searchedAcademicYear,
-          searchedGrade: this.searchedGrade,
-          searchedClass: this.searchedClass,
-          keyword: this.keyword
+        studentClassId: studentClassId,
+        currentPage: this.currentPage,
+        searchedAcademicYear: this.searchedAcademicYear,
+        searchedExamTitle: this.searchedExamTitle,
+        searchedGrade: this.searchedGrade,
+        keyword: this.keyword,
+        searched: this.searched
       },
       skipLocationChange: true
     });
   }
 
-  setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+  setDataInCurrentPage(res: CustomPaginationResponse) {
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, ...data};
+      let obj = { 'index': ++i, ...data };
       return obj;
     });
-    this.sortedData = [...this.dataList];
   }
 
 }

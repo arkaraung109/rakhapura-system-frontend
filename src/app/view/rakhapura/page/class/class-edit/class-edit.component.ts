@@ -31,7 +31,7 @@ export class ClassEditComponent implements OnInit {
   searchedGrade!: number;
   keyword!: string;
   oldClass: Class = new Class();
-  
+
   form: FormGroup = new FormGroup({
     academicYear: new FormControl('', [
       Validators.required
@@ -40,20 +40,20 @@ export class ClassEditComponent implements OnInit {
       Validators.required
     ]),
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(100), 
+      Validators.required,
+      Validators.maxLength(100),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private academicYearService: AcademicYearService, 
-    private gradeService: GradeService, 
-    private classService: ClassService, 
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private academicYearService: AcademicYearService,
+    private gradeService: GradeService,
+    private classService: ClassService,
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -72,7 +72,7 @@ export class ClassEditComponent implements OnInit {
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
     });
-    
+
     this.classService.fetchById(this.id).subscribe(data => {
       this.form.get('academicYear')!.setValue(data.academicYear.id);
       this.form.get('grade')!.setValue(data.grade.id);
@@ -85,7 +85,7 @@ export class ClassEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -94,25 +94,25 @@ export class ClassEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Class = new Class();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.academicYear.id = this.form.get('academicYear')!.value;
         requestBody.grade.id = this.form.get('grade')!.value;
-    
+
         this.classService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");

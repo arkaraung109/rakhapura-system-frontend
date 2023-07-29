@@ -39,16 +39,16 @@ export class StudentCardCreateComponent implements OnInit {
   academicYearList!: AcademicYear[];
   gradeList!: Grade[];
   classList!: String[];
-  searchedExamTitle!: number;
-  searchedAcademicYear!: number;
-  searchedGrade!: number;
-  searchedClass!: string;
-  keyword!: string;
+  searchedExamTitle: number = 0;
+  searchedAcademicYear: number = 0;
+  searchedGrade: number = 0;
+  searchedClass: string = "All";
+  keyword: string = "";
   idList: string[] = [];
 
   submitForm: FormGroup = new FormGroup({
     examHoldingTimes: new FormControl('', [
-      Validators.required, 
+      Validators.required,
       Validators.pattern("^([1-9]|[1-9][0-9]|1[0-9][0-9]|200)$"),
       whiteSpaceValidator()
     ])
@@ -64,15 +64,15 @@ export class StudentCardCreateComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService,  
+    private classService: ClassService,
     private studentCardService: StudentCardService,
     private toastrService: ToastrService,
-    private router: Router, 
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -90,7 +90,7 @@ export class StudentCardCreateComponent implements OnInit {
       this.classList = data;
     });
 
-    this.studentCardService.fetchPageSegment(this.currentPage).subscribe({
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -99,10 +99,10 @@ export class StudentCardCreateComponent implements OnInit {
       }
     });
 
-    if(localStorage.getItem("status_created") === "created") {
+    if (localStorage.getItem("status_created") === "created") {
       this.toastrService.success(localStorage.getItem("message_created")!);
     }
-    if(localStorage.getItem("status_error") === "error") {
+    if (localStorage.getItem("status_error") === "error") {
       this.toastrService.warning("Not Existing Record.", localStorage.getItem("message_error")!);
     }
 
@@ -112,7 +112,7 @@ export class StudentCardCreateComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -148,7 +148,7 @@ export class StudentCardCreateComponent implements OnInit {
 
   submit() {
     this.submittedForm = true;
-    if(this.submitForm.invalid) {
+    if (this.submitForm.invalid) {
       return;
     }
 
@@ -157,87 +157,87 @@ export class StudentCardCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
-        if(this.idList.length == 0) {
+      if (result) {
+        if (this.idList.length == 0) {
           this.toastrService.warning("Please check students first.", "Not Finished Yet.");
           return;
         }
 
         this.studentCardService.save(this.idList, this.submitForm.get('examHoldingTimes')!.value).subscribe({
-            next: (res: DataResponse) => {
-              if(res.status == HttpCode.CREATED) {
+          next: (res: DataResponse) => {
+            if (res.status == HttpCode.CREATED) {
+              localStorage.setItem("status_created", "created");
+              let size = res.createdCount;
+              let message = "Successfully Generated ";
+              message += size > 1 ? size + " Records" : size + " Record";
+              localStorage.setItem("message_created", message);
+              this.router.navigate(['/app/student-card/create']).then(() => {
+                location.reload();
+              });
+            }
+          },
+          error: (err) => {
+            if (err.status === HttpErrorCode.NOT_FOUND) {
+              if (err.error.createdCount != 0) {
                 localStorage.setItem("status_created", "created");
-                let size = res.createdCount;
+                let size = err.error.createdCount;
                 let message = "Successfully Generated ";
                 message += size > 1 ? size + " Records" : size + " Record";
                 localStorage.setItem("message_created", message);
-                this.router.navigate(['/app/student-card/create']).then(() => {
-                  location.reload();
-                });
               }
-            },
-            error: (err) => {
-              if(err.status === HttpErrorCode.NOT_FOUND) {
-                if(err.error.createdCount != 0) {
-                  localStorage.setItem("status_created", "created");
-                  let size = err.error.createdCount;
-                  let message = "Successfully Generated ";
-                  message += size > 1 ? size + " Records" : size + " Record";
-                  localStorage.setItem("message_created", message);
-                }
-                if(err.error.errorCount != 0) {
-                  localStorage.setItem("status_error", "error");
-                  let size = err.error.errorCount;
-                  let message = size > 1 ? size + " students have no exam existing for their grade." : size + " student has no exam existing for his grade.";
-                  localStorage.setItem("message_error", message);
-                }
-                this.router.navigate(['/app/student-card/create']).then(() => {
-                  location.reload();
-                });
-              } else if(err.status == HttpErrorCode.FORBIDDEN) {
-                this.toastrService.error("Forbidden", "Failed action");
-              } else {
-                this.toastrService.error("Failed to save new record", "Failed action");
+              if (err.error.errorCount != 0) {
+                localStorage.setItem("status_error", "error");
+                let size = err.error.errorCount;
+                let message = size > 1 ? size + " students have no exam existing for their grade." : size + " student has no exam existing for his grade.";
+                localStorage.setItem("message_error", message);
               }
+              this.router.navigate(['/app/student-card/create']).then(() => {
+                location.reload();
+              });
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
+              this.toastrService.error("Forbidden", "Failed action");
+            } else {
+              this.toastrService.error("Failed to save new record", "Failed action");
             }
-          });
+          }
+        });
       } else {
         this.matDialog.closeAll();
       }
     });
   }
 
-  checkUncheckAll() { 
+  checkUncheckAll() {
     let isExist = false;
     let index = 0;
 
-    for(let i = 0; i < this.sortedData.length; i++) {
+    for (let i = 0; i < this.sortedData.length; i++) {
       this.sortedData[i].check = this.isCheckAll;
-      for(let j = 0; j < this.idList.length; j++) {
-        if(this.idList[j] == this.sortedData[i].id) {
+      for (let j = 0; j < this.idList.length; j++) {
+        if (this.idList[j] == this.sortedData[i].id) {
           isExist = true;
           index = j;
           break;
         }
       }
-      if(!isExist) {
+      if (!isExist) {
         this.idList.push(this.sortedData[i].id);
       }
-      if(!this.sortedData[i].check) {
+      if (!this.sortedData[i].check) {
         this.idList.splice(index, 1);
-      } 
+      }
     }
   }
 
   isAllSelected(event: any, id: string) {
-    this.isCheckAll = this.sortedData.every(function(item: any) {
+    this.isCheckAll = this.sortedData.every(function (item: any) {
       return item.check == true;
     });
-    if(event.target.checked) {
+    if (event.target.checked) {
       this.idList.push(id);
     } else {
-      for(let i = 0; i < this.idList.length; i++) {
-        if(this.idList[i] == id) {
+      for (let i = 0; i < this.idList.length; i++) {
+        if (this.idList[i] == id) {
           this.idList.splice(i, 1);
         }
       }
@@ -254,31 +254,19 @@ export class StudentCardCreateComponent implements OnInit {
     this.searchedGrade = this.form.get('grade')!.value;
     this.searchedClass = this.form.get('class')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.studentCardService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   resetForm() {
@@ -293,68 +281,40 @@ export class StudentCardCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.studentCardService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          if(res.totalElements == 0) {this.currentPage = 0}
-          this.pageData = res;
-          let pageSize = res.pageSize;
-          let i = (this.currentPage - 1) * pageSize;
-          this.dataList = this.pageData.elements.map(data => {
-            let obj = {'index': ++i, ...data};
-            for(let j = 0; j < this.idList.length; j++) {
-              if(data.id == this.idList[j]) {
-                obj.check = true;
-              }
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        if (res.totalElements == 0) { this.currentPage = 0 }
+        this.pageData = res;
+        let pageSize = res.pageSize;
+        let i = (this.currentPage - 1) * pageSize;
+        this.dataList = this.pageData.elements.map(data => {
+          let obj = { 'index': ++i, ...data };
+          for (let j = 0; j < this.idList.length; j++) {
+            if (data.id == this.idList[j]) {
+              obj.check = true;
             }
-            return obj;
-          });
-          this.sortedData = [...this.dataList];
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-          this.isCheckAll = this.sortedData.every(function(item: any) {
-            return item.check == true;
-          });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          if(res.totalElements == 0) {this.currentPage = 0}
-          this.pageData = res;
-          let pageSize = res.pageSize;
-          let i = (this.currentPage - 1) * pageSize;
-          this.dataList = this.pageData.elements.map(data => {
-            let obj = {'index': ++i, ...data};
-            for(let j = 0; j < this.idList.length; j++) {
-              if(data.id == this.idList[j]) {
-                obj.check = true;
-              }
-            }
-            return obj;
-          });
-          this.sortedData = [...this.dataList];
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-          this.isCheckAll = this.sortedData.every(function(item: any) {
-            return item.check == true;
-          });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+          }
+          return obj;
+        });
+        this.sortedData = [...this.dataList];
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+        this.isCheckAll = this.sortedData.every(function (item: any) {
+          return item.check == true;
+        });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, 'check': false, ...data};
+      let obj = { 'index': ++i, 'check': false, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

@@ -65,8 +65,8 @@ export class StudentClassEditComponent implements OnInit {
     private classService: ClassService,
     private studentClassService: StudentClassService,
     private toastrService: ToastrService,
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -83,7 +83,7 @@ export class StudentClassEditComponent implements OnInit {
 
     this.examTitleService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.examTitleList = data;
-    });  
+    });
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
       this.academicYearList = data;
     });
@@ -114,7 +114,7 @@ export class StudentClassEditComponent implements OnInit {
     let academicYear = this.form.get('academicYear')!.value;
     let grade = this.form.get('grade')!.value;
     this.form.get('class')!.setValue('');
-    if(academicYear == '' || grade == '') {
+    if (academicYear == '' || grade == '') {
       this.classList = [];
       return;
     }
@@ -125,7 +125,7 @@ export class StudentClassEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -134,26 +134,26 @@ export class StudentClassEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: StudentClass = new StudentClass();
         requestBody.examTitle.id = this.form.get('examTitle')!.value;
         requestBody.studentClass.academicYear.id = this.form.get('academicYear')!.value;
         requestBody.studentClass.id = this.form.get('class')!.value;
         requestBody.student.id = this.studentId;
-    
+
         this.studentClassService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Arrived", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");

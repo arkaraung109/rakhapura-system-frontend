@@ -28,7 +28,7 @@ import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
   styleUrls: ['./exam-list.component.css']
 })
 export class ExamListComponent implements OnInit {
-  
+
   pageData: PaginationResponse = new PaginationResponse();
   currentPage: number = 1;
   userInfo!: ApplicationUser;
@@ -39,10 +39,10 @@ export class ExamListComponent implements OnInit {
   academicYearList!: AcademicYear[];
   examTitleList!: ExamTitle[];
   subjectTypeList!: SubjectType[];
-  searchedAcademicYear!: number;
-  searchedExamTitle!: number;
-  searchedSubjectType!: number;
-  keyword!: string;
+  searchedAcademicYear: number = 0;
+  searchedExamTitle: number = 0;
+  searchedSubjectType: number = 0;
+  keyword: string = "";
 
   form: FormGroup = new FormGroup({
     academicYear: new FormControl(0),
@@ -53,28 +53,28 @@ export class ExamListComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private academicYearSerivce: AcademicYearService, 
-    private examTitleService: ExamTitleService, 
+    private academicYearSerivce: AcademicYearService,
+    private examTitleService: ExamTitleService,
     private subjectTypeService: SubjectTypeService,
-    private examService: ExamService, 
-    private userService: UserService, 
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private examService: ExamService,
+    private userService: UserService,
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
-        this.currentPage = params['currentPage'];
+      if (params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = Number(params['currentPage']);
       }
       this.searchedAcademicYear = params['searchedAcademicYear'] == undefined ? 0 : params['searchedAcademicYear'];
       this.searchedExamTitle = params['searchedExamTitle'] == undefined ? 0 : params['searchedExamTitle'];
       this.searchedSubjectType = params['searchedSubjectType'] == undefined ? 0 : params['searchedSubjectType'];
-      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+      this.keyword = params['keyword'] == undefined ? '' : params['keyword'];
     });
 
     this.academicYearSerivce.fetchAllByAuthorizedStatus().subscribe(data => {
@@ -87,38 +87,22 @@ export class ExamListComponent implements OnInit {
       this.subjectTypeList = data;
     });
 
-    if(this.searchedAcademicYear == 0 && this.searchedExamTitle == 0 && this.searchedSubjectType == 0 && this.keyword === '') {
-      this.examService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.submitted = true;
-      this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-      this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
-      this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
-      this.form.get('subjectType')!.setValue(+this.searchedSubjectType);
-      this.form.get('keyword')!.setValue(this.keyword);
-    }
+    this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
 
-    if(localStorage.getItem("status") === "updated") {
+    this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
+    this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
+    this.form.get('subjectType')!.setValue(+this.searchedSubjectType);
+    this.form.get('keyword')!.setValue(this.keyword);
+
+    if (localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
-    } else if(localStorage.getItem("status") === "deleted") {
-      this.toastrService.success("Successfully Deleted.");
-    } else if(localStorage.getItem("status") === "authorized") {
-      this.toastrService.success("Successfully Authorized.");
     }
 
     localStorage.removeItem("status");
@@ -127,7 +111,7 @@ export class ExamListComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -168,69 +152,45 @@ export class ExamListComponent implements OnInit {
     this.searchedExamTitle = this.form.get('examTitle')!.value;
     this.searchedSubjectType = this.form.get('subjectType')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
-    if(this.searchedAcademicYear == 0 && this.searchedExamTitle == 0 && this.searchedSubjectType == 0 && this.keyword === '') {
-      this.examService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } 
+    this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedAcademicYear == 0 && this.searchedExamTitle == 0 && this.searchedSubjectType == 0 && this.keyword === '')) {
-      this.examService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }    
+    this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
     location.reload();
   }
 
-  edit(id: number) { 
+  edit(id: number) {
     this.examService.fetchById(id).subscribe({
       next: (res: Exam) => {
         let isAuthorized = res.authorizedStatus;
-        if(isAuthorized) {
-          this.toastrService.error("Already Authorized", "You cannot edit this.");
+        if (isAuthorized) {
+          this.toastrService.warning("Already Authorized", "You cannot edit this.");
         } else {
           this.router.navigate(['/app/exam/edit'], {
             queryParams: {
@@ -257,18 +217,39 @@ export class ExamListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         this.examService.delete(id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
-              localStorage.setItem("status", "deleted");
-              location.reload();
+            if (res.status == HttpCode.OK) {
+              this.toastrService.success("Successfully Deleted.");
+              this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                    this.currentPage = res.totalPages;
+                    this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+                      next: (res: PaginationResponse) => {
+                        this.setDataInCurrentPage(res);
+                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                      },
+                      error: (err) => {
+                        this.toastrService.error("Error message", "Something went wrong.");
+                      }
+                    });
+                  } else {
+                    this.setDataInCurrentPage(res);
+                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                  }
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
+              });
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.error("Already Authorized", "You cannot delete this.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+              this.toastrService.warning("Already Authorized", "You cannot delete this.");
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to delete record", "Failed action");
@@ -281,18 +262,26 @@ export class ExamListComponent implements OnInit {
     });
   }
 
-  authorize(id: number, authorizedUserId:number) {
+  authorize(id: number, authorizedUserId: number) {
     const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
       width: '300px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         this.examService.authorize(id, authorizedUserId).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
-              localStorage.setItem("status", "authorized");
-              location.reload();
+            if (res.status == HttpCode.OK) {
+              this.toastrService.success("Successfully Authorized.");
+              this.examService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  this.setDataInCurrentPage(res);
+                  this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
+              });
             }
           },
           error: (err) => {
@@ -306,12 +295,12 @@ export class ExamListComponent implements OnInit {
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, ...data};
+      let obj = { 'index': ++i, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { HttpCode } from 'src/app/common/HttpCode';
 import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
-import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { ApiResponse } from 'src/app/model/ApiResponse';
@@ -56,11 +55,11 @@ export class ExamCreateComponent implements OnInit {
 
   constructor(
     private academicYearService: AcademicYearService,
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private subjectTypeService: SubjectTypeService,
-    private examService: ExamService, 
-    private toastrService: ToastrService, 
-    private router: Router, 
+    private examService: ExamService,
+    private toastrService: ToastrService,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -78,7 +77,7 @@ export class ExamCreateComponent implements OnInit {
 
   save() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -87,7 +86,7 @@ export class ExamCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Exam = new Exam();
         requestBody.examDate = this.form.get('examDate')!.value;
         requestBody.time = this.form.get('startTime')!.value + " - " + this.form.get('endTime')!.value;
@@ -96,15 +95,15 @@ export class ExamCreateComponent implements OnInit {
         requestBody.academicYear.id = this.form.get('academicYear')!.value;
         requestBody.examTitle.id = this.form.get('examTitle')!.value;
         requestBody.subjectType.id = this.form.get('subjectType')!.value;
-    
+
         this.examService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
               dialogRef.afterClosed().subscribe(result => {
-                if(result) {
+                if (result) {
                   this.router.navigate(['/app/exam/create']).then(() => {
                     this.reset();
                   });
@@ -112,13 +111,13 @@ export class ExamCreateComponent implements OnInit {
                   this.back();
                 }
               });
-              this.toastrService.success("Successfully Created.");  
+              this.toastrService.success("Successfully Created.");
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");

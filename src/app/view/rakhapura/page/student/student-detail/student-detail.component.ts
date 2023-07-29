@@ -19,7 +19,7 @@ export class StudentDetailComponent implements OnInit {
 
   constructor(
     private studentService: StudentService,
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private router: Router
   ) { }
 
@@ -29,7 +29,7 @@ export class StudentDetailComponent implements OnInit {
       this.currentPage = params['currentPage'];
       this.searchedRegion = params['searchedRegion'];
       this.keyword = params['keyword'];
-    });   
+    });
     this.studentService.fetchById(this.id).subscribe(data => {
       this.student.regDate = data.regDate;
       this.student.name = data.name;

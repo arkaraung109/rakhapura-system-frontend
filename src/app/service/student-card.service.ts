@@ -13,10 +13,6 @@ export class StudentCardService {
 
   constructor(private http: HttpClient) { }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-cards/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, examTitleId: number, academicYearId: number, gradeId: number, studentClass: string, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-cards/segment/search?page=${page}&order=${order}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&studentClass=${studentClass}&keyword=${keyword}`, { responseType: "json" });
   }

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
@@ -37,11 +36,11 @@ export class ArrivalListComponent implements OnInit {
   academicYearList!: AcademicYear[];
   gradeList!: Grade[];
   classList!: String[];
-  searchedExamTitle!: number;
-  searchedAcademicYear!: number;
-  searchedGrade!: number;
-  searchedClass!: string;
-  keyword!: string;
+  searchedExamTitle: number = 0;
+  searchedAcademicYear: number = 0;
+  searchedGrade: number = 0;
+  searchedClass: string = "All";
+  keyword: string = "";
 
   form: FormGroup = new FormGroup({
     examTitle: new FormControl(0),
@@ -53,15 +52,14 @@ export class ArrivalListComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService, 
+    private classService: ClassService,
     private arrivalService: ArrivalService,
     private userService: UserService,
-    private router: Router,
     private toastrService: ToastrService,
   ) { }
 
@@ -79,7 +77,7 @@ export class ArrivalListComponent implements OnInit {
       this.classList = data;
     });
 
-    this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, true).subscribe({
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, true, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -93,7 +91,7 @@ export class ArrivalListComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -135,31 +133,19 @@ export class ArrivalListComponent implements OnInit {
     this.searchedGrade = this.form.get('grade')!.value;
     this.searchedClass = this.form.get('class')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, true).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, true, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, true, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
@@ -169,33 +155,21 @@ export class ArrivalListComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.arrivalService.fetchPageSegment(this.currentPage, PaginationOrder.DESC, true).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, true, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, true, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   exportToExcel() {
-    this.arrivalService.exportToExcel().subscribe({
+    this.arrivalService.exportToExcel(this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
       next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         let filename = 'arrived_student_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
@@ -207,12 +181,12 @@ export class ArrivalListComponent implements OnInit {
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, ...data};
+      let obj = { 'index': ++i, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

@@ -25,7 +25,7 @@ import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
   styleUrls: ['./student-list.component.css']
 })
 export class StudentListComponent implements OnInit {
-  
+
   pageData: PaginationResponse = new PaginationResponse();
   currentPage: number = 1;
   userInfo!: ApplicationUser;
@@ -34,8 +34,8 @@ export class StudentListComponent implements OnInit {
   submitted = false;
   @ViewChild(MatSort) sort!: MatSort;
   regionList!: Region[];
-  searchedRegion!: number;
-  keyword!: string;
+  searchedRegion: number = 0;
+  keyword: string = "";
 
   form: FormGroup = new FormGroup({
     region: new FormControl(0),
@@ -44,58 +44,44 @@ export class StudentListComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
     private regionService: RegionService,
-    private studentService: StudentService, 
-    private userService: UserService, 
+    private studentService: StudentService,
+    private userService: UserService,
     private toastrService: ToastrService,
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
-        this.currentPage = params['currentPage'];
+      if (params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = Number(params['currentPage']);
       }
       this.searchedRegion = params['searchedRegion'] == undefined ? 0 : params['searchedRegion'];
-      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+      this.keyword = params['keyword'] == undefined ? '' : params['keyword'];
     });
 
     this.regionService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.regionList = data;
     });
 
-    if(this.searchedRegion == 0 && this.keyword === '') {
-      this.studentService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.submitted = true;
-      this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-      this.form.get('region')!.setValue(+this.searchedRegion);
-      this.form.get('keyword')!.setValue(this.keyword);
-    }
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
 
-    if(localStorage.getItem("status") === "updated") {
+    this.form.get('region')!.setValue(+this.searchedRegion);
+    this.form.get('keyword')!.setValue(this.keyword);
+
+    if (localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
-    } else if(localStorage.getItem("status") === "deleted") {
-      this.toastrService.success("Successfully Deleted.");
     }
 
     localStorage.removeItem("status");
@@ -104,7 +90,7 @@ export class StudentListComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -139,31 +125,19 @@ export class StudentListComponent implements OnInit {
     this.currentPage = 1;
     this.searchedRegion = this.form.get('region')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedRegion == 0 && this.keyword === '') {
-      this.studentService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
@@ -173,36 +147,24 @@ export class StudentListComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedRegion == 0 && this.keyword === '')) {
-      this.studentService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
-  edit(id: string) {  
+  edit(id: string) {
     this.router.navigate(['/app/student/edit'], {
       queryParams: {
-          id: id,
-          currentPage: this.currentPage,
-          searchedRegion: this.searchedRegion,
-          keyword: this.keyword
+        id: id,
+        currentPage: this.currentPage,
+        searchedRegion: this.searchedRegion,
+        keyword: this.keyword
       },
       skipLocationChange: true
     });
@@ -214,18 +176,39 @@ export class StudentListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         this.studentService.delete(id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
-              localStorage.setItem("status", "deleted");
-              location.reload();
+            if (res.status == HttpCode.OK) {
+              this.toastrService.success("Successfully Deleted.");
+              this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                    this.currentPage = res.totalPages;
+                    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+                      next: (res: PaginationResponse) => {
+                        this.setDataInCurrentPage(res);
+                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                      },
+                      error: (err) => {
+                        this.toastrService.error("Error message", "Something went wrong.");
+                      }
+                    });
+                  } else {
+                    this.setDataInCurrentPage(res);
+                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                  }
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
+              });
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.error("Please delete student from assigned class at first.", "Already Assigned in Class");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+              this.toastrService.warning("Please delete student from assigned class at first.", "Already Assigned in Class");
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to delete record", "Failed action");
@@ -241,19 +224,19 @@ export class StudentListComponent implements OnInit {
   viewDetails(id: string) {
     this.router.navigate(['/app/student/detail'], {
       queryParams: {
-          id: id,
-          currentPage: this.currentPage,
-          searchedRegion: this.searchedRegion,
-          keyword: this.keyword
+        id: id,
+        currentPage: this.currentPage,
+        searchedRegion: this.searchedRegion,
+        keyword: this.keyword
       },
       skipLocationChange: true
     });
   }
 
   exportToExcel() {
-    this.studentService.exportToExcel().subscribe({
+    this.studentService.exportToExcel(this.searchedRegion, this.keyword).subscribe({
       next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         let filename = 'student_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
@@ -265,12 +248,12 @@ export class StudentListComponent implements OnInit {
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, ...data};
+      let obj = { 'index': ++i, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

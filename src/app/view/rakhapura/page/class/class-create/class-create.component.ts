@@ -35,19 +35,19 @@ export class ClassCreateComponent implements OnInit {
       Validators.required
     ]),
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(100), 
+      Validators.required,
+      Validators.maxLength(100),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private academicYearService: AcademicYearService, 
-    private classService: ClassService, 
-    private gradeService: GradeService, 
-    private toastrService: ToastrService, 
-    private router: Router, 
+    private academicYearService: AcademicYearService,
+    private classService: ClassService,
+    private gradeService: GradeService,
+    private toastrService: ToastrService,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -62,7 +62,7 @@ export class ClassCreateComponent implements OnInit {
 
   save() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -71,20 +71,20 @@ export class ClassCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Class = new Class();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.academicYear.id = this.form.get('academicYear')!.value;
         requestBody.grade.id = this.form.get('grade')!.value;
-    
+
         this.classService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
               dialogRef.afterClosed().subscribe(result => {
-                if(result) {
+                if (result) {
                   this.router.navigate(['/app/class/create']).then(() => {
                     this.reset();
                   });
@@ -92,13 +92,13 @@ export class ClassCreateComponent implements OnInit {
                   this.back();
                 }
               });
-              this.toastrService.success("Successfully Created.");  
+              this.toastrService.success("Successfully Created.");
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");

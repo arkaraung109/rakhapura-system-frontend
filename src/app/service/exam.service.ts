@@ -18,16 +18,8 @@ export class ExamService {
     return this.http.get<Exam>(`${environment.baseUrl}/exams/${id}`, { responseType: "json" });
   }
 
-  fetchFilteredByAcademicYearAndExamTitleAndSubjectType(academicYearId: number, examTitleId: number, subjectTypeId: number): Observable<Exam> {
-    return this.http.get<Exam>(`${environment.baseUrl}/exams/filterOne?academicYearId=${academicYearId}&examTitleId=${examTitleId}&subjectTypeId=${subjectTypeId}`, { responseType: "json" });
-  }
-
   fetchAllFilteredByAcademicYearAndExamTitle(academicYearId: number, examTitleId: number): Observable<Exam[]> {
     return this.http.get<Exam[]>(`${environment.baseUrl}/exams/filter?academicYearId=${academicYearId}&examTitleId=${examTitleId}`, { responseType: "json" });
-  }
-
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/exams/segment?page=${page}&order=${order}`, { responseType: "json" });
   }
 
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, academicYearId: number, examTitleId: number, subjectTypeId: number, keyword: string): Observable<PaginationResponse> {

@@ -18,10 +18,6 @@ export class StudentService {
     return this.http.get<Student>(`${environment.baseUrl}/students/${id}`, { responseType: "json" });
   }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/students/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, regionId: number, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/students/segment/search?page=${page}&order=${order}&regionId=${regionId}&keyword=${keyword}`, { responseType: "json" });
   }
@@ -38,8 +34,8 @@ export class StudentService {
     return this.http.delete<ApiResponse>(`${environment.baseUrl}/students/${id}`, { responseType: "json" });
   }
 
-  exportToExcel(): Observable<any> {
-    return this.http.get<any>(`${environment.baseUrl}/students/export-to-excel`, { responseType: "arraybuffer" as "json" });
+  exportToExcel(regionId: number, keyword: string): Observable<any> {
+    return this.http.get<any>(`${environment.baseUrl}/students/export-to-excel?regionId=${regionId}&keyword=${keyword}`, { responseType: "arraybuffer" as "json" });
   }
   
 }

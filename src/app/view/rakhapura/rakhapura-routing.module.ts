@@ -19,6 +19,8 @@ import { ArrivalComponent } from './page/arrival/arrival.component';
 import { StudentCardComponent } from './page/student-card/student-card.component';
 import { AttendanceComponent } from './page/attendance/attendance.component';
 import { StudentHostelComponent } from './page/student-hostel/student-hostel.component';
+import { StudentExamComponent } from './page/student-exam/student-exam.component';
+import { StudentExamModerateComponent } from './page/student-exam-moderate/student-exam-moderate.component';
 
 const routes: Routes = [
   {
@@ -255,6 +257,34 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./page/student-hostel/student-hostel.module').then(m => m.StudentHostelModule)
+      },
+    ]
+  },
+  {
+    path: 'student-exam',
+    component: StudentExamComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN, UserPermission.EXAM_MARK_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/student-exam/student-exam.module').then(m => m.StudentExamModule)
+      },
+    ]
+  },
+  {
+    path: 'student-exam-moderate',
+    component: StudentExamModerateComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN, UserPermission.EXAM_MARK_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/student-exam-moderate/student-exam-moderate.module').then(m => m.StudentExamModerateModule)
       },
     ]
   }

@@ -23,7 +23,7 @@ import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
   styleUrls: ['./academic-year-list.component.css']
 })
 export class AcademicYearListComponent implements OnInit {
-  
+
   pageData: PaginationResponse = new PaginationResponse();
   currentPage: number = 1;
   userInfo!: ApplicationUser;
@@ -31,7 +31,7 @@ export class AcademicYearListComponent implements OnInit {
   dataList: any[] = [];
   submitted = false;
   @ViewChild(MatSort) sort!: MatSort;
-  keyword!: string;
+  keyword: string = "";
 
   form: FormGroup = new FormGroup({
     keyword: new FormControl('', [
@@ -39,53 +39,37 @@ export class AcademicYearListComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private academicYearService: AcademicYearService, 
-    private userService: UserService, 
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private academicYearService: AcademicYearService,
+    private userService: UserService,
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
-        this.currentPage = params['currentPage'];
+      if (params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = Number(params['currentPage']);
       }
-      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+      this.keyword = params['keyword'] == undefined ? '' : params['keyword'];
     });
 
-    if(this.keyword === '') {
-      this.academicYearService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.submitted = true;
-      this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-      this.form.get('keyword')!.setValue(this.keyword);
-    }
+    this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
 
-    if(localStorage.getItem("status") === "updated") {
+    this.form.get('keyword')!.setValue(this.keyword);
+
+    if (localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
-    } else if(localStorage.getItem("status") === "deleted") {
-      this.toastrService.success("Successfully Deleted.");
-    } else if(localStorage.getItem("status") === "authorized") {
-      this.toastrService.success("Successfully Authorized.");
     }
 
     localStorage.removeItem("status");
@@ -94,14 +78,14 @@ export class AcademicYearListComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
     }
     this.sortedData = data.sort((a, b) => {
       let isAsc = sort.direction === 'asc';
-      switch(sort.active) {
+      switch (sort.active) {
         case 'index':
           return this.compare(a.index, b.index, isAsc);
         case 'name':
@@ -120,7 +104,7 @@ export class AcademicYearListComponent implements OnInit {
     this.submitted = true;
     this.currentPage = 1;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -142,41 +126,29 @@ export class AcademicYearListComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || this.keyword === '') {
-      this.academicYearService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+    this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
-  edit(id: number) { 
+  edit(id: number) {
     this.academicYearService.fetchById(id).subscribe({
       next: (res: AcademicYear) => {
         let isAuthorized = res.authorizedStatus;
-        if(isAuthorized) {
-          this.toastrService.error("Already Authorized", "You cannot edit this.");
+        if (isAuthorized) {
+          this.toastrService.warning("Already Authorized", "You cannot edit this.");
         } else {
           this.router.navigate(['/app/academic-year/edit'], {
             queryParams: {
-                id: id,
-                currentPage: this.currentPage,
-                keyword: this.keyword
+              id: id,
+              currentPage: this.currentPage,
+              keyword: this.keyword
             },
             skipLocationChange: true
           });
@@ -194,18 +166,39 @@ export class AcademicYearListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         this.academicYearService.delete(id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
-              localStorage.setItem("status", "deleted");
-              location.reload();
+            if (res.status == HttpCode.OK) {
+              this.toastrService.success("Successfully Deleted.");
+              this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                    this.currentPage = res.totalPages;
+                    this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
+                      next: (res: PaginationResponse) => {
+                        this.setDataInCurrentPage(res);
+                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                      },
+                      error: (err) => {
+                        this.toastrService.error("Error message", "Something went wrong.");
+                      }
+                    });
+                  } else {
+                    this.setDataInCurrentPage(res);
+                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                  }
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
+              });
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.error("Already Authorized", "You cannot delete this.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+              this.toastrService.warning("Already Authorized", "You cannot delete this.");
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to delete record", "Failed action");
@@ -218,18 +211,26 @@ export class AcademicYearListComponent implements OnInit {
     });
   }
 
-  authorize(id:number, authorizedUserId: number) {
+  authorize(id: number, authorizedUserId: number) {
     const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
       width: '300px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         this.academicYearService.authorize(id, authorizedUserId).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
-              localStorage.setItem("status", "authorized");
-              location.reload();
+            if (res.status == HttpCode.OK) {
+              this.toastrService.success("Successfully Authorized.");
+              this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  this.setDataInCurrentPage(res);
+                  this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
+              });
             }
           },
           error: (err) => {
@@ -243,12 +244,12 @@ export class AcademicYearListComponent implements OnInit {
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, ...data};
+      let obj = { 'index': ++i, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

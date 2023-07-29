@@ -36,7 +36,7 @@ export class ExamEditComponent implements OnInit {
   searchedSubjectType!: number;
   keyword!: string;
   oldExam: Exam = new Exam();
-  
+
   form: FormGroup = new FormGroup({
     academicYear: new FormControl('', [
       Validators.required
@@ -61,13 +61,13 @@ export class ExamEditComponent implements OnInit {
   }, { validators: lessThanValidator });
 
   constructor(
-    private academicYearSerivce: AcademicYearService, 
+    private academicYearSerivce: AcademicYearService,
     private examTitleService: ExamTitleService,
-    private subjectTypeService: SubjectTypeService, 
-    private examService: ExamService, 
-    private toastrService: ToastrService, 
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private subjectTypeService: SubjectTypeService,
+    private examService: ExamService,
+    private toastrService: ToastrService,
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -97,7 +97,6 @@ export class ExamEditComponent implements OnInit {
       this.form.get('subjectType')!.setValue(data.subjectType.id);
       this.form.get('examDate')!.setValue(format(parse(data.examDate, "dd-MM-yyyy", new Date()), "yyyy-MM-dd"));
       let time = data.time.split(" - ", 2);
-      console.log(time[0]);
       this.form.get('startTime')!.setValue(time[0]);
       this.form.get('endTime')!.setValue(time[1]);
       this.form.get('passMark')!.setValue(data.passMark);
@@ -114,7 +113,7 @@ export class ExamEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -123,7 +122,7 @@ export class ExamEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Exam = new Exam();
         requestBody.examDate = this.form.get('examDate')!.value;
         requestBody.time = this.form.get('startTime')!.value + " - " + this.form.get('endTime')!.value;
@@ -132,20 +131,20 @@ export class ExamEditComponent implements OnInit {
         requestBody.academicYear.id = this.form.get('academicYear')!.value;
         requestBody.examTitle.id = this.form.get('examTitle')!.value;
         requestBody.subjectType.id = this.form.get('subjectType')!.value;
-    
+
         this.examService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");

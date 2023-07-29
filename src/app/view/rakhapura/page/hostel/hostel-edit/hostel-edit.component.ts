@@ -26,30 +26,30 @@ export class HostelEditComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     address: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(300), 
+      Validators.required,
+      Validators.maxLength(300),
       Validators.pattern("^[^<>~`!\\[\\]{}|@#^*+=:;/?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ]),
     phone: new FormControl('', [
-      Validators.required, 
-      Validators.maxLength(50), 
+      Validators.required,
+      Validators.maxLength(50),
       Validators.pattern("^(09-[0-9]{7,9})|(09\\s*[0-9]{7,9})|(\\s*)|(\u1040\u1049-[\u1040-\u1049]{7,9})|(\u1040\u1049\\s*[\u1040-\u1049]{7,9})$"),
       whiteSpaceValidator()
     ])
   });
 
   constructor(
-    private hostelService: HostelService, 
+    private hostelService: HostelService,
     private toastrService: ToastrService,
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -59,7 +59,7 @@ export class HostelEditComponent implements OnInit {
       this.currentPage = params['currentPage'];
       this.keyword = params['keyword'];
     });
-    
+
     this.hostelService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
       this.form.get('address')!.setValue(data.address);
@@ -72,7 +72,7 @@ export class HostelEditComponent implements OnInit {
 
   update() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -81,25 +81,25 @@ export class HostelEditComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody: Hostel = new Hostel();
         requestBody.name = this.form.get('name')!.value.trim();
         requestBody.address = this.form.get('address')!.value.trim();
         requestBody.phone = this.form.get('phone')!.value.trim();
-    
+
         this.hostelService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
+            if (res.status == HttpCode.OK) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
+            if (err.status == HttpErrorCode.CONFLICT) {
               this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
-            } else if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
               this.toastrService.error("Already Authorized", "You cannot update this.");
             } else {
               this.toastrService.error("Failed to update new record", "Failed action");

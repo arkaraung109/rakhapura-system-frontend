@@ -20,9 +20,12 @@
                         <div class="col-sm-4"></div>
                         <div *ngIf="submittedForm || submitForm.get('examHoldingTimes')!.invalid && submitForm.get('examHoldingTimes')!.touched"
                             class="col-sm-6" style="color: red">
-                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['required']">Field is required</div>
-                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['pattern']">Must be between 1 and 200</div>
-                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['required']">Field is required
+                            </div>
+                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['pattern']">Must be between 1 and
+                                200</div>
+                            <div *ngIf="submitForm.get('examHoldingTimes')!.errors?.['startingWithWhiteSpace']">Must not
+                                start with space</div>
                         </div>
                     </div>
                 </div>

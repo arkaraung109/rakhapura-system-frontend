@@ -49,15 +49,15 @@ export class ExamSubjectCreateComponent implements OnInit {
     passMark: new FormControl(''),
     markPercentage: new FormControl('')
   }, { validators: lessThanValidator });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private examService: ExamService,
     private subjectService: SubjectService,
     private examSubjectService: ExamSubjectService,
     private toastrService: ToastrService,
-    private router: Router, 
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -77,7 +77,7 @@ export class ExamSubjectCreateComponent implements OnInit {
     let academicYear = this.form.get('academicYear')!.value;
     let examTitle = this.form.get('examTitle')!.value;
     this.form.get('subjectType')!.setValue('');
-    if(academicYear == '' || examTitle == '') {
+    if (academicYear == '' || examTitle == '') {
       this.subjectTypeList = [];
       return;
     }
@@ -91,7 +91,7 @@ export class ExamSubjectCreateComponent implements OnInit {
 
   save() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -100,7 +100,7 @@ export class ExamSubjectCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         let requestBody = new ExamSubject();
         requestBody.passMark = Number(this.form.get('passMark')!.value);
         requestBody.markPercentage = Number(this.form.get('markPercentage')!.value);
@@ -108,15 +108,15 @@ export class ExamSubjectCreateComponent implements OnInit {
         requestBody.exam.examTitle.id = this.form.get('examTitle')!.value;
         requestBody.exam.subjectType.id = this.form.get('subjectType')!.value;
         requestBody.subject.id = this.form.get('subject')!.value;
-      
+
         this.examSubjectService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
               dialogRef.afterClosed().subscribe(result => {
-                if(result) {
+                if (result) {
                   this.router.navigate(['/app/exam-subject/create']).then(() => {
                     this.reset();
                   });
@@ -125,80 +125,32 @@ export class ExamSubjectCreateComponent implements OnInit {
                   this.back();
                 }
               });
-              this.toastrService.success("Successfully Created.");   
+              this.toastrService.success("Successfully Created.");
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              if(err.error.message === "passMarkExceeded") {
+            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+              if (err.error.message === "passMarkExceeded") {
                 this.toastrService.warning("Exceeded record.", "Total sum of pass mark is exceeded");
-              } else if(err.error.message === "markPercentageExceeded") {
+              } else if (err.error.message === "markPercentageExceeded") {
                 this.toastrService.warning("Exceeded record.", "Total sum of mark percentage is exceeded");
-              } else if(err.error.message === "passMarkExceeded&markPercentageExceeded") {
+              } else if (err.error.message === "passMarkExceeded&markPercentageExceeded") {
                 this.toastrService.warning("Exceeded record.", "Total sum of pass mark is exceeded");
                 this.toastrService.warning("Exceeded record.", "Total sum of mark percentage is exceeded");
               }
-            } else if(err.status == HttpErrorCode.CONFLICT) {
-              this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.CONFLICT) {
+              if (err.error.message === 'used object cannot be created.') {
+                this.toastrService.warning("Already Used This Exam For Mark Entry.", "You cannot add anymore.");
+              } else {
+                this.toastrService.warning("Duplicate record.", "Record already exists.");
+              }
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");
             }
           }
         });
-
-          // this.examSubjectService.fetchAllByExam(examId).subscribe(examSubjectList => {
-          //   if(examSubjectList.length != 0) {
-          //     examSubjectList.forEach(examSubject => {
-          //       sumOfPassMark += examSubject.passMark;
-          //       sumOfMarkPercentage += examSubject.markPercentage;
-          //     });
-          //   }
-          //   if(sumOfPassMark > overAllPassMark) {
-          //     this.toastrService.warning("Exceeded record.", "Total sum of pass mark is exceeded");
-          //   }
-          //   if(sumOfMarkPercentage > overAllMarkPercentage) {
-          //     this.toastrService.warning("Exceeded record.", "Total sum of mark percentage is exceeded");
-          //   }
-          //   if(sumOfPassMark <= overAllPassMark && sumOfMarkPercentage <= overAllMarkPercentage) {
-          //     let requestBody: ExamSubject = new ExamSubject();
-          //     requestBody.exam.id = exam.id;
-          //     requestBody.subject.id = subjectId;          
-          //     requestBody.passMark = passMark;
-          //     requestBody.markPercentage = markPercentage;
-          //     this.examSubjectService.save(requestBody).subscribe({
-          //       next: (res: ApiResponse) => {
-          //         if(res.status == HttpCode.CREATED) {
-          //           const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
-          //             width: '300px'
-          //           });
-          //           dialogRef.afterClosed().subscribe(result => {
-          //             if(result) {
-          //               this.router.navigate(['/app/exam-subject/create']).then(() => {
-          //                 this.reset();
-          //               });
-          //             }
-          //             else {
-          //               this.back();
-          //             }
-          //           });
-          //           this.toastrService.success("Successfully Created.");   
-          //         }
-          //       },
-          //       error: (err) => {
-          //         if(err.status == HttpErrorCode.CONFLICT) {
-          //           this.toastrService.warning("Duplicate record.", "Record already exists.");
-          //         } else if(err.status == HttpErrorCode.FORBIDDEN) {
-          //           this.toastrService.error("Forbidden", "Failed action");
-          //         } else {
-          //           this.toastrService.error("Failed to save new record", "Failed action");
-          //         }
-          //       }
-          //     });
-          //   }
-          // });
-        //});
       } else {
         this.matDialog.closeAll();
       }

@@ -22,10 +22,6 @@ export class RegionService {
     return this.http.get<Region[]>(`${environment.baseUrl}/regions/authorized`, { responseType: "json" });
   }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/regions/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/regions/segment/search?page=${page}&order=${order}&keyword=${keyword}`, { responseType: "json" });
   }

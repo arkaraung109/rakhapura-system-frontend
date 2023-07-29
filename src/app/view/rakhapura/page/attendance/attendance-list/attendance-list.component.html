@@ -1,95 +1,141 @@
-<div class="hrow">
-    <h4>စာမေးပွဲဖြေဆိုခဲ့သည့်စာသင်သားစာရင်း</h4>
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>စာမေးပွဲတက်‌ရောက်ဖြေဆိုခဲ့သည့်စာသင်သားစာရင်းရှာဖွေခြင်း</h4>
+    </div>
 </div>
-<div class="container-fluid ttable">
+<div class="container-fluid">
     <div class="row">
         <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
-            <div class="col-sm-2">
-                <select formControlName="academicYear" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="0">စာသင်နှစ်အားလုံး</option>
-                    <option *ngFor="let a of academicYearList" [ngValue]="a.id">
-                        {{a.name}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <select formControlName="examTitle" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="0">စာမေးပွဲခေါင်းစဉ်အားလုံး</option>
-                    <option *ngFor="let e of examTitleList" [ngValue]="e.id">
-                        {{e.name}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <select formControlName="grade" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="0">အတန်းအားလုံး</option>
-                    <option *ngFor="let g of gradeList" [ngValue]="g.id">
-                        {{g.name}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <select formControlName="class" class="fcontrol" style="margin: 20px 0px;">
-                    <option [ngValue]="'All'">အခန်းအားလုံး</option>
-                    <option *ngFor="let c of classList" [ngValue]="c">
-                        {{c}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;"
-                    autocomplete="off" placeholder="Filter Search" />
-            </div>
-            <div class="col-sm-2">
-                <button type="submit" class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
-                <button type="button" class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>စာသင်နှစ်<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <select formControlName="academicYear" class="fcontrol">
+                                <option [ngValue]="''">Choose</option>
+                                <option *ngFor="let a of academicYearList" [ngValue]="a.id">
+                                    {{a.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="searched || form.get('academicYear')!.invalid && form.get('academicYear')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="form.get('academicYear')!.errors?.['required']">Field is required</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>စာမေးပွဲခေါင်းစဉ်<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <select formControlName="examTitle" class="fcontrol">
+                                <option [ngValue]="''">Choose</option>
+                                <option *ngFor="let e of examTitleList" [ngValue]="e.id">
+                                    {{e.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="searched || form.get('examTitle')!.invalid && form.get('examTitle')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="form.get('examTitle')!.errors?.['required']">Field is required</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>အတန်း<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <select formControlName="grade" class="fcontrol">
+                                <option [ngValue]="''">Choose</option>
+                                <option *ngFor="let g of gradeList" [ngValue]="g.id">
+                                    {{g.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="searched || form.get('grade')!.invalid && form.get('grade')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="form.get('grade')!.errors?.['required']">Field is required</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>ခုံနံပါတ် (သို့) အမည် (သို့) အဖအမည်</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" formControlName="keyword" class="fcontrol" autocomplete="off"
+                                placeholder="Filter Search" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="searched || form.get('keyword')!.invalid && form.get('keyword')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters
+                            </div>
+                            <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with
+                                space</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
             </div>
             <div class="row">
-                <div class="col-sm-4"></div>
-                <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
-                    style="color: red">
-                    <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
-                    <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4 col-sm-6">
+                    <button type="submit" class="bsearch btn">Search</button>
+                    <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
                 </div>
+                <div class="col-xs-4"></div>
             </div>
         </form>
     </div>
-    <div class="row">
-        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;">Export to
+    <hr *ngIf="valid">
+    <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden;">
+        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
+            *ngIf="dataList.length != 0">Export to
             Excel</button>
-        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
-            (matSortChange)="sortData($event)">
+        <table class="table table-bordered exptable" id="" *ngIf="dataList.length != 0">
             <thead>
                 <tr>
-                    <th style="width: 80px" mat-sort-header="index">စဉ်</th>
-                    <th style="width: 100px" mat-sort-header="regNo">ခုံနံပါတ်</th>
-                    <th style="width: 100px" mat-sort-header="name">အမည်</th>
-                    <th style="width: 100px" mat-sort-header="fatherName">အဖအမည်</th>
-                    <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
-                    <th style="width: 100px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
-                    <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
-                    <th style="width: 100px" mat-sort-header="class">အခန်း</th>
-                    <th style="width: 100px">Action</th>
+                    <th style="width: 80px; vertical-align: middle;">စဉ်</th>
+                    <th style="width: 100px; vertical-align: middle;">ခုံနံပါတ်</th>
+                    <th style="width: 100px; vertical-align: middle;">အမည်</th>
+                    <th style="width: 100px; vertical-align: middle;">အဖအမည်</th>
+                    <th *ngFor="let customExam of tableHeader.customExamList">{{customExam.exam.subjectType.name}}</th>
+                    <th style="width: 80px">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let element of sortedData">
+                <tr *ngFor="let element of dataList">
                     <td>{{element.index}}</td>
-                    <td *ngIf="element.studentClass.regNo">{{element.studentClass.regNo}}</td>
-                    <td *ngIf="!element.studentClass.regNo">-</td>
-                    <td>{{element.studentClass.student.name}}</td>
-                    <td>{{element.studentClass.student.fatherName}}</td>
-                    <td>{{element.exam.academicYear.name}}</td>
-                    <td>{{element.exam.examTitle.name}}</td>
-                    <td>{{element.studentClass.studentClass.grade.name}}</td>
-                    <td>{{element.studentClass.studentClass.name}}</td>
-                    <td><a style="cursor: pointer" (click)="viewAttendanceDetail(element.studentClass.id, element.id)">ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</a></td>
+                    <td *ngIf="element.attendance.studentClass.regNo">{{element.attendance.studentClass.regNo}}</td>
+                    <td *ngIf="!element.attendance.studentClass.regNo">-</td>
+                    <td>{{element.attendance.studentClass.student.name}}</td>
+                    <td>{{element.attendance.studentClass.student.fatherName}}</td>
+                    <td *ngFor="let attendedExam of element.attendedExamList">
+                        <i class="fa fa-check" *ngIf="attendedExam.present" style="color: green"></i>
+                        <i class="fa fa-times" *ngIf="!attendedExam.present" style="color: red"></i>
+                    </td>
+                    <td><i class="fa fa-eye" (click)="viewAttendanceDetail(element.attendance.studentClass.id)"></i>
+                    </td>
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+        <h2 style="color: red" *ngIf="dataList.length == 0">No record found!</h2>
         <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-            (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
+            *ngIf="dataList.length != 0" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
     </div>
 </div>

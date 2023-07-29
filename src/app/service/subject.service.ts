@@ -22,10 +22,6 @@ export class SubjectService {
     return this.http.get<Subject[]>(`${environment.baseUrl}/subjects/authorized`, { responseType: "json" });
   }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/subjects/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/subjects/segment/search?page=${page}&order=${order}&keyword=${keyword}`, { responseType: "json" });
   }

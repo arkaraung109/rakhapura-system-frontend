@@ -22,10 +22,6 @@ export class ExamTitleService {
     return this.http.get<ExamTitle[]>(`${environment.baseUrl}/exam-titles/authorized`, { responseType: "json" });
   }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/exam-titles/segment?page=${page}&order=${order}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/exam-titles/segment/search?page=${page}&order=${order}&keyword=${keyword}`, { responseType: "json" });
   }

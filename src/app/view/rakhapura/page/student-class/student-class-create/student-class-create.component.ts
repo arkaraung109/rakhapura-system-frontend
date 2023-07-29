@@ -45,8 +45,8 @@ export class StudentClassCreateComponent implements OnInit {
   gradeList!: Grade[];
   classList!: Class[];
   regionList!: Region[];
-  searchedRegion!: number;
-  keyword!: string;
+  searchedRegion: number = 0;
+  keyword: string = "";
   idList: string[] = [];
 
   submitForm: FormGroup = new FormGroup({
@@ -71,17 +71,17 @@ export class StudentClassCreateComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService, 
+    private classService: ClassService,
     private regionService: RegionService,
-    private studentService: StudentService, 
+    private studentService: StudentService,
     private studentClassService: StudentClassService,
     private toastrService: ToastrService,
-    private router: Router, 
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -99,7 +99,7 @@ export class StudentClassCreateComponent implements OnInit {
       this.regionList = data;
     });
 
-    this.studentService.fetchPageSegment(this.currentPage).subscribe({
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -108,7 +108,7 @@ export class StudentClassCreateComponent implements OnInit {
       }
     });
 
-    if(localStorage.getItem("status") === "created") {
+    if (localStorage.getItem("status") === "created") {
       this.toastrService.success(localStorage.getItem("message")!);
     }
 
@@ -117,7 +117,7 @@ export class StudentClassCreateComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -151,7 +151,7 @@ export class StudentClassCreateComponent implements OnInit {
     let academicYear = this.submitForm.get('academicYear')!.value;
     let grade = this.submitForm.get('grade')!.value;
     this.submitForm.get('class')!.setValue('');
-    if(academicYear == '' || grade == '') {
+    if (academicYear == '' || grade == '') {
       this.classList = [];
       return;
     }
@@ -162,7 +162,7 @@ export class StudentClassCreateComponent implements OnInit {
 
   submit() {
     this.submittedForm = true;
-    if(this.submitForm.invalid) {
+    if (this.submitForm.invalid) {
       return;
     }
 
@@ -171,8 +171,8 @@ export class StudentClassCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
-        if(this.idList.length == 0) {
+      if (result) {
+        if (this.idList.length == 0) {
           this.toastrService.warning("Please check students first.", "Not Finished Yet.");
           return;
         }
@@ -186,7 +186,7 @@ export class StudentClassCreateComponent implements OnInit {
         requestBody.studentClass.id = classId;
         this.studentClassService.save(requestBody, this.idList).subscribe({
           next: (res: DataResponse) => {
-            if(res.status == HttpCode.CREATED) {
+            if (res.status == HttpCode.CREATED) {
               localStorage.setItem("status", "created");
               let size = res.createdCount;
               let message = "Successfully Created ";
@@ -198,19 +198,19 @@ export class StudentClassCreateComponent implements OnInit {
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.CONFLICT) {
-              if(err.error.createdCount != 0) {
+            if (err.status == HttpErrorCode.CONFLICT) {
+              if (err.error.createdCount != 0) {
                 let size = err.error.createdCount;
                 let message = "Successfully Created ";
                 message += size > 1 ? size + " Records" : size + " Record";
                 this.toastrService.success(message);
               }
-              if(err.error.errorCount != 0) {
+              if (err.error.errorCount != 0) {
                 let size = err.error.errorCount;
                 let message = size > 1 ? size + " records already exist." : size + " record already exists.";
                 this.toastrService.warning("Duplicate Record.", message);
               }
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");
@@ -223,37 +223,37 @@ export class StudentClassCreateComponent implements OnInit {
     });
   }
 
-  checkUncheckAll() { 
+  checkUncheckAll() {
     let isExist = false;
     let index = 0;
 
-    for(let i = 0; i < this.sortedData.length; i++) {
+    for (let i = 0; i < this.sortedData.length; i++) {
       this.sortedData[i].check = this.isCheckAll;
-      for(let j = 0; j < this.idList.length; j++) {
-        if(this.idList[j] == this.sortedData[i].id) {
+      for (let j = 0; j < this.idList.length; j++) {
+        if (this.idList[j] == this.sortedData[i].id) {
           isExist = true;
           index = j;
           break;
         }
       }
-      if(!isExist) {
+      if (!isExist) {
         this.idList.push(this.sortedData[i].id);
       }
-      if(!this.sortedData[i].check) {
+      if (!this.sortedData[i].check) {
         this.idList.splice(index, 1);
-      } 
+      }
     }
   }
 
   isAllSelected(event: any, id: string) {
-    this.isCheckAll = this.sortedData.every(function(item: any) {
+    this.isCheckAll = this.sortedData.every(function (item: any) {
       return item.check == true;
     });
-    if(event.target.checked) {
+    if (event.target.checked) {
       this.idList.push(id);
     } else {
-      for(let i = 0; i < this.idList.length; i++) {
-        if(this.idList[i] == id) {
+      for (let i = 0; i < this.idList.length; i++) {
+        if (this.idList[i] == id) {
           this.idList.splice(i, 1);
         }
       }
@@ -267,31 +267,19 @@ export class StudentClassCreateComponent implements OnInit {
     this.idList = [];
     this.searchedRegion = this.form.get('region')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedRegion == 0 && this.keyword === '') {
-      this.studentService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
@@ -310,68 +298,40 @@ export class StudentClassCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedRegion == 0 && this.keyword === '')) {
-      this.studentService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          if(res.totalElements == 0) {this.currentPage = 0}
-          this.pageData = res;
-          let pageSize = res.pageSize;
-          let i = (this.currentPage - 1) * pageSize;
-          this.dataList = this.pageData.elements.map(data => {
-            let obj = {'index': ++i, ...data};
-            for(let j = 0; j < this.idList.length; j++) {
-              if(data.id == this.idList[j]) {
-                obj.check = true;
-              }
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        if (res.totalElements == 0) { this.currentPage = 0 }
+        this.pageData = res;
+        let pageSize = res.pageSize;
+        let i = (this.currentPage - 1) * pageSize;
+        this.dataList = this.pageData.elements.map(data => {
+          let obj = { 'index': ++i, ...data };
+          for (let j = 0; j < this.idList.length; j++) {
+            if (data.id == this.idList[j]) {
+              obj.check = true;
             }
-            return obj;
-          });
-          this.sortedData = [...this.dataList];
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-          this.isCheckAll = this.sortedData.every(function(item: any) {
-            return item.check == true;
-          });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          if(res.totalElements == 0) {this.currentPage = 0}
-          this.pageData = res;
-          let pageSize = res.pageSize;
-          let i = (this.currentPage - 1) * pageSize;
-          this.dataList = this.pageData.elements.map(data => {
-            let obj = {'index': ++i, ...data};
-            for(let j = 0; j < this.idList.length; j++) {
-              if(data.id == this.idList[j]) {
-                obj.check = true;
-              }
-            }
-            return obj;
-          });
-          this.sortedData = [...this.dataList];
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-          this.isCheckAll = this.sortedData.every(function(item: any) {
-            return item.check == true;
-          });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+          }
+          return obj;
+        });
+        this.sortedData = [...this.dataList];
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+        this.isCheckAll = this.sortedData.every(function (item: any) {
+          return item.check == true;
+        });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, 'check': false, ...data};
+      let obj = { 'index': ++i, 'check': false, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

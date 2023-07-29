@@ -43,11 +43,11 @@ export class StudentClassListComponent implements OnInit {
   academicYearList!: AcademicYear[];
   gradeList!: Grade[];
   classList!: String[];
-  searchedExamTitle!: number;
-  searchedAcademicYear!: number;
-  searchedGrade!: number;
-  searchedClass!: string;
-  keyword!: string;
+  searchedExamTitle: number = 0;
+  searchedAcademicYear: number = 0;
+  searchedGrade: number = 0;
+  searchedClass: string = "All";
+  keyword: string = "";
 
   form: FormGroup = new FormGroup({
     examTitle: new FormControl(0),
@@ -59,30 +59,30 @@ export class StudentClassListComponent implements OnInit {
       whiteSpaceValidator()
     ])
   });
-  
+
   constructor(
-    private examTitleService: ExamTitleService, 
+    private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService, 
-    private studentClassService: StudentClassService, 
-    private userService: UserService, 
+    private classService: ClassService,
+    private studentClassService: StudentClassService,
+    private userService: UserService,
     private toastrService: ToastrService,
-    private route: ActivatedRoute, 
-    private router: Router, 
+    private route: ActivatedRoute,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(params['currentPage'] != undefined && params['currentPage'] != 1) {
-        this.currentPage = params['currentPage'];
+      if (params['currentPage'] != undefined && params['currentPage'] != 1) {
+        this.currentPage = Number(params['currentPage']);
       }
       this.searchedExamTitle = params['searchedExamTitle'] == undefined ? 0 : params['searchedExamTitle'];
       this.searchedAcademicYear = params['searchedAcademicYear'] == undefined ? 0 : params['searchedAcademicYear'];
       this.searchedGrade = params['searchedGrade'] == undefined ? 0 : params['searchedGrade'];
-      this.searchedClass = params['searchedClass'] == undefined ? '' : params['searchedClass'];
-      this.keyword = params['keyword'] == undefined ? '': params['keyword'];
+      this.searchedClass = params['searchedClass'] == undefined ? 'All' : params['searchedClass'];
+      this.keyword = params['keyword'] == undefined ? '' : params['keyword'];
     });
 
     this.examTitleService.fetchAllByAuthorizedStatus().subscribe(data => {
@@ -98,38 +98,24 @@ export class StudentClassListComponent implements OnInit {
       this.classList = data;
     });
 
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === '' && this.keyword === '') {
-      this.studentClassService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.submitted = true;
-      this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-      this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
-      this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
-      this.form.get('grade')!.setValue(+this.searchedGrade);
-      this.form.get('class')!.setValue(this.searchedClass);
-      this.form.get('keyword')!.setValue(this.keyword);
-    }
+    this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
 
-    if(localStorage.getItem("status") === "updated") {
+    this.form.get('examTitle')!.setValue(+this.searchedExamTitle);
+    this.form.get('academicYear')!.setValue(+this.searchedAcademicYear);
+    this.form.get('grade')!.setValue(+this.searchedGrade);
+    this.form.get('class')!.setValue(this.searchedClass);
+    this.form.get('keyword')!.setValue(this.keyword);
+
+    if (localStorage.getItem("status") === "updated") {
       this.toastrService.success("Successfully Updated.");
-    } else if(localStorage.getItem("status") === "deleted") {
-      this.toastrService.success("Successfully Deleted.");
-    } 
+    }
 
     localStorage.removeItem("status");
     this.userInfo = this.userService.fetchUserProfileInfo();
@@ -137,7 +123,7 @@ export class StudentClassListComponent implements OnInit {
 
   sortData(sort: Sort) {
     let data = [...this.dataList];
-    
+
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -179,31 +165,19 @@ export class StudentClassListComponent implements OnInit {
     this.searchedGrade = this.form.get('grade')!.value;
     this.searchedClass = this.form.get('class')!.value;
     this.keyword = this.form.get('keyword')!.value.trim();
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
-    
-    if(this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '') {
-      this.studentClassService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else {
-      this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+
+    this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
   reset() {
@@ -213,45 +187,33 @@ export class StudentClassListComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    if(!this.submitted || (this.searchedExamTitle == 0 && this.searchedAcademicYear == 0 && this.searchedGrade == 0 && this.searchedClass === 'All' && this.keyword === '')) {
-      this.studentClassService.fetchPageSegment(this.currentPage).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    } else { 
-      this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-        next: (res: PaginationResponse) => {
-          this.setDataInCurrentPage(res);
-          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-        },
-        error: (err) => {
-          this.toastrService.error("Error message", "Something went wrong.");
-        }
-      });
-    }
+    this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        this.toastrService.error("Error message", "Something went wrong.");
+      }
+    });
   }
 
-  edit(id: string) {  
+  edit(id: string) {
     this.studentClassService.fetchById(id).subscribe({
       next: (res: StudentClass) => {
         let isArrived = res.arrival;
-        if(isArrived) {
-          this.toastrService.error("Already Arrived", "You cannot edit this.");
+        if (isArrived) {
+          this.toastrService.warning("Already Arrived", "You cannot edit this.");
         } else {
           this.router.navigate(['/app/student-class/edit'], {
             queryParams: {
-                id: id,
-                currentPage: this.currentPage,
-                searchedExamTitle: this.searchedExamTitle,
-                searchedAcademicYear: this.searchedAcademicYear,
-                searchedGrade: this.searchedGrade,
-                searchedClass: this.searchedClass,
-                keyword: this.keyword
+              id: id,
+              currentPage: this.currentPage,
+              searchedExamTitle: this.searchedExamTitle,
+              searchedAcademicYear: this.searchedAcademicYear,
+              searchedGrade: this.searchedGrade,
+              searchedClass: this.searchedClass,
+              keyword: this.keyword
             },
             skipLocationChange: true
           });
@@ -269,18 +231,39 @@ export class StudentClassListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+      if (result) {
         this.studentClassService.delete(id).subscribe({
           next: (res: ApiResponse) => {
-            if(res.status == HttpCode.OK) {
-              localStorage.setItem("status", "deleted");
-              location.reload();
+            if (res.status == HttpCode.OK) {
+              this.toastrService.success("Successfully Deleted.");
+              this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                    this.currentPage = res.totalPages;
+                    this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+                      next: (res: PaginationResponse) => {
+                        this.setDataInCurrentPage(res);
+                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                      },
+                      error: (err) => {
+                        this.toastrService.error("Error message", "Something went wrong.");
+                      }
+                    });
+                  } else {
+                    this.setDataInCurrentPage(res);
+                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                  }
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
+              });
             }
           },
           error: (err) => {
-            if(err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.error("Already Arrived", "You cannot delete this.");
-            } else if(err.status == HttpErrorCode.FORBIDDEN) {
+            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
+              this.toastrService.warning("Already Arrived", "You cannot delete this.");
+            } else if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to delete record", "Failed action");
@@ -294,9 +277,9 @@ export class StudentClassListComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.studentClassService.exportToExcel().subscribe({
+    this.studentClassService.exportToExcel(this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
       next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         let filename = 'student_class_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
@@ -308,12 +291,12 @@ export class StudentClassListComponent implements OnInit {
   }
 
   setDataInCurrentPage(res: PaginationResponse) {
-    if(res.totalElements == 0) {this.currentPage = 0}
+    if (res.totalElements == 0) { this.currentPage = 0 }
     this.pageData = res;
     let pageSize = res.pageSize;
     let i = (this.currentPage - 1) * pageSize;
     this.dataList = this.pageData.elements.map(data => {
-      let obj = {'index': ++i, ...data};
+      let obj = { 'index': ++i, ...data };
       return obj;
     });
     this.sortedData = [...this.dataList];

@@ -13,10 +13,6 @@ export class ArrivalService {
 
   constructor(private http: HttpClient) { }
 
-  fetchPageSegment(page: number, order: PaginationOrder = PaginationOrder.DESC, arrival: boolean): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/arrivals/segment?page=${page}&order=${order}&arrival=${arrival}`, { responseType: "json" });
-  }
-
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, arrival: boolean, examTitleId: number, academicYearId: number, gradeId: number, studentClass: string, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/arrivals/segment/search?page=${page}&order=${order}&arrival=${arrival}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&studentClass=${studentClass}&keyword=${keyword}`, { responseType: "json" });
   }
@@ -25,8 +21,8 @@ export class ArrivalService {
     return this.http.post<DataResponse>(`${environment.baseUrl}/arrivals?idList=${idList}`, { responseType: "json" });
   }
 
-  exportToExcel(): Observable<any> {
-    return this.http.get<any>(`${environment.baseUrl}/arrivals/export-to-excel`, { responseType: "arraybuffer" as "json" });
+  exportToExcel(examTitleId: number, academicYearId: number, gradeId: number, studentClass: string, keyword: string): Observable<any> {
+    return this.http.get<any>(`${environment.baseUrl}/arrivals/export-to-excel?examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&studentClass=${studentClass}&keyword=${keyword}`, { responseType: "arraybuffer" as "json" });
   }
   
 }
