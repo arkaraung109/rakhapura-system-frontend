@@ -14,7 +14,6 @@ import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
 import { PaginationResponse } from 'src/app/model/PaginationResponse';
 import { AcademicYearService } from 'src/app/service/academic-year.service';
-import { ClassService } from 'src/app/service/class.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
 import { StudentCardService } from 'src/app/service/student-card.service';
@@ -33,34 +32,36 @@ export class StudentCardCreateComponent implements OnInit {
   dataList: any[] = [];
   submitted = false;
   submittedForm = false;
+  valid = false;
   isCheckAll = false;
   @ViewChild(MatSort) sort!: MatSort;
   examTitleList!: ExamTitle[];
   academicYearList!: AcademicYear[];
   gradeList!: Grade[];
-  classList!: String[];
   searchedExamTitle: number = 0;
   searchedAcademicYear: number = 0;
   searchedGrade: number = 0;
-  searchedClass: string = "All";
-  keyword: string = "";
   idList: string[] = [];
 
-  submitForm: FormGroup = new FormGroup({
-    examHoldingTimes: new FormControl('', [
-      Validators.required,
-      Validators.pattern("^([1-9]|[1-9][0-9]|1[0-9][0-9]|200)$"),
-      whiteSpaceValidator()
+  form: FormGroup = new FormGroup({
+    academicYear: new FormControl('', [
+      Validators.required
+    ]),
+    examTitle: new FormControl('', [
+      Validators.required
+    ]),
+    grade: new FormControl('', [
+      Validators.required
     ])
   });
 
-  form: FormGroup = new FormGroup({
-    examTitle: new FormControl(0),
-    academicYear: new FormControl(0),
-    grade: new FormControl(0),
-    class: new FormControl('All'),
-    keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
+  submitForm: FormGroup = new FormGroup({
+    cardDate: new FormControl('', [
+      Validators.required
+    ]),
+    examHoldingTimes: new FormControl('', [
+      Validators.required,
+      Validators.pattern("^([1-9]|[1-9][0-9]|1[0-9][0-9]|200)$"),
       whiteSpaceValidator()
     ])
   });
@@ -69,7 +70,6 @@ export class StudentCardCreateComponent implements OnInit {
     private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
-    private classService: ClassService,
     private studentCardService: StudentCardService,
     private toastrService: ToastrService,
     private router: Router,
@@ -85,18 +85,6 @@ export class StudentCardCreateComponent implements OnInit {
     });
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;
-    });
-    this.classService.fetchDistinctAll().subscribe(data => {
-      this.classList = data;
-    });
-
-    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-      next: (res: PaginationResponse) => {
-        this.setDataInCurrentPage(res);
-      },
-      error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
-      }
     });
 
     if (localStorage.getItem("status_created") === "created") {
@@ -163,7 +151,9 @@ export class StudentCardCreateComponent implements OnInit {
           return;
         }
 
-        this.studentCardService.save(this.idList, this.submitForm.get('examHoldingTimes')!.value).subscribe({
+        let cardDate = this.submitForm.get('cardDate')!.value;
+        let examHoldingTimes = this.submitForm.get('examHoldingTimes')!.value
+        this.studentCardService.save(this.idList, cardDate, examHoldingTimes).subscribe({
           next: (res: DataResponse) => {
             if (res.status == HttpCode.CREATED) {
               localStorage.setItem("status_created", "created");
@@ -252,13 +242,12 @@ export class StudentCardCreateComponent implements OnInit {
     this.searchedExamTitle = this.form.get('examTitle')!.value;
     this.searchedAcademicYear = this.form.get('academicYear')!.value;
     this.searchedGrade = this.form.get('grade')!.value;
-    this.searchedClass = this.form.get('class')!.value;
-    this.keyword = this.form.get('keyword')!.value.trim();
     if (this.form.invalid) {
       return;
     }
 
-    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+    this.valid = true;
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -281,7 +270,7 @@ export class StudentCardCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
       next: (res: PaginationResponse) => {
         if (res.totalElements == 0) { this.currentPage = 0 }
         this.pageData = res;

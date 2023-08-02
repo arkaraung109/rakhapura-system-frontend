@@ -42,8 +42,8 @@ export class StudentExamListComponent implements OnInit {
   searchedGrade: number = 0;
   keyword: string = "";
   totalAnswered: number = 0;
-  totalNormalPassed: number = 0;
-  totalModeratePassed: number = 0;
+  totalPassed: number = 0;
+  totalModerated: number = 0;
   totalFailed: number = 0;
   tableHeader: TableHeader = new TableHeader();
 
@@ -99,8 +99,8 @@ export class StudentExamListComponent implements OnInit {
       next: (res: CustomPaginationResponse) => {
         this.setDataInCurrentPage(res);
         this.totalAnswered = res.totalAnswered;
-        this.totalNormalPassed = res.totalNormalPassed;
-        this.totalModeratePassed = res.totalModeratePassed;
+        this.totalPassed = res.totalPassed;
+        this.totalModerated = res.totalModerated;
         this.totalFailed = res.totalFailed;
         this.tableHeader = res.tableHeader;
       },

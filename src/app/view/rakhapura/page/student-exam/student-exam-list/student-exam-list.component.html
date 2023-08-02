@@ -72,7 +72,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
-                            <label>ခုံနံပါတ် (သို့) အမည် (သို့) အဖအမည်</label>
+                            <label>ခုံနံပါတ်/အမည်/အဖအမည်</label>
                         </div>
                         <div class="col-sm-6">
                             <input type="text" formControlName="keyword" class="fcontrol" autocomplete="off"
@@ -106,9 +106,9 @@
     <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden;">
         <div style="padding: 20px;" *ngIf="dataList.length != 0">
             <h3>ဖြေဆိုသူစုစုပေါင်း = {{totalAnswered}}</h3>
-            <h3>အောင်မြင်သူစုစုပေါင်း = {{totalNormalPassed + totalModeratePassed}} (သာမန် - {{totalNormalPassed}}၊
-                ကုစား - {{totalModeratePassed}})</h3>
+            <h3>အောင်မြင်သူစုစုပေါင်း = {{totalPassed}}</h3>
             <h3>ကျရှုံးသူစုစုပေါင်း = {{totalFailed}}</h3>
+            <h3>ကုစားသူစုစုပေါင်း = {{totalModerated}}</h3>
         </div>
         <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
             *ngIf="dataList.length != 0">Export to
@@ -123,7 +123,7 @@
                     <th *ngFor="let customExam of tableHeader.customExamList"
                         [attr.colspan]="customExam.examSubjectCount + 1">{{customExam.exam.subjectType.name}}</th>
                     <th style="width: 100px; vertical-align: middle;" rowspan="2">ဘာသာရပ်အားလုံးပေါင်း</th>
-                    <th style="width: 100px; vertical-align: middle;" rowspan="3">Status</th>
+                    <th style="width: 120px; vertical-align: middle;" rowspan="3">အောင်/ရှုံး/ကုစား</th>
                 </tr>
                 <tr>
                     <th *ngFor="let examSubject of tableHeader.examSubjectList">{{examSubject}}</th>
@@ -143,7 +143,7 @@
                     <td>{{element.attendance.studentClass.student.fatherName}}</td>
                     <ng-container *ngFor="let e of element.examResultList">
                         <td *ngFor="let s of e.subjectResultList"
-                            [ngStyle]="{'color' : s.status == 'fail' ? 'red' : 'pass' ? 'green' : 'orange'}">
+                            [ngStyle]="{'color' : s.status == 'fail' ? 'red' : s.status == 'pass' ? 'green' : s.status == 'moderation' ? 'orange' : 'black'}">
                             {{s.mark}}
                         </td>
                         <td [ngStyle]="{'color' : e.status == 'fail' ? 'red' : e.status == 'pass' ? 'green' : 'black'}">
@@ -154,7 +154,7 @@
                         {{element.overAllMark.mark}}</td>
                     <td *ngIf="element.status == 'fail'" style="color: red">ရှုံး</td>
                     <td *ngIf="element.status == 'pass'" style="color: green">အောင်</td>
-                    <td *ngIf="element.status == 'moderate'" style="color: orange">ကုစား</td>
+                    <td *ngIf="element.status == 'moderation'" style="color: orange">ကုစား</td>
                 </tr>
             </tbody>
         </table>

@@ -13,12 +13,12 @@ export class StudentCardService {
 
   constructor(private http: HttpClient) { }
 
-  fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, examTitleId: number, academicYearId: number, gradeId: number, studentClass: string, keyword: string): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-cards/segment/search?page=${page}&order=${order}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&studentClass=${studentClass}&keyword=${keyword}`, { responseType: "json" });
+  fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, examTitleId: number, academicYearId: number, gradeId: number): Observable<PaginationResponse> {
+    return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-cards/segment/search?page=${page}&order=${order}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}`, { responseType: "json" });
   }
 
-  save(idList: string[], examHoldingTimes: number): Observable<DataResponse> {
-    return this.http.post<DataResponse>(`${environment.baseUrl}/student-cards?idList=${idList}&examHoldingTimes=${examHoldingTimes}`, { responseType: "json" });
+  save(idList: string[], cardDate: string, examHoldingTimes: number): Observable<DataResponse> {
+    return this.http.post<DataResponse>(`${environment.baseUrl}/student-cards?idList=${idList}&cardDate=${cardDate}&examHoldingTimes=${examHoldingTimes}`, { responseType: "json" });
   }
 
 }

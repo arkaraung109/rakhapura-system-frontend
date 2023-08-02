@@ -236,7 +236,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာမေးပွဲဖြေဆိုခွင့်ကဒ်ထုတ်ခြင်း',
+        title: 'စာမေးပွဲဖြေဆိုခွင့်ကတ်ထုတ်ခြင်း',
         items: [
           {
             title: 'အသစ်ထုတ်ယူခြင်း',
@@ -264,8 +264,13 @@ export class MenuService {
         title: 'စာမေးပွဲအမှတ်စာရင်း',
         items: [
           {
-            title: 'ရမှတ်စာရင်းကြည့်ခြင်း',
+            title: 'အမှတ်စာရင်းကြည့်ခြင်း',
             url: '/app/student-exam/list',
+            permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
+          },
+          {
+            title: 'ရလဒ်စာရင်းကြည့်ခြင်း',
+            url: '/app/exam-result/list',
             permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
           },
           {
