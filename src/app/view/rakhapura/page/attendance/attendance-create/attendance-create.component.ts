@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { HttpCode } from 'src/app/common/HttpCode';
 import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
@@ -59,7 +58,6 @@ export class AttendanceCreateComponent implements OnInit {
     private subjectTypeService: SubjectTypeService,
     private attendanceService: AttendanceService,
     private toastrService: ToastrService,
-    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -82,12 +80,6 @@ export class AttendanceCreateComponent implements OnInit {
         this.toastrService.error("Error message", "Something went wrong.");
       }
     });
-
-    if (localStorage.getItem("status") === "created") {
-      this.toastrService.success(localStorage.getItem("message")!);
-    }
-
-    localStorage.removeItem("status");
   }
 
   sortData(sort: Sort) {
@@ -139,30 +131,42 @@ export class AttendanceCreateComponent implements OnInit {
         this.attendanceService.save(this.idList).subscribe({
           next: (res: DataResponse) => {
             if (res.status == HttpCode.CREATED) {
-              localStorage.setItem("status", "created");
               let size = res.createdCount;
               let message = "Successfully Make As Present ";
               message += size > 1 ? size + " Records" : size + " Record";
-              localStorage.setItem("message", message);
-              this.router.navigate(['/app/attendance/create']).then(() => {
-                location.reload();
+              this.toastrService.success(message);
+              this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                    this.currentPage = res.totalPages;
+                    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+                      next: (res: PaginationResponse) => {
+                        this.setDataInCurrentPage(res);
+                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                        this.idList = [];
+                        this.isCheckAll = false;
+                      },
+                      error: (err) => {
+                        this.toastrService.error("Error message", "Something went wrong.");
+                      }
+                    });
+                  } else {
+                    this.setDataInCurrentPage(res);
+                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                    this.idList = [];
+                    this.isCheckAll = false;
+                  }
+                  this.setDataInCurrentPage(res);
+                  this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
               });
             }
           },
           error: (err) => {
-            if (err.status === HttpErrorCode.NOT_FOUND) {
-              if (err.error.createdCount != 0) {
-                let size = err.error.createdCount;
-                let message = "Successfully Make As Present ";
-                message += size > 1 ? size + " Records" : size + " Record";
-                this.toastrService.success(message);
-              }
-              if (err.error.errorCount != 0) {
-                let size = err.error.errorCount;
-                let message = size > 1 ? size + " records do not exist." : size + " record does not exist.";
-                this.toastrService.warning("Not Found Record.", message);
-              }
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
+            if (err.status == HttpErrorCode.FORBIDDEN) {
               this.toastrService.error("Forbidden", "Failed action");
             } else {
               this.toastrService.error("Failed to save new record", "Failed action");

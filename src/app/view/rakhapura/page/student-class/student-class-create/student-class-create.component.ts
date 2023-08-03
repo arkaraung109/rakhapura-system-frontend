@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationResponse } from 'src/app/model/PaginationResponse';
 import { RegionService } from 'src/app/service/region.service';
@@ -81,7 +80,6 @@ export class StudentClassCreateComponent implements OnInit {
     private studentService: StudentService,
     private studentClassService: StudentClassService,
     private toastrService: ToastrService,
-    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -107,12 +105,6 @@ export class StudentClassCreateComponent implements OnInit {
         this.toastrService.error("Error message", "Something went wrong.");
       }
     });
-
-    if (localStorage.getItem("status") === "created") {
-      this.toastrService.success(localStorage.getItem("message")!);
-    }
-
-    localStorage.removeItem("status");
   }
 
   sortData(sort: Sort) {
@@ -187,13 +179,35 @@ export class StudentClassCreateComponent implements OnInit {
         this.studentClassService.save(requestBody, this.idList).subscribe({
           next: (res: DataResponse) => {
             if (res.status == HttpCode.CREATED) {
-              localStorage.setItem("status", "created");
               let size = res.createdCount;
               let message = "Successfully Created ";
               message += size > 1 ? size + " Records" : size + " Record";
-              localStorage.setItem("message", message);
-              this.router.navigate(['/app/student-class/create']).then(() => {
-                location.reload();
+              this.toastrService.success(message);
+              this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+                next: (res: PaginationResponse) => {
+                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                    this.currentPage = res.totalPages;
+                    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+                      next: (res: PaginationResponse) => {
+                        this.setDataInCurrentPage(res);
+                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                        this.idList = [];
+                        this.isCheckAll = false;
+                      },
+                      error: (err) => {
+                        this.toastrService.error("Error message", "Something went wrong.");
+                      }
+                    });
+                  } else {
+                    this.setDataInCurrentPage(res);
+                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                    this.idList = [];
+                    this.isCheckAll = false;
+                  }
+                },
+                error: (err) => {
+                  this.toastrService.error("Error message", "Something went wrong.");
+                }
               });
             }
           },
