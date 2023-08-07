@@ -1,10 +1,10 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
+import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { ExamSubject } from 'src/app/model/ExamSubject';
@@ -65,7 +65,7 @@ export class StudentExamCreateComponent implements OnInit {
     this.examService.fetchById(this.examId).subscribe(data => {
       this.subjectType = data.subjectType;
     });
-    this.examSubjectService.fetchAllByAuthorizedExam(this.examId).subscribe(data => {
+    this.examSubjectService.fetchAllAuthorizedByExam(this.examId).subscribe(data => {
       this.examSubjectList = data;
       this.examSubjectList.forEach(es => {
         let markGroup = this.fb.group({
@@ -103,7 +103,7 @@ export class StudentExamCreateComponent implements OnInit {
 
         this.studentExamService.save(studentExamList).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.CREATED) {
+            if (res.status == HttpStatusCode.Created) {
               localStorage.setItem("status", "created");
               this.router.navigate(['/app/attendance/detail'], {
                 queryParams: {
@@ -120,11 +120,7 @@ export class StudentExamCreateComponent implements OnInit {
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
-            } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
-            }
+            showError(this.toastrService, this.router, err);
           }
         });
       } else {

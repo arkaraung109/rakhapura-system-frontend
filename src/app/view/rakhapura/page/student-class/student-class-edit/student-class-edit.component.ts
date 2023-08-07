@@ -13,10 +13,10 @@ import { Grade } from 'src/app/model/Grade';
 import { Class } from 'src/app/model/Class';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { StudentClass } from 'src/app/model/StudentClass';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { StudentClassService } from 'src/app/service/student-class.service';
-import { HttpCode } from 'src/app/common/HttpCode';
+import { showError } from 'src/app/common/showError';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'app-student-class-edit',
@@ -118,8 +118,13 @@ export class StudentClassEditComponent implements OnInit {
       this.classList = [];
       return;
     }
-    this.classService.fetchAllFilteredByAcademicYearAndGrade(academicYear, grade).subscribe(data => {
-      this.classList = data;
+    this.classService.fetchAllFilteredByAcademicYearAndGrade(academicYear, grade).subscribe({
+      next: (data) => {
+        this.classList = data;
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
     });
   }
 
@@ -143,20 +148,29 @@ export class StudentClassEditComponent implements OnInit {
 
         this.studentClassService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.OK) {
+            if (res.status == HttpStatusCode.Ok) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.CONFLICT) {
-              this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
-            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.error("Already Arrived", "You cannot update this.");
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.NotFound) {
+              this.toastrService.warning("Record does not exist.", "Not Found");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              this.toastrService.warning("You cannot update this.", "Already Arrived");
+            } else if (err.status == HttpStatusCode.Conflict) {
+              this.toastrService.warning("Record already exists.", "Duplication");
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to update new record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });

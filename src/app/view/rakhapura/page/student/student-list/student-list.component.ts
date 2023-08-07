@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
@@ -17,7 +16,8 @@ import { format } from 'date-fns';
 import { PaginationOrder } from 'src/app/common/PaginationOrder';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 import { Region } from 'src/app/model/Region';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
+import { showError } from 'src/app/common/showError';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'app-student-list',
@@ -73,7 +73,7 @@ export class StudentListComponent implements OnInit {
         this.setDataInCurrentPage(res);
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
 
@@ -135,7 +135,7 @@ export class StudentListComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -153,7 +153,7 @@ export class StudentListComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -179,19 +179,19 @@ export class StudentListComponent implements OnInit {
       if (result) {
         this.studentService.delete(id).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.OK) {
+            if (res.status == HttpStatusCode.Ok) {
               this.toastrService.success("Successfully Deleted.");
               this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
                     this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-                      next: (res: PaginationResponse) => {
-                        this.setDataInCurrentPage(res);
+                      next: (response: PaginationResponse) => {
+                        this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
                       },
                       error: (err) => {
-                        this.toastrService.error("Error message", "Something went wrong.");
+                        showError(this.toastrService, this.router, err);
                       }
                     });
                   } else {
@@ -200,18 +200,25 @@ export class StudentListComponent implements OnInit {
                   }
                 },
                 error: (err) => {
-                  this.toastrService.error("Error message", "Something went wrong.");
+                  showError(this.toastrService, this.router, err);
                 }
               });
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.warning("Please delete student from assigned class at first.", "Already Assigned in Class");
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              this.toastrService.warning("Please delete student from assigned class first.", "Already Assigned in Class");
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to delete record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });
@@ -241,8 +248,8 @@ export class StudentListComponent implements OnInit {
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
       },
-      error: (error) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
       }
     });
   }

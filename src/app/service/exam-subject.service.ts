@@ -18,7 +18,7 @@ export class ExamSubjectService {
     return this.http.get<ExamSubject>(`${environment.baseUrl}/exam-subjects/${id}`, { responseType: "json" });
   }
 
-  fetchAllByAuthorizedExam(id: number): Observable<ExamSubject[]> {
+  fetchAllAuthorizedByExam(id: number): Observable<ExamSubject[]> {
     return this.http.get<ExamSubject[]>(`${environment.baseUrl}/exam-subjects/exam/${id}`, { responseType: "json" });
   }
 

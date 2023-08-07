@@ -1,3 +1,4 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,9 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { PaginationOrder } from 'src/app/common/PaginationOrder';
+import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { ApiResponse } from 'src/app/model/ApiResponse';
@@ -106,7 +106,7 @@ export class StudentHostelListComponent implements OnInit {
         this.setDataInCurrentPage(res);
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
 
@@ -178,7 +178,7 @@ export class StudentHostelListComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -196,7 +196,7 @@ export class StudentHostelListComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -206,7 +206,7 @@ export class StudentHostelListComponent implements OnInit {
       next: (res: StudentClass) => {
         let isUsed = res.regNo != null && res.regSeqNo != 0;
         if (isUsed) {
-          this.toastrService.warning("Already Used For Student Card", "You cannot edit this.");
+          this.toastrService.warning("You cannot edit this.", "Already Used For Student Card");
         } else {
           this.router.navigate(['/app/student-hostel/edit'], {
             queryParams: {
@@ -223,7 +223,7 @@ export class StudentHostelListComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -237,19 +237,19 @@ export class StudentHostelListComponent implements OnInit {
       if (result) {
         this.studentHostelService.delete(id).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.OK) {
+            if (res.status == HttpStatusCode.Ok) {
               this.toastrService.success("Successfully Deleted.");
               this.studentHostelService.fetchPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedHostel, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
                     this.studentHostelService.fetchPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedHostel, this.keyword).subscribe({
-                      next: (res: PaginationResponse) => {
-                        this.setDataInCurrentPage(res);
+                      next: (response: PaginationResponse) => {
+                        this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
                       },
                       error: (err) => {
-                        this.toastrService.error("Error message", "Something went wrong.");
+                        showError(this.toastrService, this.router, err);
                       }
                     });
                   } else {
@@ -258,18 +258,25 @@ export class StudentHostelListComponent implements OnInit {
                   }
                 },
                 error: (err) => {
-                  this.toastrService.error("Error message", "Something went wrong.");
+                  showError(this.toastrService, this.router, err);
                 }
               });
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.warning("Already Used For Student Card", "You cannot delete this.");
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              this.toastrService.warning("You cannot delete this.", "Already Used For Student Card");
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to delete record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });
@@ -287,8 +294,8 @@ export class StudentHostelListComponent implements OnInit {
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
       },
-      error: (error) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
       }
     });
   }

@@ -1,11 +1,12 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { PaginationOrder } from 'src/app/common/PaginationOrder';
+import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { DataResponse } from 'src/app/model/DataResponse';
@@ -62,6 +63,7 @@ export class ArrivalCreateComponent implements OnInit {
     private classService: ClassService,
     private arrivalService: ArrivalService,
     private toastrService: ToastrService,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -84,7 +86,7 @@ export class ArrivalCreateComponent implements OnInit {
         this.setDataInCurrentPage(res);
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -133,13 +135,13 @@ export class ArrivalCreateComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (this.idList.length == 0) {
-          this.toastrService.warning("Please check students first.", "Not Finished Yet.");
+          this.toastrService.warning("Please check students first.", "Not Finished Yet");
           return;
         }
 
         this.arrivalService.save(this.idList).subscribe({
           next: (res: DataResponse) => {
-            if (res.status == HttpCode.CREATED) {
+            if (res.status == HttpStatusCode.Created) {
               let size = res.createdCount;
               let message = "Successfully Arrived ";
               message += size > 1 ? size + " Records" : size + " Record";
@@ -149,14 +151,14 @@ export class ArrivalCreateComponent implements OnInit {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
                     this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-                      next: (res: PaginationResponse) => {
-                        this.setDataInCurrentPage(res);
+                      next: (response: PaginationResponse) => {
+                        this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
                         this.idList = [];
                         this.isCheckAll = false;
                       },
                       error: (err) => {
-                        this.toastrService.error("Error message", "Something went wrong.");
+                        showError(this.toastrService, this.router, err);
                       }
                     });
                   } else {
@@ -167,17 +169,13 @@ export class ArrivalCreateComponent implements OnInit {
                   }
                 },
                 error: (err) => {
-                  this.toastrService.error("Error message", "Something went wrong.");
+                  showError(this.toastrService, this.router, err);
                 }
               });
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
-            } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
-            }
+            showError(this.toastrService, this.router, err);
           }
         });
       } else {
@@ -243,7 +241,7 @@ export class ArrivalCreateComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -277,7 +275,7 @@ export class ArrivalCreateComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }

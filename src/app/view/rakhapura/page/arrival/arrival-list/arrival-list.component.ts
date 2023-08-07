@@ -1,10 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSort, Sort } from '@angular/material/sort';
+import { Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationOrder } from 'src/app/common/PaginationOrder';
+import { showError } from 'src/app/common/showError';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
 import { ExamTitle } from 'src/app/model/ExamTitle';
@@ -60,6 +62,7 @@ export class ArrivalListComponent implements OnInit {
     private classService: ClassService,
     private arrivalService: ArrivalService,
     private userService: UserService,
+    private router: Router,
     private toastrService: ToastrService,
   ) { }
 
@@ -82,7 +85,7 @@ export class ArrivalListComponent implements OnInit {
         this.setDataInCurrentPage(res);
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
 
@@ -143,7 +146,7 @@ export class ArrivalListComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -161,7 +164,7 @@ export class ArrivalListComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -174,8 +177,8 @@ export class ArrivalListComponent implements OnInit {
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
       },
-      error: (error) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
       }
     });
   }

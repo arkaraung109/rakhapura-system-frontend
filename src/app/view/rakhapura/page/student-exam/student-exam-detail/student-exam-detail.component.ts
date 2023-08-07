@@ -1,10 +1,10 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
+import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
@@ -83,13 +83,7 @@ export class StudentExamDetailComponent implements OnInit {
       }
       this.dataList = [...this.sortedData];
     });
-
-
-    if (localStorage.getItem("status") === "moderated") {
-      this.toastrService.success("Successfully Moderated");
-    }
-
-    localStorage.removeItem("status");
+    
     this.userInfo = this.userService.fetchUserProfileInfo();
   }
 
@@ -138,30 +132,29 @@ export class StudentExamDetailComponent implements OnInit {
         requestBody.id = studentExamId;
         this.studentExamModerateService.moderate(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.CREATED) {
-              localStorage.setItem("status", "moderated");
-              this.router.navigate(['app/attendance/detail'], {
-                queryParams: {
-                  attendanceId: this.attendanceId,
-                  examId: this.examId,
-                  studentClassId: this.studentClassId,
-                  currentPage: this.currentPage,
-                  searchedExamTitle: this.searchedExamTitle,
-                  searchedAcademicYear: this.searchedAcademicYear,
-                  searchedGrade: this.searchedGrade,
-                  keyword: this.keyword,
-                  searched: this.searched
-                },
-                skipLocationChange: true
+            if (res.status == HttpStatusCode.Created) {
+              this.studentExamService.fetchByAttendance(this.attendanceId).subscribe(data => {
+                this.sortedData = [...data];
+                for (let i = 0; i < this.sortedData.length; i++) {
+                  this.studentExamModerateService.fetchFilteredByExamSubjectAndAttendance(this.sortedData[i].examSubject.id, this.attendanceId).subscribe(studentExamModerate => {
+                    this.sortedData[i].index = i + 1;
+                    if (!this.sortedData[i].pass) {
+                      this.sortedData[i].result = 'ရှုံး';
+                    } else {
+                      this.sortedData[i].result = 'အောင်';
+                      if (studentExamModerate != null) {
+                        this.sortedData[i].result = 'ကုစား';
+                      }
+                    }
+                    this.sortedData[i].moderatedMark = studentExamModerate?.mark;
+                  });
+                }
+                this.dataList = [...this.sortedData];
               });
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
-            } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
-            }
+            showError(this.toastrService, this.router, err);
           }
         });
       } else {

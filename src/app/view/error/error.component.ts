@@ -1,6 +1,6 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 
 @Component({
   selector: 'app-error',
@@ -9,7 +9,7 @@ import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 })
 export class ErrorComponent implements OnInit {
 
-  errorCode: string = `${HttpErrorCode.INTERNAL_SERVER_ERROR}`;
+  errorCode: string = `${HttpStatusCode.InternalServerError}`;
   errorMessage: string = "Something went wrong";
   returnRoute: string = '/';
 
@@ -23,32 +23,32 @@ export class ErrorComponent implements OnInit {
       this.errorCode = params.get('errorCode')!.toString();
 
       switch(this.errorCode) {
-        case `${HttpErrorCode.UNAUTHORIZED}`: {
-          this.errorCode = `${HttpErrorCode.UNAUTHORIZED}`;
+        case `${HttpStatusCode.Unauthorized}`: {
+          this.errorCode = `${HttpStatusCode.Unauthorized}`;
           this.errorMessage = "Session Expired! Please login again.";
           this.returnRoute = '/auth';
           break;
         }
-        case `${HttpErrorCode.FORBIDDEN}`: {
-          this.errorCode = `${HttpErrorCode.FORBIDDEN}`;
+        case `${HttpStatusCode.Forbidden}`: {
+          this.errorCode = `${HttpStatusCode.Forbidden}`;
           this.errorMessage = "Forbidden access! You have no permission.";
           this.returnRoute = '/auth';
           break;
         }
-        case `${HttpErrorCode.NOT_FOUND}`: {
-          this.errorCode = `${HttpErrorCode.NOT_FOUND}`;
+        case `${HttpStatusCode.NotFound}`: {
+          this.errorCode = `${HttpStatusCode.NotFound}`;
           this.errorMessage = "Page not found";
           this.returnRoute = '/';
           break;
         }
-        case `${HttpErrorCode.BAD_REQUEST}`: {
-          this.errorCode = `${HttpErrorCode.BAD_REQUEST}`;
+        case `${HttpStatusCode.BadRequest}`: {
+          this.errorCode = `${HttpStatusCode.BadRequest}`;
           this.errorMessage = "Bad request";
           this.returnRoute = '/';
           break;
         }
-        case `${HttpErrorCode.SERVICE_UNAVAILABLE}`: {
-          this.errorCode = `${HttpErrorCode.SERVICE_UNAVAILABLE}`;
+        case `${HttpStatusCode.ServiceUnavailable}`: {
+          this.errorCode = `${HttpStatusCode.ServiceUnavailable}`;
           this.errorMessage = "Sorry this service is currently unavailable";
           this.returnRoute = '/';
           break;

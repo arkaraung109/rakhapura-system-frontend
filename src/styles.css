@@ -230,6 +230,7 @@ form{
 	text-align: center;
 	position: fixed;
 	height: 100%;
+	width: 100%;
 }
 .loginp h2{
 	color:#ff6600;

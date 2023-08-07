@@ -1,10 +1,10 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
+import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { ExamSubject } from 'src/app/model/ExamSubject';
@@ -66,7 +66,7 @@ export class StudentExamEditComponent implements OnInit {
     this.examService.fetchById(this.examId).subscribe(data => {
       this.subjectType = data.subjectType;
     });
-    this.examSubjectService.fetchAllByAuthorizedExam(this.examId).subscribe(data => {
+    this.examSubjectService.fetchAllAuthorizedByExam(this.examId).subscribe(data => {
       this.examSubjectList = data;
       for (let i = 0; i < this.examSubjectList.length; i++) {
         let markGroup = this.fb.group({
@@ -112,7 +112,7 @@ export class StudentExamEditComponent implements OnInit {
 
         this.studentExamService.update(studentExamList).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.OK) {
+            if (res.status == HttpStatusCode.Ok) {
               localStorage.setItem("status", "updated");
               this.router.navigate(['/app/attendance/detail'], {
                 queryParams: {
@@ -129,11 +129,7 @@ export class StudentExamEditComponent implements OnInit {
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
-            } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
-            }
+            showError(this.toastrService, this.router, err);
           }
         });
       } else {

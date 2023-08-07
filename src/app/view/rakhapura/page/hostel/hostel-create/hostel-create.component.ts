@@ -3,14 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { HttpCode } from 'src/app/common/HttpCode';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { Hostel } from 'src/app/model/Hostel';
 import { HostelService } from 'src/app/service/hostel.service';
 import { SaveAnotherDialogComponent } from 'src/app/save-another-dialog/save-another-dialog.component';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'app-hostel-create',
@@ -68,7 +67,7 @@ export class HostelCreateComponent {
 
         this.hostelService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.CREATED) {
+            if (res.status == HttpStatusCode.Created) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
@@ -85,12 +84,19 @@ export class HostelCreateComponent {
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.CONFLICT) {
-              this.toastrService.warning("Duplicate record.", "Record already exists.");
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.Conflict) {
+              this.toastrService.warning("Record already exists.", "Duplication");
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });

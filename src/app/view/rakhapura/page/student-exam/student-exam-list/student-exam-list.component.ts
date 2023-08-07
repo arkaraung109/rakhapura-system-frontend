@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
+import { showError } from 'src/app/common/showError';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { CustomPaginationResponse } from 'src/app/model/CustomPaginationResponse';
 import { ExamTitle } from 'src/app/model/ExamTitle';
@@ -69,6 +71,7 @@ export class StudentExamListComponent implements OnInit {
     private gradeService: GradeService,
     private studentExamService: StudentExamService,
     private toastrService: ToastrService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -105,7 +108,7 @@ export class StudentExamListComponent implements OnInit {
         this.tableHeader = res.tableHeader;
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -118,7 +121,7 @@ export class StudentExamListComponent implements OnInit {
         this.setDataInCurrentPage(res);
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -135,8 +138,8 @@ export class StudentExamListComponent implements OnInit {
         saveAs(file, filename);
         this.toastrService.success("Successfully Exported.");
       },
-      error: (error) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
       }
     });
   }

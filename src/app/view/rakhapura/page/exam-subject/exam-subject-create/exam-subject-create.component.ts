@@ -8,9 +8,7 @@ import { AcademicYearService } from 'src/app/service/academic-year.service';
 import { ExamTitle } from 'src/app/model/ExamTitle';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { ApiResponse } from 'src/app/model/ApiResponse';
-import { HttpCode } from 'src/app/common/HttpCode';
 import { SubjectType } from 'src/app/model/SubjectType';
 import { SubjectService } from 'src/app/service/subject.service';
 import { ExamSubject } from 'src/app/model/ExamSubject';
@@ -19,6 +17,8 @@ import { ExamService } from 'src/app/service/exam.service';
 import { lessThanValidator } from 'src/app/validator/less-than.validator';
 import { Subject } from 'src/app/model/Subject';
 import { SaveAnotherDialogComponent } from 'src/app/save-another-dialog/save-another-dialog.component';
+import { showError } from 'src/app/common/showError';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'app-exam-subject-create',
@@ -81,11 +81,16 @@ export class ExamSubjectCreateComponent implements OnInit {
       this.subjectTypeList = [];
       return;
     }
-    this.examService.fetchAllFilteredByAcademicYearAndExamTitle(academicYear, examTitle).subscribe(data => {
-      this.subjectTypeList = [];
-      data.forEach(d => {
-        this.subjectTypeList.push(d.subjectType);
-      })
+    this.examService.fetchAllFilteredByAcademicYearAndExamTitle(academicYear, examTitle).subscribe({
+      next: (data) => {
+        this.subjectTypeList = [];
+        data.forEach(d => {
+          this.subjectTypeList.push(d.subjectType);
+        })
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
     });
   }
 
@@ -111,7 +116,7 @@ export class ExamSubjectCreateComponent implements OnInit {
 
         this.examSubjectService.save(requestBody).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.CREATED) {
+            if (res.status == HttpStatusCode.Created) {
               const dialogRef = this.matDialog.open(SaveAnotherDialogComponent, {
                 width: '300px'
               });
@@ -129,25 +134,32 @@ export class ExamSubjectCreateComponent implements OnInit {
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              if (err.error.message === "passMarkExceeded") {
-                this.toastrService.warning("Exceeded record.", "Total sum of pass mark is exceeded");
-              } else if (err.error.message === "markPercentageExceeded") {
-                this.toastrService.warning("Exceeded record.", "Total sum of mark percentage is exceeded");
-              } else if (err.error.message === "passMarkExceeded&markPercentageExceeded") {
-                this.toastrService.warning("Exceeded record.", "Total sum of pass mark is exceeded");
-                this.toastrService.warning("Exceeded record.", "Total sum of mark percentage is exceeded");
-              }
-            } else if (err.status == HttpErrorCode.CONFLICT) {
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.Conflict) {
               if (err.error.message === 'used object cannot be created.') {
-                this.toastrService.warning("Already Used This Exam For Mark Entry.", "You cannot add anymore.");
+                this.toastrService.warning("You cannot add anymore.", "Already Used For Mark Entry");
               } else {
-                this.toastrService.warning("Duplicate record.", "Record already exists.");
+                this.toastrService.warning("Record already exists.", "Duplication");
               }
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              if (err.error.message === "passMarkExceeded") {
+                this.toastrService.warning("Total sum of pass mark is exceeded.", "Exceeded");
+              } else if (err.error.message === "markPercentageExceeded") {
+                this.toastrService.warning("Total sum of mark percentage is exceeded.", "Exceeded");
+              } else if (err.error.message === "passMarkExceeded&markPercentageExceeded") {
+                this.toastrService.warning("Total sum of pass mark is exceeded.", "Exceeded");
+                this.toastrService.warning("Total sum of mark percentage is exceeded.", "Exceeded");
+              }
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });

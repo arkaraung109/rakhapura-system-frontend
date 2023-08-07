@@ -5,13 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { StudentClass } from 'src/app/model/StudentClass';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { StudentClassService } from 'src/app/service/student-class.service';
-import { HttpCode } from 'src/app/common/HttpCode';
 import { Hostel } from 'src/app/model/Hostel';
 import { HostelService } from 'src/app/service/hostel.service';
 import { StudentHostelService } from 'src/app/service/student-hostel.service';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'app-student-hostel-edit',
@@ -99,18 +98,27 @@ export class StudentHostelEditComponent implements OnInit {
 
         this.studentHostelService.update(requestBody, this.id).subscribe({
           next: (res: ApiResponse) => {
-            if (res.status == HttpCode.OK) {
+            if (res.status == HttpStatusCode.Ok) {
               localStorage.setItem("status", "updated");
               this.back();
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
-            } else if (err.status == HttpErrorCode.NOT_ACCEPTABLE) {
-              this.toastrService.error("Already Used For Student Card", "You cannot update this.");
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.NotFound) {
+              this.toastrService.warning("Record does not exist.", "Not Found");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              this.toastrService.warning("You cannot update this.", "Already Used For Student Card");
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to update new record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });

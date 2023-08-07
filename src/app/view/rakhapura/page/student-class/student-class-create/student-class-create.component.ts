@@ -19,10 +19,11 @@ import { Grade } from 'src/app/model/Grade';
 import { Class } from 'src/app/model/Class';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { StudentClass } from 'src/app/model/StudentClass';
-import { HttpErrorCode } from 'src/app/common/HttpErrorCode';
 import { StudentClassService } from 'src/app/service/student-class.service';
-import { HttpCode } from 'src/app/common/HttpCode';
 import { DataResponse } from 'src/app/model/DataResponse';
+import { Router } from '@angular/router';
+import { showError } from 'src/app/common/showError';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'app-student-class-create',
@@ -80,6 +81,7 @@ export class StudentClassCreateComponent implements OnInit {
     private studentService: StudentService,
     private studentClassService: StudentClassService,
     private toastrService: ToastrService,
+    private router: Router,
     private matDialog: MatDialog
   ) { }
 
@@ -102,7 +104,7 @@ export class StudentClassCreateComponent implements OnInit {
         this.setDataInCurrentPage(res);
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -147,8 +149,13 @@ export class StudentClassCreateComponent implements OnInit {
       this.classList = [];
       return;
     }
-    this.classService.fetchAllFilteredByAcademicYearAndGrade(academicYear, grade).subscribe(data => {
-      this.classList = data;
+    this.classService.fetchAllFilteredByAcademicYearAndGrade(academicYear, grade).subscribe({
+      next: (data) => {
+        this.classList = data;
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
     });
   }
 
@@ -165,7 +172,7 @@ export class StudentClassCreateComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (this.idList.length == 0) {
-          this.toastrService.warning("Please check students first.", "Not Finished Yet.");
+          this.toastrService.warning("Please check students first.", "Not Finished Yet");
           return;
         }
         let examTitleId = this.submitForm.get('examTitle')!.value;
@@ -178,7 +185,7 @@ export class StudentClassCreateComponent implements OnInit {
         requestBody.studentClass.id = classId;
         this.studentClassService.save(requestBody, this.idList).subscribe({
           next: (res: DataResponse) => {
-            if (res.status == HttpCode.CREATED) {
+            if (res.status == HttpStatusCode.Created) {
               let size = res.createdCount;
               let message = "Successfully Created ";
               message += size > 1 ? size + " Records" : size + " Record";
@@ -188,14 +195,14 @@ export class StudentClassCreateComponent implements OnInit {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
                     this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-                      next: (res: PaginationResponse) => {
-                        this.setDataInCurrentPage(res);
+                      next: (response: PaginationResponse) => {
+                        this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
                         this.idList = [];
                         this.isCheckAll = false;
                       },
                       error: (err) => {
-                        this.toastrService.error("Error message", "Something went wrong.");
+                        showError(this.toastrService, this.router, err);
                       }
                     });
                   } else {
@@ -206,13 +213,18 @@ export class StudentClassCreateComponent implements OnInit {
                   }
                 },
                 error: (err) => {
-                  this.toastrService.error("Error message", "Something went wrong.");
+                  showError(this.toastrService, this.router, err);
                 }
               });
             }
           },
           error: (err) => {
-            if (err.status == HttpErrorCode.CONFLICT) {
+            if(err.status == HttpStatusCode.Unauthorized) {
+              localStorage.clear();
+              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
+            } else if (err.status == HttpStatusCode.Forbidden) {
+              this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.Conflict) {
               if (err.error.createdCount != 0) {
                 let size = err.error.createdCount;
                 let message = "Successfully Created ";
@@ -222,12 +234,14 @@ export class StudentClassCreateComponent implements OnInit {
               if (err.error.errorCount != 0) {
                 let size = err.error.errorCount;
                 let message = size > 1 ? size + " records already exist." : size + " record already exists.";
-                this.toastrService.warning("Duplicate Record.", message);
+                this.toastrService.warning(message, "Duplication");
               }
-            } else if (err.status == HttpErrorCode.FORBIDDEN) {
-              this.toastrService.error("Forbidden", "Failed action");
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastrService.error("Failed to save new record", "Failed action");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });
@@ -291,7 +305,7 @@ export class StudentClassCreateComponent implements OnInit {
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }
@@ -334,7 +348,7 @@ export class StudentClassCreateComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.toastrService.error("Error message", "Something went wrong.");
+        showError(this.toastrService, this.router, err);
       }
     });
   }

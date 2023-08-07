@@ -23,7 +23,7 @@ import { MatSortModule } from '@angular/material/sort';
     AcademicYearRoutingModule,
     ShareModule,
     ReactiveFormsModule,
-    MatSortModule,
+    MatSortModule
   ]
 })
 export class AcademicYearModule { }

@@ -48,7 +48,7 @@ import { SaveAnotherDialogComponent } from './save-another-dialog/save-another-d
   ],
   providers: [
     MenuService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

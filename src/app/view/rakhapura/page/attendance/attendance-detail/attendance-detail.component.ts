@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { showError } from 'src/app/common/showError';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
 import { StudentClass } from 'src/app/model/StudentClass';
 import { AttendanceService } from 'src/app/service/attendance.service';
@@ -127,85 +128,100 @@ export class AttendanceDetailComponent implements OnInit {
   }
 
   navigateToSaveForm(attendanceId: string, examId: number) {
-    this.studentExamService.fetchByAttendance(attendanceId).subscribe(data => {
-      this.examService.fetchById(examId).subscribe(exam => {
-        this.examSubjectService.fetchAllByAuthorizedExam(exam.id).subscribe(examSubjectList => {
-          for (let examSubject of examSubjectList) {
-            this.totalPassMark += examSubject.passMark;
-            this.totalMarkPercentage += examSubject.markPercentage;
-          }
-          if (this.totalPassMark < exam.passMark) {
-            this.toastrService.warning("Action Needed", "Sum of pass mark of subjects does not match with its exam's pass mark.");
-          }
-          if (this.totalMarkPercentage < exam.markPercentage) {
-            this.toastrService.warning("Action Needed", "Sum of mark percentage of subjects does not match with its exam's mark percentage.");
-          }
-          if (data.length != 0) {
-            this.toastrService.warning("Already Created", "You cannot save anymore.");
-          }
-          if (this.totalPassMark == exam.passMark && this.totalMarkPercentage == exam.markPercentage && data.length == 0) {
-            this.router.navigate(['app/student-exam/create'], {
-              queryParams: {
-                attendanceId: attendanceId,
-                examId: examId,
-                studentClassId: this.studentClassId,
-                currentPage: this.currentPage,
-                searchedExamTitle: this.searchedExamTitle,
-                searchedAcademicYear: this.searchedAcademicYear,
-                searchedGrade: this.searchedGrade,
-                keyword: this.keyword,
-                searched: this.searched
-              },
-              skipLocationChange: true
-            });
-          }
+    this.studentExamService.fetchByAttendance(attendanceId).subscribe({
+      next: (data) => {
+        this.examService.fetchById(examId).subscribe(exam => {
+          this.examSubjectService.fetchAllAuthorizedByExam(exam.id).subscribe(examSubjectList => {
+            for (let examSubject of examSubjectList) {
+              this.totalPassMark += examSubject.passMark;
+              this.totalMarkPercentage += examSubject.markPercentage;
+            }
+            if (this.totalPassMark < exam.passMark) {
+              this.toastrService.warning("Sum of pass mark of subjects does not match with its exam's pass mark.", "Action Needed");
+            }
+            if (this.totalMarkPercentage < exam.markPercentage) {
+              this.toastrService.warning("Sum of mark percentage of subjects does not match with its exam's mark percentage.", "Action Needed");
+            }
+            if (data.length != 0) {
+              this.toastrService.warning("You cannot save anymore.", "Already Created");
+            }
+            if (this.totalPassMark == exam.passMark && this.totalMarkPercentage == exam.markPercentage && data.length == 0) {
+              this.router.navigate(['app/student-exam/create'], {
+                queryParams: {
+                  attendanceId: attendanceId,
+                  examId: examId,
+                  studentClassId: this.studentClassId,
+                  currentPage: this.currentPage,
+                  searchedExamTitle: this.searchedExamTitle,
+                  searchedAcademicYear: this.searchedAcademicYear,
+                  searchedGrade: this.searchedGrade,
+                  keyword: this.keyword,
+                  searched: this.searched
+                },
+                skipLocationChange: true
+              });
+            }
+          });
         });
-      });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
     });
   }
 
   navigateToEditForm(attendanceId: string, examId: number) {
-    this.studentExamService.fetchByAttendance(attendanceId).subscribe(data => {
-      if (data.length == 0) {
-        this.toastrService.warning("Please add score in this exam first.");
-      } else {
-        this.router.navigate(['app/student-exam/edit'], {
-          queryParams: {
-            attendanceId: attendanceId,
-            examId: examId,
-            studentClassId: this.studentClassId,
-            currentPage: this.currentPage,
-            searchedExamTitle: this.searchedExamTitle,
-            searchedAcademicYear: this.searchedAcademicYear,
-            searchedGrade: this.searchedGrade,
-            keyword: this.keyword,
-            searched: this.searched
-          },
-          skipLocationChange: true
-        });
+    this.studentExamService.fetchByAttendance(attendanceId).subscribe({
+      next: (data) => {
+        if (data.length == 0) {
+          this.toastrService.warning("Please add score in this exam first.", "Action Needed");
+        } else {
+          this.router.navigate(['app/student-exam/edit'], {
+            queryParams: {
+              attendanceId: attendanceId,
+              examId: examId,
+              studentClassId: this.studentClassId,
+              currentPage: this.currentPage,
+              searchedExamTitle: this.searchedExamTitle,
+              searchedAcademicYear: this.searchedAcademicYear,
+              searchedGrade: this.searchedGrade,
+              keyword: this.keyword,
+              searched: this.searched
+            },
+            skipLocationChange: true
+          });
+        }
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
       }
     });
   }
 
   navigateToDetail(attendanceId: string, examId: number) {
-    this.studentExamService.fetchByAttendance(attendanceId).subscribe(data => {
-      if (data.length == 0) {
-        this.toastrService.warning("Please add score in this exam first.");
-      } else {
-        this.router.navigate(['app/student-exam/detail'], {
-          queryParams: {
-            attendanceId: attendanceId,
-            examId: examId,
-            studentClassId: this.studentClassId,
-            currentPage: this.currentPage,
-            searchedExamTitle: this.searchedExamTitle,
-            searchedAcademicYear: this.searchedAcademicYear,
-            searchedGrade: this.searchedGrade,
-            keyword: this.keyword,
-            searched: this.searched
-          },
-          skipLocationChange: true
-        });
+    this.studentExamService.fetchByAttendance(attendanceId).subscribe({
+      next: (data) => {
+        if (data.length == 0) {
+          this.toastrService.warning("Please add score in this exam first.", "Action Needed");
+        } else {
+          this.router.navigate(['app/student-exam/detail'], {
+            queryParams: {
+              attendanceId: attendanceId,
+              examId: examId,
+              studentClassId: this.studentClassId,
+              currentPage: this.currentPage,
+              searchedExamTitle: this.searchedExamTitle,
+              searchedAcademicYear: this.searchedAcademicYear,
+              searchedGrade: this.searchedGrade,
+              keyword: this.keyword,
+              searched: this.searched
+            },
+            skipLocationChange: true
+          });
+        }
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
       }
     });
   }

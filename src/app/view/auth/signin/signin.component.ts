@@ -6,6 +6,7 @@ import { AuthenticationService } from 'src/app/service/authentication.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/service/user.service';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
+import { HttpStatusCode } from '@angular/common/http';
 
 
 @Component({
@@ -15,9 +16,9 @@ import { ApplicationUser } from 'src/app/model/ApplicationUser';
 })
 export class SigninComponent implements OnInit {
 
-  errorMsg: string = '';
+  userNotFoundMsg: string = "";
+  wrongPasswordMsg: string = "";
   submitted = false;
-  wrongCredentials!: boolean;
 
   form = new FormGroup({
     userId: new FormControl('', Validators.required),
@@ -28,7 +29,7 @@ export class SigninComponent implements OnInit {
     private router: Router,
     private authService: AuthenticationService,
     private userService: UserService,
-    private toastr: ToastrService
+    private toastrService: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -46,33 +47,43 @@ export class SigninComponent implements OnInit {
 
     let userId = this.form.get(['userId'])!.value;
     let password = this.form.get(['password'])!.value;
-    
     this.authService.authenticate(userId, password).subscribe({
       next: (res: JWTToken) => {
         this.authService.storeJwtToken(res);
         this.userService.fetchApplicationUserByUsername(userId).subscribe({
-          next: (res: ApplicationUser) => {
-            this.userService.storeUserProfileInfo(res);
+          next: (appUser: ApplicationUser) => {
+            this.userService.storeUserProfileInfo(appUser);
             this.router.navigate(['/app/profile']);
           },
           error: (err) => {
-            if (err.status == 204) {
-              this.errorMsg = "User does not exist.";
+            if (err.status == HttpStatusCode.NotFound) {
+              this.userNotFoundMsg = "User does not exist.";
+            } else if(err.status >= 400 && err.status < 500) {
+              this.toastrService.error("Something went wrong.", "Client Error");
+            } else if(err.status >= 500) {
+              this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
-              this.toastr.error("Something went wrong, please try again.", "Error message");
+              this.toastrService.error("Something went wrong.", "Unknown Error");
             }
           }
         });
       },
       error: (err) => {
-        this.wrongCredentials = true;
-        if(err.status == 401) {
-          this.errorMsg = "Username or password is wrong.";
+        if(err.status == HttpStatusCode.NotFound) {
+          this.userNotFoundMsg = "User does not exist.";
+          this.wrongPasswordMsg = "";
+        } else if(err.status == HttpStatusCode.Unauthorized) {
+          this.userNotFoundMsg = "";
+          this.wrongPasswordMsg = "Password is wrong.";
+        } else if(err.status >= 400 && err.status < 500) {
+          this.toastrService.error("Something went wrong.", "Client Error");
+        } else if(err.status >= 500) {
+          this.toastrService.error("Please contact administrator.", "Server Error");
         } else {
-          this.toastr.error("Something went wrong, please try again.", "Error message");
+          this.toastrService.error("Something went wrong.", "Unknown Error");
         }
       }
-    });
+    });  
   }
 
 }
