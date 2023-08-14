@@ -1,7 +1,7 @@
 <div class="hrow">
     <h4>စာမေးပွဲဖြေဆိုခွင့်ကတ်ထုတ်ခြင်း</h4>
 </div>
-<div class="container-fluid ttable">
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
     <div class="row">
         <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
@@ -137,9 +137,9 @@
             </div>
         </form>
     </div>
-    <div class="row" *ngIf="valid">
-        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
-            (matSortChange)="sortData($event)" *ngIf="dataList.length != 0">
+    <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden;">
+        <table class="table table-bordered exptable" id="myTable" matSort
+            (matSortChange)="sortData($event)">
             <thead>
                 <tr>
                     <th style="width: 50px">
@@ -149,10 +149,9 @@
                     <th style="width: 100px" mat-sort-header="regNo">ခုံနံပါတ်</th>
                     <th style="width: 100px" mat-sort-header="name">အမည်</th>
                     <th style="width: 100px" mat-sort-header="fatherName">အဖအမည်</th>
-                    <th style="width: 100px" mat-sort-header="academicYear">စာသင်နှစ်</th>
-                    <th style="width: 100px" mat-sort-header="examTitle">စာမေးပွဲခေါင်းစဉ်</th>
-                    <th style="width: 100px" mat-sort-header="grade">အတန်း</th>
-                    <th style="width: 100px" mat-sort-header="class">အခန်း</th>
+                    <th style="width: 100px" mat-sort-header="monasteryHeadmaster">ဆရာတော်</th>
+                    <th style="width: 100px" mat-sort-header="monasteryName">ကျောင်းတိုက်</th>
+                    <th style="width: 100px" mat-sort-header="region">ပြည်နယ်/တိုင်း</th>
                 </tr>
             </thead>
             <tbody>
@@ -166,15 +165,14 @@
                     <td *ngIf="!element.regNo">-</td>
                     <td>{{element.student.name}}</td>
                     <td>{{element.student.fatherName}}</td>
-                    <td>{{element.studentClass.academicYear.name}}</td>
-                    <td>{{element.examTitle.name}}</td>
-                    <td>{{element.studentClass.grade.name}}</td>
-                    <td>{{element.studentClass.name}}</td>
+                    <td>{{element.student.monasteryHeadmaster}}</td>
+                    <td>{{element.student.monasteryName}}</td>
+                    <td>{{element.student.region.name}}</td>
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
-        <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-            *ngIf="dataList.length != 0" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
     </div>
+    <h2 style="color: red" *ngIf="sortedData.length == 0 && valid">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+        *ngIf="dataList.length != 0 && valid" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
 </div>

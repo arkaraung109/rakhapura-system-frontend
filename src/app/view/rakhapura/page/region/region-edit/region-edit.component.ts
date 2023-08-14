@@ -48,7 +48,7 @@ export class RegionEditComponent implements OnInit {
     });
     this.regionService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
-      this.oldRegion.name = data.name;
+      this.oldRegion = data;
     });
   }
 

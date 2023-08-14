@@ -1,0 +1,192 @@
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>အောင်လက်မှတ်ထုတ်ခြင်း</h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <form [formGroup]="form" (ngSubmit)="generate()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာသင်နှစ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="academicYear" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let a of academicYearList" [ngValue]="a.id">
+                                {{a.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('academicYear')!.invalid && form.get('academicYear')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('academicYear')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာမေးပွဲခေါင်းစဉ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="examTitle" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let e of examTitleList" [ngValue]="e.id">
+                                {{e.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('examTitle')!.invalid && form.get('examTitle')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('examTitle')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>အတန်း<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select formControlName="grade" class="fcontrol">
+                            <option [ngValue]="''">Choose</option>
+                            <option *ngFor="let g of gradeList" [ngValue]="g.id">
+                                {{g.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('grade')!.invalid && form.get('grade')!.touched" class="col-sm-6"
+                        style="color: red">
+                        <div *ngIf="form.get('grade')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>သာသနာတော်နှစ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="tharthanarYear" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('tharthanarYear')!.invalid && form.get('tharthanarYear')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('tharthanarYear')!.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.get('tharthanarYear')!.errors?.['pattern']">Must be valid year</div>
+                        <div *ngIf="form.get('tharthanarYear')!.errors?.['startingWithWhiteSpace']">Must not start with
+                            space
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ကောဇာသက္ကရာဇ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="kawzarYear" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('kawzarYear')!.invalid && form.get('kawzarYear')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('kawzarYear')!.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.get('kawzarYear')!.errors?.['pattern']">Must be valid year</div>
+                        <div *ngIf="form.get('kawzarYear')!.errors?.['startingWithWhiteSpace']">Must not start with
+                            space
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ခရစ်နှစ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="chrisYear" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('chrisYear')!.invalid && form.get('chrisYear')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('chrisYear')!.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.get('chrisYear')!.errors?.['pattern']">Must be valid year</div>
+                        <div *ngIf="form.get('chrisYear')!.errors?.['startingWithWhiteSpace']">Must not start with space
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ဖြေဆိုသည့်နေ့စွဲ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" formControlName="examDate" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('examDate')!.invalid && form.get('examDate')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('examDate')!.errors?.['required']">Field is required
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာမေးပွဲကျင်းပသည့်အကြိမ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="examHoldingTimes" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('examHoldingTimes')!.invalid && form.get('examHoldingTimes')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('examHoldingTimes')!.errors?.['required']">Field is required
+                        </div>
+                        <div *ngIf="form.get('examHoldingTimes')!.errors?.['pattern']">Must be between 1 and
+                            200</div>
+                        <div *ngIf="form.get('examHoldingTimes')!.errors?.['startingWithWhiteSpace']">Must not
+                            start with space</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ထုတ်ပြန်သည့်ရက်စွဲ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" formControlName="releasedDate" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('releasedDate')!.invalid && form.get('releasedDate')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('releasedDate')!.errors?.['required']">Field is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4 col-sm-6">
+                <button type="submit" class="bsearch btn">Generate</button>
+                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+    </form>
+</div>

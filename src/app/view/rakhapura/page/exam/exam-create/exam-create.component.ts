@@ -16,6 +16,7 @@ import { SubjectTypeService } from 'src/app/service/subject-type.service';
 import { lessThanValidator } from 'src/app/validator/less-than.validator';
 import { SaveAnotherDialogComponent } from 'src/app/save-another-dialog/save-another-dialog.component';
 import { HttpStatusCode } from '@angular/common/http';
+import { timeComparisonValidator } from 'src/app/validator/time-comparison.validator';
 
 @Component({
   selector: 'app-exam-create',
@@ -50,7 +51,7 @@ export class ExamCreateComponent implements OnInit {
     ]),
     passMark: new FormControl(''),
     markPercentage: new FormControl('')
-  }, { validators: lessThanValidator });
+  }, { validators: [lessThanValidator, timeComparisonValidator('startTime', 'endTime')] });
 
   constructor(
     private academicYearService: AcademicYearService,
@@ -114,16 +115,18 @@ export class ExamCreateComponent implements OnInit {
             }
           },
           error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
+            if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
               this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              this.toastrService.warning("You cannot save with this academic year, this exam title and this subject type anymore.", "Already Published Exam Results");
             } else if (err.status == HttpStatusCode.Conflict) {
               this.toastrService.warning("Record already exists.", "Duplication");
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");

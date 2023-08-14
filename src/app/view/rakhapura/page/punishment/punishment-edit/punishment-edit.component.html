@@ -1,0 +1,129 @@
+<div class="container-fluid hrow">
+    <div class="row">
+        <h4>စာသင်သားကျူးလွန်ထားသော ပြစ်ဒဏ်ပေးစာရင်းပြင်ခြင်း</h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ကျူးလွန်သည့်ပြစ်ဒဏ်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" formControlName="punishment" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('punishment')!.invalid && form.get('punishment')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('punishment')!.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.get('punishment')!.errors?.['maxlength']">Must not exceed 150 characters</div>
+                        <div *ngIf="form.get('punishment')!.errors?.['pattern']">Must not include special characters
+                        </div>
+                        <div *ngIf="form.get('punishment')!.errors?.['startingWithWhiteSpace']">Must not start with
+                            space
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>အကြောင်းအရာ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <textarea formControlName="description" autocomplete="off" maxlength="300" rows="3"
+                            style="width: 100%"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('description')!.invalid && form.get('description')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('description')!.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.get('description')!.errors?.['maxlength']">Must not exceed 300 characters</div>
+                        <div *ngIf="form.get('description')!.errors?.['pattern']">Must not include special characters
+                        </div>
+                        <div *ngIf="form.get('description')!.errors?.['startingWithWhiteSpace']">Must not start with
+                            space</div>
+                        <div *ngIf="form.get('description')!.errors?.['linebreak']">Must not include line break</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ကျူးလွန်သည့်နေ့စွဲ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" formControlName="eventDate" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('eventDate')!.invalid && form.get('eventDate')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('eventDate')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ပြစ်ဒဏ်ပေးစတင်သည့်နေ့စွဲ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" formControlName="startDate" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted || form.get('startDate')!.touched" class="col-sm-6" style="color: red">
+                        <div *ngIf="form.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.errors?.['isGreaterThan']">Must be equal to or less than end date</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>ပြစ်ဒဏ်ပေးပြီးဆုံးသည့်နေ့စွဲ<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" formControlName="endDate" class="fcontrol" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div *ngIf="submitted|| form.get('endDate')!.invalid && form.get('endDate')!.touched"
+                        class="col-sm-6" style="color: red">
+                        <div *ngIf="form.get('endDate')!.errors?.['required']">Field is required</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>စာသင်သားအမည်</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{studentName}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>အဖအမည်<span>*</span></label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{fatherName}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4 col-sm-6">
+                <button type="submit" class="bsearch btn">Update</button>
+                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+                <button type="button" class="bsearch btn" (click)="back()">Back</button>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+    </form>
+</div>

@@ -21,6 +21,9 @@ import { AttendanceComponent } from './page/attendance/attendance.component';
 import { StudentHostelComponent } from './page/student-hostel/student-hostel.component';
 import { StudentExamComponent } from './page/student-exam/student-exam.component';
 import { StudentExamModerateComponent } from './page/student-exam-moderate/student-exam-moderate.component';
+import { CertificateComponent } from './page/certificate/certificate.component';
+import { AwardComponent } from './page/award/award.component';
+import { PunishmentComponent } from './page/punishment/punishment.component';
 
 const routes: Routes = [
   {
@@ -285,6 +288,48 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./page/student-exam-moderate/student-exam-moderate.module').then(m => m.StudentExamModerateModule)
+      },
+    ]
+  },
+  {
+    path: 'certificate',
+    component: CertificateComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/certificate/certificate.module').then(m => m.CertificateModule)
+      },
+    ]
+  },
+  {
+    path: 'award',
+    component: AwardComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN, UserPermission.EXAM_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/award/award.module').then(m => m.AwardModule)
+      },
+    ]
+  },
+  {
+    path: 'punishment',
+    component: PunishmentComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN, UserPermission.EXAM_ENTRY]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/punishment/punishment.module').then(m => m.PunishmentModule)
       },
     ]
   }

@@ -76,9 +76,7 @@ export class ClassEditComponent implements OnInit {
       this.form.get('academicYear')!.setValue(data.academicYear.id);
       this.form.get('grade')!.setValue(data.grade.id);
       this.form.get('name')!.setValue(data.name);
-      this.oldClass.academicYear.id = data.academicYear.id;
-      this.oldClass.grade.id = data.grade.id;
-      this.oldClass.name = data.name;
+      this.oldClass = data;
     });
   }
 

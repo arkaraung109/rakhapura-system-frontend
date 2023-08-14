@@ -63,9 +63,7 @@ export class HostelEditComponent implements OnInit {
       this.form.get('name')!.setValue(data.name);
       this.form.get('address')!.setValue(data.address);
       this.form.get('phone')!.setValue(data.phone);
-      this.oldHostel.name = data.name;
-      this.oldHostel.address = data.address;
-      this.oldHostel.phone = data.phone;
+      this.oldHostel = data;
     });
   }
 

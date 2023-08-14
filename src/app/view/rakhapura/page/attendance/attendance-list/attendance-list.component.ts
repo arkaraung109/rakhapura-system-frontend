@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
@@ -27,7 +28,9 @@ export class AttendanceListComponent implements OnInit {
   valid = false;
   pageData: CustomPaginationResponse = new CustomPaginationResponse();
   currentPage: number = 1;
+  sortedData: any[] = [];
   dataList: any[] = [];
+  @ViewChild(MatSort) sort!: MatSort;
   academicYearList!: AcademicYear[];
   examTitleList!: ExamTitle[];
   gradeList!: Grade[];
@@ -104,6 +107,34 @@ export class AttendanceListComponent implements OnInit {
     }
   }
 
+  sortData(sort: Sort) {
+    let data = [...this.dataList];
+
+    if (!sort.active || sort.direction === '') {
+      this.sortedData = data;
+      return;
+    }
+    this.sortedData = data.sort((a, b) => {
+      let isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'index':
+          return this.compare(a.index, b.index, isAsc);
+        case 'regNo':
+          return this.compare(a.attendance.studentClass.regNo, b.attendance.studentClass.regNo, isAsc);
+        case 'name':
+          return this.compare(a.attendance.studentClass.student.name, b.attendance.studentClass.student.name, isAsc);
+        case 'fatherName':
+          return this.compare(a.attendance.studentClass.student.fatherName, b.attendance.studentClass.student.fatherName, isAsc);
+        default:
+          return 0;
+      }
+    });
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
   search() {
     this.searched = true;
     this.currentPage = 1;
@@ -120,6 +151,7 @@ export class AttendanceListComponent implements OnInit {
       next: (res: CustomPaginationResponse) => {
         this.setDataInCurrentPage(res);
         this.tableHeader = res.tableHeader;
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
         showError(this.toastrService, this.router, err);
@@ -137,6 +169,7 @@ export class AttendanceListComponent implements OnInit {
     this.attendanceService.fetchPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
       next: (res: CustomPaginationResponse) => {
         this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
         showError(this.toastrService, this.router, err);
@@ -145,17 +178,21 @@ export class AttendanceListComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.attendanceService.exportToExcel(this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
-      next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        let filename = 'attendance_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
-        saveAs(file, filename);
-        this.toastrService.success("Successfully Exported.");
-      },
-      error: (err) => {
-        showError(this.toastrService, this.router, err);
-      }
-    });
+    if (this.sortedData.length == 0) {
+      this.toastrService.warning("There is no record to export.", "Not Found");
+    } else {
+      this.attendanceService.exportToExcel(this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
+        next: (response) => {
+          let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          let filename = 'attendance_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
+          saveAs(file, filename);
+          this.toastrService.success("Successfully Exported.");
+        },
+        error: (err) => {
+          showError(this.toastrService, this.router, err);
+        }
+      });
+    }
   }
 
   viewAttendanceDetail(studentClassId: string) {
@@ -182,6 +219,7 @@ export class AttendanceListComponent implements OnInit {
       let obj = { 'index': ++i, ...data };
       return obj;
     });
+    this.sortedData = [...this.dataList];
   }
 
 }

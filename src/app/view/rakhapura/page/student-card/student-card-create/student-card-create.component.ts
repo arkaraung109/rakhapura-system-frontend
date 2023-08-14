@@ -1,4 +1,3 @@
-import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,15 +8,18 @@ import { PaginationOrder } from 'src/app/common/PaginationOrder';
 import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { AcademicYear } from 'src/app/model/AcademicYear';
-import { DataResponse } from 'src/app/model/DataResponse';
 import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
 import { PaginationResponse } from 'src/app/model/PaginationResponse';
 import { AcademicYearService } from 'src/app/service/academic-year.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
+import { ExamService } from 'src/app/service/exam.service';
 import { GradeService } from 'src/app/service/grade.service';
 import { StudentCardService } from 'src/app/service/student-card.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
+import { saveAs } from 'file-saver-es';
+import { format } from 'date-fns';
+import { StudentCard } from 'src/app/model/StudentCard';
 
 @Component({
   selector: 'app-student-card-create',
@@ -70,6 +72,7 @@ export class StudentCardCreateComponent implements OnInit {
     private examTitleService: ExamTitleService,
     private academicYearSerivce: AcademicYearService,
     private gradeService: GradeService,
+    private examService: ExamService,
     private studentCardService: StudentCardService,
     private toastrService: ToastrService,
     private router: Router,
@@ -103,17 +106,15 @@ export class StudentCardCreateComponent implements OnInit {
         case 'regNo':
           return this.compare(a.regNo, b.regNo, isAsc);
         case 'name':
-          return this.compare(a.name, b.name, isAsc);
+          return this.compare(a.student.name, b.student.name, isAsc);
         case 'fatherName':
-          return this.compare(a.fatherName, b.fatherName, isAsc);
-        case 'academicYear':
-          return this.compare(a.studentClass.academicYear.name, b.studentClass.academicYear.name, isAsc);
-        case 'examTitle':
-          return this.compare(a.examTitle.name, b.examTitle.name, isAsc);
-        case 'grade':
-          return this.compare(a.studentClass.grade.name, b.studentClass.grade.name, isAsc);
-        case 'class':
-          return this.compare(a.studentClass.name, b.studentClass.name, isAsc);
+          return this.compare(a.student.fatherName, b.student.fatherName, isAsc);
+        case 'monasteryHeadmaster':
+          return this.compare(a.student.monasteryHeadmaster, b.student.monasteryHeadmaster, isAsc);
+        case 'monasteryName':
+          return this.compare(a.student.monasteryName, b.student.monasteryName, isAsc);
+        case 'region':
+          return this.compare(a.student.region.name, b.student.region.name, isAsc);
         default:
           return 0;
       }
@@ -141,94 +142,60 @@ export class StudentCardCreateComponent implements OnInit {
           return;
         }
 
+        let academicYearId = this.form.get('academicYear')!.value;
+        let examTitleId = this.form.get('examTitle')!.value;
+        let gradeId = this.form.get('grade')!.value;
         let cardDate = this.submitForm.get('cardDate')!.value;
-        let examHoldingTimes = this.submitForm.get('examHoldingTimes')!.value
-        this.studentCardService.save(this.idList, cardDate, examHoldingTimes).subscribe({
-          next: (res: DataResponse) => {
-            if (res.status == HttpStatusCode.Created) {
-              let size = res.createdCount;
-              let message = "Successfully Generated ";
-              message += size > 1 ? size + " Records" : size + " Record";
-              this.toastrService.success(message);
-              this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
-                next: (res: PaginationResponse) => {
-                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
-                    this.currentPage = res.totalPages;
-                    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
-                      next: (response: PaginationResponse) => {
-                        this.setDataInCurrentPage(response);
-                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-                        this.idList = [];
-                        this.isCheckAll = false;
-                      },
-                      error: (err) => {
-                        showError(this.toastrService, this.router, err);
-                      }
-                    });
-                  } else {
-                    this.setDataInCurrentPage(res);
-                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-                    this.idList = [];
-                    this.isCheckAll = false;
+        let examHoldingTimes = this.submitForm.get('examHoldingTimes')!.value;
+        let requestBody: StudentCard = new StudentCard();
+        requestBody.academicYearId = academicYearId;
+        requestBody.examTitleId = examTitleId;
+        requestBody.gradeId = gradeId;
+        requestBody.cardDate = cardDate;
+        requestBody.examHoldingTimes = examHoldingTimes;
+        requestBody.idList = this.idList;
+
+        this.examService.fetchAllFilteredByAcademicYearAndExamTitleAndGrade(academicYearId, examTitleId, gradeId).subscribe(data => {
+          if(data.length == 0) {
+            this.toastrService.warning("There is no exam for this academic year, this exam title and this grade.", "Not Found");
+          } else {
+            this.studentCardService.generate(requestBody).subscribe({
+              next: (res) => {
+                let file = new Blob([res], { type: "application/x-zip-compressed" });
+                let filename = 'student_card_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.zip';
+                saveAs(file, filename);
+                this.toastrService.success("Successfully Generated.");
+                this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
+                  next: (res: PaginationResponse) => {
+                    if (this.currentPage > res.totalPages && res.totalPages != 0) {
+                      this.currentPage = res.totalPages;
+                      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
+                        next: (response: PaginationResponse) => {
+                          this.setDataInCurrentPage(response);
+                          this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                          this.idList = [];
+                          this.isCheckAll = false;
+                        },
+                        error: (err) => {
+                          showError(this.toastrService, this.router, err);
+                        }
+                      });
+                    } else {
+                      this.setDataInCurrentPage(res);
+                      this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                      this.idList = [];
+                      this.isCheckAll = false;
+                    }
+                  },
+                  error: (err) => {
+                    showError(this.toastrService, this.router, err);
                   }
-                },
-                error: (err) => {
-                  showError(this.toastrService, this.router, err);
-                }
-              });
-            }
-          },
-          error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
-              localStorage.clear();
-              this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
-            } else if (err.status == HttpStatusCode.Forbidden) {
-              this.toastrService.error("This action is forbidden.", "Forbidden Access");
-            } else if (err.status === HttpStatusCode.NotFound) {
-              if (err.error.createdCount != 0) {
-                let size = err.error.createdCount;
-                let message = "Successfully Generated ";
-                message += size > 1 ? size + " Records" : size + " Record";
-                this.toastrService.success(message);
+                });
+              },
+              error: (err) => {
+                showError(this.toastrService, this.router, err);
               }
-              if (err.error.errorCount != 0) {
-                let size = err.error.errorCount;
-                let message = size > 1 ? size + " students have no exam existing for their grade." : size + " student has no exam existing for his grade.";
-                this.toastrService.warning(message, "Not Found");
-              }
-              this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
-                next: (res: PaginationResponse) => {
-                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
-                    this.currentPage = res.totalPages;
-                    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
-                      next: (response: PaginationResponse) => {
-                        this.setDataInCurrentPage(response);
-                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-                        this.idList = [];
-                        this.isCheckAll = false;
-                      },
-                      error: (err) => {
-                        showError(this.toastrService, this.router, err);
-                      }
-                    });
-                  } else {
-                    this.setDataInCurrentPage(res);
-                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-                    this.idList = [];
-                    this.isCheckAll = false;
-                  }
-                },
-                error: (err) => {
-                  showError(this.toastrService, this.router, err);
-                }
-              });
-            } else if(err.status >= 400 && err.status < 500) {
-              this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
-              this.toastrService.error("Please contact administrator.", "Server Error");
-            } else {
-              this.toastrService.error("Something went wrong.", "Unknown Error");
-            }
+            });
           }
         });
       } else {

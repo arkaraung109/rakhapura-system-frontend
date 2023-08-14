@@ -94,9 +94,10 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('startTime')!.invalid && form.get('startTime')!.touched"
-                        class="col-sm-6" style="color: red">
-                        <div *ngIf="form.get('startTime')!.errors?.['required']">Field is required</div>
+
+                    <div *ngIf="submitted || form.get('startTime')!.touched" class="col-sm-6" style="color: red">
+                        <div *ngIf="form.errors?.['required']">Field is required</div>
+                        <div *ngIf="form.errors?.['isEqualToOrGreaterThan']">Must be less than end time</div>
                     </div>
                 </div>
                 <div class="row">

@@ -16,6 +16,7 @@ import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { ExamService } from 'src/app/service/exam.service';
 import { SubjectTypeService } from 'src/app/service/subject-type.service';
 import { lessThanValidator } from 'src/app/validator/less-than.validator';
+import { timeComparisonValidator } from 'src/app/validator/time-comparison.validator';
 
 @Component({
   selector: 'app-exam-edit',
@@ -57,7 +58,7 @@ export class ExamEditComponent implements OnInit {
     ]),
     passMark: new FormControl(''),
     markPercentage: new FormControl('')
-  }, { validators: lessThanValidator });
+  }, { validators: [lessThanValidator, timeComparisonValidator('startTime', 'endTime')] });
 
   constructor(
     private academicYearSerivce: AcademicYearService,
@@ -100,13 +101,7 @@ export class ExamEditComponent implements OnInit {
       this.form.get('endTime')!.setValue(time[1]);
       this.form.get('passMark')!.setValue(data.passMark);
       this.form.get('markPercentage')!.setValue(data.markPercentage);
-      this.oldExam.academicYear.id = data.academicYear.id;
-      this.oldExam.examTitle.id = data.examTitle.id;
-      this.oldExam.subjectType.id = data.subjectType.id;
-      this.oldExam.examDate = data.examDate;
-      this.oldExam.time = data.time;
-      this.oldExam.passMark = data.passMark;
-      this.oldExam.markPercentage = data.markPercentage;
+      this.oldExam = data;
     });
   }
 
@@ -139,7 +134,7 @@ export class ExamEditComponent implements OnInit {
             }
           },
           error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
+            if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
@@ -150,9 +145,9 @@ export class ExamEditComponent implements OnInit {
               this.toastrService.warning("You cannot update this.", "Already Authorized");
             } else if (err.status == HttpStatusCode.Conflict) {
               this.toastrService.warning("Record already exists.", "Duplication");
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");

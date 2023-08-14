@@ -99,12 +99,7 @@ export class ExamSubjectEditComponent implements OnInit {
       this.form.get('subject')?.setValue(data.subject.id);
       this.form.get('passMark')!.setValue(data.passMark);
       this.form.get('markPercentage')!.setValue(data.markPercentage);
-      this.oldExamSubject.exam.academicYear.id = data.exam.academicYear.id;
-      this.oldExamSubject.exam.examTitle.id = data.exam.examTitle.id;
-      this.oldExamSubject.exam.subjectType.id = data.exam.subjectType.id;
-      this.oldExamSubject.subject.id = data.subject.id;
-      this.oldExamSubject.passMark = data.passMark;
-      this.oldExamSubject.markPercentage = data.markPercentage;
+      this.oldExamSubject = data;
       this.form.get('subject')!.disable();
       this.examService.fetchAllFilteredByAcademicYearAndExamTitle(data.exam.academicYear.id, data.exam.examTitle.id).subscribe(data => {
         data.forEach(d => {

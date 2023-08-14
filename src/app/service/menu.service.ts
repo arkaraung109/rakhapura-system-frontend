@@ -236,12 +236,17 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာမေးပွဲဖြေဆိုခွင့်ကတ်ထုတ်ခြင်း',
+        title: 'စာမေးပွဲကတ်ထုတ်ခြင်း',
         items: [
           {
-            title: 'အသစ်ထုတ်ယူခြင်း',
+            title: 'ဖြေဆိုခွင့်ကတ်ထုတ်ခြင်း',
             url: '/app/student-card/create',
             permissions: [{ name: UserPermission.EXAM_ENTRY }]
+          },
+          {
+            title: 'အောင်လက်မှတ်ထုတ်ခြင်း',
+            url: '/app/certificate/create',
+            permissions: [{ name: UserPermission.ADMIN }]
           }
         ]
       },
@@ -269,14 +274,39 @@ export class MenuService {
             permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
           },
           {
-            title: 'ရလဒ်စာရင်းကြည့်ခြင်း',
-            url: '/app/exam-result/list',
-            permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
-          },
-          {
             title: 'ကုစားစာရင်းကြည့်ခြင်း',
             url: '/app/student-exam-moderate/list',
             permissions: [{ name: UserPermission.EXAM_MARK_ENTRY }, { name: UserPermission.ADMIN }]
+          }
+        ]
+      },
+      {
+        title: 'ဆုပေးစာရင်း',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/award/create',
+            permissions: [{ name: UserPermission.EXAM_ENTRY }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/award/list',
+            permissions: [{ name: UserPermission.EXAM_ENTRY }, { name: UserPermission.ADMIN }]
+          }
+        ]
+      },
+      {
+        title: 'ပြစ်ဒဏ်ပေးစာရင်း',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/punishment/create',
+            permissions: [{ name: UserPermission.EXAM_ENTRY }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/punishment/list',
+            permissions: [{ name: UserPermission.EXAM_ENTRY }, { name: UserPermission.ADMIN }]
           }
         ]
       }

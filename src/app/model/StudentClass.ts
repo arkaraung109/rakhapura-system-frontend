@@ -8,6 +8,7 @@ export class StudentClass {
     regNo!: string;
     regSeqNo!: number;
     arrival!: boolean;
+    published!: boolean;
     createdTimestamp!: string;
     examTitle: ExamTitle = new ExamTitle();
     studentClass: Class = new Class();

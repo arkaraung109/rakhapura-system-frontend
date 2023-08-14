@@ -131,18 +131,7 @@ export class StudentEditComponent implements OnInit {
       this.form.get('monasteryName')!.setValue(data.monasteryName);
       this.form.get('monasteryHeadmaster')!.setValue(data.monasteryHeadmaster);
       this.form.get('monasteryTownship')!.setValue(data.monasteryTownship);
-      this.oldStudent.name = data.name;
-      this.oldStudent.dob = data.dob;
-      this.oldStudent.sex = data.sex;
-      this.oldStudent.nationality = data.nationality;
-      this.oldStudent.nrc = data.nrc;
-      this.oldStudent.fatherName = data.fatherName;
-      this.oldStudent.motherName = data.motherName;
-      this.oldStudent.address = data.address;
-      this.oldStudent.region.id = data.region.id;
-      this.oldStudent.monasteryName = data.monasteryName;
-      this.oldStudent.monasteryHeadmaster = data.monasteryHeadmaster;
-      this.oldStudent.monasteryTownship = data.monasteryTownship;
+      this.oldStudent = data;
     });
   }
 

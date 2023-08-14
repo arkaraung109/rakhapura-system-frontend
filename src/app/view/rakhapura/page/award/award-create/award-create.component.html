@@ -1,0 +1,156 @@
+<div class="hrow">
+    <h4>စာသင်သားများရရှိသော ဆုပေးစာရင်းသွင်းခြင်း</h4>
+</div>
+<div class="container-fluid ttable">
+    <div class="row">
+        <form [formGroup]="submitForm" (ngSubmit)="submit()" accept-charset="utf-8" htmlEscape="true"
+            enctype="multipart/form-data" autocomplete="off">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>ရရှိသည့်ဆု<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" formControlName="award" class="fcontrol" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="submittedForm || submitForm.get('award')!.invalid && submitForm.get('award')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="submitForm.get('award')!.errors?.['required']">Field is required</div>
+                            <div *ngIf="submitForm.get('award')!.errors?.['maxlength']">Must not exceed 150 characters
+                            </div>
+                            <div *ngIf="submitForm.get('award')!.errors?.['pattern']">Must not include special
+                                characters
+                            </div>
+                            <div *ngIf="submitForm.get('award')!.errors?.['startingWithWhiteSpace']">Must not start with
+                                space
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>အကြောင်းအရာ<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <textarea formControlName="description" autocomplete="off" maxlength="300" rows="3"
+                                style="width: 100%"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="submittedForm || submitForm.get('description')!.invalid && submitForm.get('description')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="submitForm.get('description')!.errors?.['required']">Field is required</div>
+                            <div *ngIf="submitForm.get('description')!.errors?.['maxlength']">Must not exceed 300
+                                characters
+                            </div>
+                            <div *ngIf="submitForm.get('description')!.errors?.['pattern']">Must not include special
+                                characters
+                            </div>
+                            <div *ngIf="submitForm.get('description')!.errors?.['startingWithWhiteSpace']">Must not
+                                start with
+                                space</div>
+                            <div *ngIf="submitForm.get('description')!.errors?.['linebreak']">Must not include line
+                                break
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>ရရှိသည့်နေ့စွဲ<span>*</span></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="date" formControlName="eventDate" class="fcontrol" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div *ngIf="submittedForm || submitForm.get('eventDate')!.invalid && submitForm.get('eventDate')!.touched"
+                            class="col-sm-6" style="color: red">
+                            <div *ngIf="submitForm.get('eventDate')!.errors?.['required']">Field is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4 col-sm-6">
+                    <button type="submit" class="bsearch btn">Submit</button>
+                    <button type="button" class="bsearch btn" (click)="resetForm()">Reset</button>
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div class="row">
+        <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
+            enctype="multipart/form-data" autocomplete="off">
+            <div class="col-sm-2">
+                <select formControlName="region" class="fcontrol" style="margin: 20px 0px;">
+                    <option [ngValue]="0">ပြည်နယ်/တိုင်းအားလုံး</option>
+                    <option *ngFor="let r of regionList" [ngValue]="r.id">
+                        {{r.name}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;"
+                    autocomplete="off" placeholder="Filter Search" />
+            </div>
+            <div class="col-sm-2">
+                <button type="submit" class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
+                <button type="button" class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
+                    style="color: red">
+                    <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
+                    <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row table-responsive" style="overflow-y: hidden;">
+        <table class="table table-bordered exptable" id="myTable" matSort
+            (matSortChange)="sortData($event)">
+            <thead>
+                <tr>
+                    <th style="width: 50px">
+                        <input type="checkbox" class="fcontrol" (change)="checkUncheckAll()" [(ngModel)]="isCheckAll">
+                    </th>
+                    <th style="width: 80px" mat-sort-header="index">စဉ်</th>
+                    <th style="width: 100px" mat-sort-header="name">အမည်</th>
+                    <th style="width: 100px" mat-sort-header="fatherName">အဖအမည်</th>
+                    <th style="width: 100px" mat-sort-header="monasteryHeadmaster">ကျောင်းထိုင်ဆရာတော်</th>
+                    <th style="width: 100px" mat-sort-header="monasteryName">ကျောင်းတိုက်</th>
+                    <th style="width: 100px" mat-sort-header="region">ပြည်နယ်/တိုင်း</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let element of sortedData">
+                    <td>
+                        <input type="checkbox" class="fcontrol" (change)="isAllSelected($event, element.id)"
+                            [(ngModel)]="element.check" value="{{element.id}}">
+                    </td>
+                    <td>{{element.index}}</td>
+                    <td>{{element.name}}</td>
+                    <td>{{element.fatherName}}</td>
+                    <td>{{element.monasteryHeadmaster}}</td>
+                    <td>{{element.monasteryName}}</td>
+                    <td>{{element.region.name}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+        <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+            (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
+    </div>
+</div>

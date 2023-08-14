@@ -48,7 +48,7 @@ export class AcademicYearEditComponent implements OnInit {
     });
     this.academicYearService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
-      this.oldAcademicYear.name = data.name;
+      this.oldAcademicYear = data;
     });
   }
 

@@ -1,7 +1,7 @@
 <div class="hrow">
     <h4>ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</h4>
 </div>
-<div class="container-fluid ttable">
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
     <div class="row">
         <div class="row">
             <div class="col-md-3"></div>
@@ -66,8 +66,8 @@
         </div>
     </div>
     <hr>
-    <div class="row">
-        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+    <div class="row table-responsive" style="overflow-y: hidden;">
+        <table class="table table-bordered exptable" id="myTable" matSort
             (matSortChange)="sortData($event)"
             [ngStyle]="{'width': userInfo.role.name === 'EXAM_MARK_ENTRY' ? '100%' : userInfo.role.name === 'ADMIN' ? '70%' : '30%'}"
             style="margin: 20px auto 50px;">
@@ -123,6 +123,6 @@
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
     </div>
+    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
 </div>

@@ -8,9 +8,11 @@ import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
+import { StudentClass } from 'src/app/model/StudentClass';
 import { StudentExam } from 'src/app/model/StudentExam';
 import { SubjectType } from 'src/app/model/SubjectType';
 import { ExamService } from 'src/app/service/exam.service';
+import { StudentClassService } from 'src/app/service/student-class.service';
 import { StudentExamModerateService } from 'src/app/service/student-exam-moderate.service';
 import { StudentExamService } from 'src/app/service/student-exam.service';
 import { UserService } from 'src/app/service/user.service';
@@ -28,6 +30,7 @@ export class StudentExamDetailComponent implements OnInit {
   dataList: any[] = [];
   @ViewChild(MatSort) sort!: MatSort;
   subjectType: SubjectType = new SubjectType();
+  studentClass: StudentClass = new StudentClass();
   studentClassId!: string;
   attendanceId!: string;
   examId!: number;
@@ -40,6 +43,7 @@ export class StudentExamDetailComponent implements OnInit {
 
   constructor(
     private examService: ExamService,
+    private studentClassService: StudentClassService,
     private studentExamService: StudentExamService,
     private studentExamModerateService: StudentExamModerateService,
     private userService: UserService,
@@ -63,6 +67,9 @@ export class StudentExamDetailComponent implements OnInit {
     });
     this.examService.fetchById(this.examId).subscribe(data => {
       this.subjectType = data.subjectType;
+    });
+    this.studentClassService.fetchById(this.studentClassId).subscribe(data => {
+      this.studentClass = data;
     });
 
     this.studentExamService.fetchByAttendance(this.attendanceId).subscribe(data => {
@@ -130,33 +137,37 @@ export class StudentExamDetailComponent implements OnInit {
       if (result) {
         let requestBody: StudentExam = new StudentExam();
         requestBody.id = studentExamId;
-        this.studentExamModerateService.moderate(requestBody).subscribe({
-          next: (res: ApiResponse) => {
-            if (res.status == HttpStatusCode.Created) {
-              this.studentExamService.fetchByAttendance(this.attendanceId).subscribe(data => {
-                this.sortedData = [...data];
-                for (let i = 0; i < this.sortedData.length; i++) {
-                  this.studentExamModerateService.fetchFilteredByExamSubjectAndAttendance(this.sortedData[i].examSubject.id, this.attendanceId).subscribe(studentExamModerate => {
-                    this.sortedData[i].index = i + 1;
-                    if (!this.sortedData[i].pass) {
-                      this.sortedData[i].result = 'ရှုံး';
-                    } else {
-                      this.sortedData[i].result = 'အောင်';
-                      if (studentExamModerate != null) {
-                        this.sortedData[i].result = 'ကုစား';
+        if (this.studentClass.published) {
+          this.toastrService.warning("You cannot moderate this.", "Already Published Exam Results");
+        } else {
+          this.studentExamModerateService.moderate(requestBody).subscribe({
+            next: (res: ApiResponse) => {
+              if (res.status == HttpStatusCode.Created) {
+                this.studentExamService.fetchByAttendance(this.attendanceId).subscribe(data => {
+                  this.sortedData = [...data];
+                  for (let i = 0; i < this.sortedData.length; i++) {
+                    this.studentExamModerateService.fetchFilteredByExamSubjectAndAttendance(this.sortedData[i].examSubject.id, this.attendanceId).subscribe(studentExamModerate => {
+                      this.sortedData[i].index = i + 1;
+                      if (!this.sortedData[i].pass) {
+                        this.sortedData[i].result = 'ရှုံး';
+                      } else {
+                        this.sortedData[i].result = 'အောင်';
+                        if (studentExamModerate != null) {
+                          this.sortedData[i].result = 'ကုစား';
+                        }
                       }
-                    }
-                    this.sortedData[i].moderatedMark = studentExamModerate?.mark;
-                  });
-                }
-                this.dataList = [...this.sortedData];
-              });
+                      this.sortedData[i].moderatedMark = studentExamModerate?.mark;
+                    });
+                  }
+                  this.dataList = [...this.sortedData];
+                });
+              }
+            },
+            error: (err) => {
+              showError(this.toastrService, this.router, err);
             }
-          },
-          error: (err) => {
-            showError(this.toastrService, this.router, err);
-          }
-        });
+          });
+        }
       } else {
         this.matDialog.closeAll();
       }

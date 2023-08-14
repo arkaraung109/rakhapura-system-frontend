@@ -95,7 +95,7 @@ export class StudentExamModerateListComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    
+
     this.valid = true;
     this.studentExamModerateService.fetchPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
       next: (res: CustomPaginationResponse) => {
@@ -130,17 +130,21 @@ export class StudentExamModerateListComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.studentExamModerateService.exportToExcel(this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
-      next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        let filename = 'student_exam_moderate_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
-        saveAs(file, filename);
-        this.toastrService.success("Successfully Exported.");
-      },
-      error: (err) => {
-        showError(this.toastrService, this.router, err);
-      }
-    });
+    if (this.dataList.length == 0) {
+      this.toastrService.warning("There is no record to export.", "Not Found");
+    } else {
+      this.studentExamModerateService.exportToExcel(this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
+        next: (response) => {
+          let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          let filename = 'student_exam_moderate_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
+          saveAs(file, filename);
+          this.toastrService.success("Successfully Exported.");
+        },
+        error: (err) => {
+          showError(this.toastrService, this.router, err);
+        }
+      });
+    }
   }
 
   setDataInCurrentPage(res: CustomPaginationResponse) {

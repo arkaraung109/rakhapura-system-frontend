@@ -1,30 +1,32 @@
 <div class="hrow">
   <h4>ဘာသာရပ်ခွဲစာရင်း</h4>
 </div>
-<form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
-  autocomplete="off">
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
   <div class="row">
-    <div class="col-sm-2">
-      <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;" autocomplete="off"
-        placeholder="Filter Search" />
-    </div>
-    <div class="col-sm-3">
-      <button class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
-      <button class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+      autocomplete="off">
+      <div class="row">
+        <div class="col-sm-2">
+          <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;" autocomplete="off"
+            placeholder="Filter Search" />
+        </div>
+        <div class="col-sm-3">
+          <button class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
+          <button class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6"></div>
+        <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
+          style="color: red">
+          <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
+          <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+        </div>
+      </div>
+    </form>
   </div>
-  <div class="row">
-    <div class="col-sm-6"></div>
-    <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
-      style="color: red">
-      <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
-      <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-    </div>
-  </div>
-</form>
-<div class="container-fluid ttable">
-  <div class="row">
-    <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+  <div class="row table-responsive" style="overflow-y: hidden;">
+    <table class="table table-bordered exptable" id="myTable" matSort
       (matSortChange)="sortData($event)">
       <thead>
         <tr>
@@ -51,8 +53,8 @@
         </tr>
       </tbody>
     </table>
-    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
-    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-      (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
   </div>
+  <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+  <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+    (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
 </div>

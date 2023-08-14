@@ -3,7 +3,7 @@
         <h4>စာမေးပွဲကုစားစာရင်းရှာဖွေခြင်း</h4>
     </div>
 </div>
-<div class="container-fluid">
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
     <div class="row">
         <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
@@ -103,16 +103,16 @@
         </form>
     </div>
     <hr *ngIf="valid">
-    <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden;">
-        <div style="padding: 20px;" *ngIf="dataList.length != 0">
-            <h3>ဖြေဆိုသူစုစုပေါင်း = {{totalAnswered}}</h3>
-            <h3>အောင်မြင်သူစုစုပေါင်း = {{totalPassed}}</h3>
-            <h3>ကျရှုံးသူစုစုပေါင်း = {{totalFailed}}</h3>
-            <h3>ကုစားသူစုစုပေါင်း = {{totalModerated}}</h3>
-        </div>
-        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
-            *ngIf="dataList.length != 0">Export to
-            Excel</button>
+    <div style="padding: 20px;" *ngIf="dataList.length != 0 && valid">
+        <h3>ဖြေဆိုသူစုစုပေါင်း = {{totalAnswered}}</h3>
+        <h3>အောင်မြင်သူစုစုပေါင်း = {{totalPassed}}</h3>
+        <h3>ကျရှုံးသူစုစုပေါင်း = {{totalFailed}}</h3>
+        <h3>ကုစားသူစုစုပေါင်း = {{totalModerated}}</h3>
+    </div>
+    <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
+        *ngIf="dataList.length != 0 && valid">Export to
+        Excel</button>
+    <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden; margin-top: 50px">
         <table class="table table-bordered exptable" id="myTable" *ngIf="dataList.length != 0">
             <thead>
                 <tr>
@@ -122,7 +122,7 @@
                     <th style="width: 100px; vertical-align: middle;" rowspan="3">အဖအမည်</th>
                     <th *ngFor="let customExam of tableHeader.customExamList"
                         [attr.colspan]="customExam.examSubjectCount + 1">{{customExam.exam.subjectType.name}}</th>
-                    <th style="width: 100px; vertical-align: middle;" rowspan="2">ဘာသာရပ်အားလုံးပေါင်း</th>
+                    <th style="width: 150px; vertical-align: middle;" rowspan="2">ဘာသာရပ်ကြီးအားလုံးပေါင်း</th>
                     <th style="width: 120px; vertical-align: middle;" rowspan="3">အောင်/ရှုံး/ကုစား</th>
                 </tr>
                 <tr>
@@ -158,8 +158,8 @@
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="dataList.length == 0">No record found!</h2>
-        <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-            *ngIf="dataList.length != 0" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
     </div>
+    <h2 style="color: red" *ngIf="dataList.length == 0  && valid">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+        *ngIf="dataList.length != 0 && valid" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
 </div>

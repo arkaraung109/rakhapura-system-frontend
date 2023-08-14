@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MenuService } from './service/menu.service';
-import { AnonymousModule } from './view/anonymous/anonymous.module';
 import { AuthModule } from './view/auth/auth.module';
 import { ErrorComponent } from './view/error/error.component';
 import { RakhapuraModule } from './view/rakhapura/rakhapura.module';
@@ -21,14 +20,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
 import { SaveAnotherDialogComponent } from './save-another-dialog/save-another-dialog.component';
+import { AnonymousModule } from './view/anonymous/anonymous.module';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent, ConfirmDialogComponent, SaveAnotherDialogComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AnonymousModule,
     AuthModule,
+    AnonymousModule,
     RakhapuraModule,
     FormsModule,
     MatDialogModule,

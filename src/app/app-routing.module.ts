@@ -27,13 +27,13 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/anonymous/exam-result',
+        redirectTo: '/anonymous/home',
         pathMatch: 'full'
       },
       {
         path: '',
         loadChildren: () => import('./view/anonymous/anonymous.module').then(m => m.AnonymousModule)
-      },
+      }      
     ]
   },
   {
@@ -57,7 +57,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: `/anonymous`
+    redirectTo: `/anonymous/home`
   }
 ];
 

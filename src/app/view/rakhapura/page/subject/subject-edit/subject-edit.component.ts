@@ -49,7 +49,7 @@ export class SubjectEditComponent implements OnInit {
 
     this.subjectService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
-      this.oldSubject.name = data.name;
+      this.oldSubject = data;
     });
   }
 

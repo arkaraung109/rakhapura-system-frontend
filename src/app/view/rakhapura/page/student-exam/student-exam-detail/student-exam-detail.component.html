@@ -3,9 +3,9 @@
         <h4>ဘာသာရပ်ခွဲရမှတ်စာရင်း</h4>
     </div>
 </div>
-<div class="container-fluid">
-    <div class="row">
-        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
+    <div class="row table-responsive" style="overflow-y: hidden;">
+        <table class="table table-bordered exptable" id="myTable" matSort
             (matSortChange)="sortData($event)" style="margin: 20px auto 50px;">
             <caption style="text-align: center; color: red">
                 <h4>ဘာသာရပ်ကြီးစာမေးပွဲ - {{subjectType.name}} ({{subjectType.grade.name}})</h4>
@@ -41,6 +41,6 @@
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
     </div>
+    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
 </div>

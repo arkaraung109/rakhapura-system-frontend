@@ -264,16 +264,16 @@ export class StudentHostelListComponent implements OnInit {
             }
           },
           error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
+            if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
               this.toastrService.error("This action is forbidden.", "Forbidden Access");
             } else if (err.status == HttpStatusCode.NotAcceptable) {
               this.toastrService.warning("You cannot delete this.", "Already Used For Student Card");
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");
@@ -287,17 +287,21 @@ export class StudentHostelListComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.studentHostelService.exportToExcel(this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedHostel, this.keyword).subscribe({
-      next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        let filename = 'student_hostel_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
-        saveAs(file, filename);
-        this.toastrService.success("Successfully Exported.");
-      },
-      error: (err) => {
-        showError(this.toastrService, this.router, err);
-      }
-    });
+    if (this.sortedData.length == 0) {
+      this.toastrService.warning("There is no record to export.", "Not Found");
+    } else {
+      this.studentHostelService.exportToExcel(this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedHostel, this.keyword).subscribe({
+        next: (response) => {
+          let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          let filename = 'student_hostel_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
+          saveAs(file, filename);
+          this.toastrService.success("Successfully Exported.");
+        },
+        error: (err) => {
+          showError(this.toastrService, this.router, err);
+        }
+      });
+    }
   }
 
   setDataInCurrentPage(res: PaginationResponse) {

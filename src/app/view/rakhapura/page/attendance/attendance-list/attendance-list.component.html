@@ -3,7 +3,7 @@
         <h4>စာမေးပွဲတက်‌ရောက်ဖြေဆိုခဲ့သည့်စာသင်သားစာရင်းရှာဖွေခြင်း</h4>
     </div>
 </div>
-<div class="container-fluid">
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
     <div class="row">
         <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
@@ -103,39 +103,40 @@
         </form>
     </div>
     <hr *ngIf="valid">
-    <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden;">
-        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
-            *ngIf="dataList.length != 0">Export to
-            Excel</button>
-        <table class="table table-bordered exptable" id="" *ngIf="dataList.length != 0">
+    <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
+        *ngIf="dataList.length != 0 && valid">Export to
+        Excel</button>
+    <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden; margin-top: 70px">
+        <table class="table table-bordered exptable" id="myTable" matSort
+        (matSortChange)="sortData($event)">
             <thead>
                 <tr>
-                    <th style="width: 80px; vertical-align: middle;">စဉ်</th>
-                    <th style="width: 100px; vertical-align: middle;">ခုံနံပါတ်</th>
-                    <th style="width: 100px; vertical-align: middle;">အမည်</th>
-                    <th style="width: 100px; vertical-align: middle;">အဖအမည်</th>
+                    <th style="width: 80px; text-align: center;" mat-sort-header="index">စဉ်</th>
+                    <th style="width: 100px; text-align: center;" mat-sort-header="regNo">ခုံနံပါတ်</th>
+                    <th style="width: 100px; text-align: center;" mat-sort-header="name">အမည်</th>
+                    <th style="width: 100px; text-align: center;" mat-sort-header="fatherName">အဖအမည်</th>
                     <th *ngFor="let customExam of tableHeader.customExamList">{{customExam.exam.subjectType.name}}</th>
                     <th style="width: 80px">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let element of dataList">
+                <tr *ngFor="let element of sortedData">
                     <td>{{element.index}}</td>
                     <td *ngIf="element.attendance.studentClass.regNo">{{element.attendance.studentClass.regNo}}</td>
                     <td *ngIf="!element.attendance.studentClass.regNo">-</td>
                     <td>{{element.attendance.studentClass.student.name}}</td>
                     <td>{{element.attendance.studentClass.student.fatherName}}</td>
-                    <td *ngFor="let attendedExam of element.attendedExamList">
+                    <td *ngFor="let attendedExam of element.attendedExamList" class="center">
                         <i class="fa fa-check" *ngIf="attendedExam.present" style="color: green"></i>
                         <i class="fa fa-times" *ngIf="!attendedExam.present" style="color: red"></i>
                     </td>
-                    <td><i class="fa fa-eye" (click)="viewAttendanceDetail(element.attendance.studentClass.id)"></i>
+                    <td class="center"><i class="fa fa-eye" (click)="viewAttendanceDetail(element.attendance.studentClass.id)"></i>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="dataList.length == 0">No record found!</h2>
-        <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-            *ngIf="dataList.length != 0" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
     </div>
+    <h2 style="color: red" *ngIf="dataList.length == 0 && valid">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+        *ngIf="dataList.length != 0 && valid" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
 </div>

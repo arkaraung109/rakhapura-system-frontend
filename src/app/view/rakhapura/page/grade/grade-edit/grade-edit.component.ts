@@ -62,9 +62,7 @@ export class GradeEditComponent implements OnInit {
       this.form.get('name')!.setValue(data.name);
       this.form.get('remark')!.setValue(data.remark);
       this.form.get('abbreviate')!.setValue(data.abbreviate);
-      this.oldGrade.name = data.name;
-      this.oldGrade.remark = data.remark;
-      this.oldGrade.abbreviate = data.abbreviate;
+      this.oldGrade = data;
     });
   }
 

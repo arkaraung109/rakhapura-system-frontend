@@ -170,17 +170,21 @@ export class ArrivalListComponent implements OnInit {
   }
 
   exportToExcel() {
-    this.arrivalService.exportToExcel(this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
-      next: (response) => {
-        let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        let filename = 'arrived_student_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
-        saveAs(file, filename);
-        this.toastrService.success("Successfully Exported.");
-      },
-      error: (err) => {
-        showError(this.toastrService, this.router, err);
-      }
-    });
+    if(this.sortedData.length == 0) {
+      this.toastrService.warning("There is no record to export.", "Not Found");
+    } else {
+      this.arrivalService.exportToExcel(this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+        next: (response) => {
+          let file = new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          let filename = 'arrived_student_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.xlsx';
+          saveAs(file, filename);
+          this.toastrService.success("Successfully Exported.");
+        },
+        error: (err) => {
+          showError(this.toastrService, this.router, err);
+        }
+      });
+    }
   }
 
   setDataInCurrentPage(res: PaginationResponse) {

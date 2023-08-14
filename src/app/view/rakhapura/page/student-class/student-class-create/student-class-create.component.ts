@@ -176,12 +176,14 @@ export class StudentClassCreateComponent implements OnInit {
           return;
         }
         let examTitleId = this.submitForm.get('examTitle')!.value;
-        let academicYearId = this.submitForm.get('academicYear')!.value
+        let academicYearId = this.submitForm.get('academicYear')!.value;
+        let gradeId = this.submitForm.get('grade')!.value;
         let classId = this.submitForm.get('class')!.value;
 
         let requestBody: StudentClass = new StudentClass();
         requestBody.examTitle.id = examTitleId;
         requestBody.studentClass.academicYear.id = academicYearId;
+        requestBody.studentClass.grade.id = gradeId;
         requestBody.studentClass.id = classId;
         this.studentClassService.save(requestBody, this.idList).subscribe({
           next: (res: DataResponse) => {
@@ -192,25 +194,10 @@ export class StudentClassCreateComponent implements OnInit {
               this.toastrService.success(message);
               this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
-                  if (this.currentPage > res.totalPages && res.totalPages != 0) {
-                    this.currentPage = res.totalPages;
-                    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
-                      next: (response: PaginationResponse) => {
-                        this.setDataInCurrentPage(response);
-                        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-                        this.idList = [];
-                        this.isCheckAll = false;
-                      },
-                      error: (err) => {
-                        showError(this.toastrService, this.router, err);
-                      }
-                    });
-                  } else {
-                    this.setDataInCurrentPage(res);
-                    this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
-                    this.idList = [];
-                    this.isCheckAll = false;
-                  }
+                  this.setDataInCurrentPage(res);
+                  this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+                  this.idList = [];
+                  this.isCheckAll = false;
                 },
                 error: (err) => {
                   showError(this.toastrService, this.router, err);
@@ -224,6 +211,8 @@ export class StudentClassCreateComponent implements OnInit {
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
               this.toastrService.error("This action is forbidden.", "Forbidden Access");
+            } else if (err.status == HttpStatusCode.NotAcceptable) {
+              this.toastrService.warning("You cannot save with this academic year, this exam title and this grade anymore.", "Already Published Exam Results");
             } else if (err.status == HttpStatusCode.Conflict) {
               if (err.error.createdCount != 0) {
                 let size = err.error.createdCount;

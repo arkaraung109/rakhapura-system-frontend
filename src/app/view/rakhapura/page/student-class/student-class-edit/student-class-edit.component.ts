@@ -98,10 +98,7 @@ export class StudentClassEditComponent implements OnInit {
       this.studentId = data.student.id;
       this.studentName = data.student.name;
       this.fatherName = data.student.fatherName;
-      this.oldStudentClass.examTitle.id = data.examTitle.id;
-      this.oldStudentClass.studentClass.academicYear.id = data.studentClass.academicYear.id;
-      this.oldStudentClass.studentClass.grade.id = data.studentClass.grade.id;
-      this.oldStudentClass.studentClass.id = data.studentClass.id;
+      this.oldStudentClass = data;
       this.classService.fetchAllFilteredByAcademicYearAndGrade(data.studentClass.academicYear.id, data.studentClass.grade.id).subscribe(data => {
         this.classList = data;
         this.oldClassList = data;

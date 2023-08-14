@@ -8,6 +8,7 @@ export class Exam {
     time!: string;
     passMark!: number;
     markPercentage!: number;
+    published!: boolean;
     authorizedStatus!: boolean;
     authorizedUserId!: number;
     academicYear: AcademicYear = new AcademicYear();

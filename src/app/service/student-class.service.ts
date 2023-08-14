@@ -19,6 +19,10 @@ export class StudentClassService {
     return this.http.get<StudentClass>(`${environment.baseUrl}/student-classes/${id}`, { responseType: "json" });
   }
 
+  fetchPassedByAcademicYearAndExamTitleAndGrade(academicYearId: number, examTitleId: number, gradeId: number) :Observable<StudentClass[]> {
+    return this.http.get<StudentClass[]>(`${environment.baseUrl}/student-classes/filter/passed?academicYearId=${academicYearId}&examTitleId=${examTitleId}&gradeId=${gradeId}`, { responseType: "json" });
+  }
+
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, examTitleId: number, academicYearId: number, gradeId: number, studentClass: string, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/student-classes/segment/search?page=${page}&order=${order}&examTitleId=${examTitleId}&academicYearId=${academicYearId}&gradeId=${gradeId}&studentClass=${studentClass}&keyword=${keyword}`, { responseType: "json" });
   }

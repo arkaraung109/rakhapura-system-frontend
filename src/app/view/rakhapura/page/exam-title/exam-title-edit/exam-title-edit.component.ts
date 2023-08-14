@@ -49,7 +49,7 @@ export class ExamTitleEditComponent implements OnInit {
 
     this.examTitleService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
-      this.oldExamTitle.name = data.name;
+      this.oldExamTitle = data;
     });
   }
 

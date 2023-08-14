@@ -86,4 +86,8 @@ export class SigninComponent implements OnInit {
     });  
   }
 
+  back() {
+    this.router.navigate(['anonymous/home']);
+  }
+
 }

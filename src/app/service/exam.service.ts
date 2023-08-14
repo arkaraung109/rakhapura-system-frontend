@@ -22,6 +22,10 @@ export class ExamService {
     return this.http.get<Exam[]>(`${environment.baseUrl}/exams/filter?academicYearId=${academicYearId}&examTitleId=${examTitleId}`, { responseType: "json" });
   }
 
+  fetchAllFilteredByAcademicYearAndExamTitleAndGrade(academicYearId: number, examTitleId: number, gradeId: number): Observable<Exam[]> {
+    return this.http.get<Exam[]>(`${environment.baseUrl}/exams/filterAll?academicYearId=${academicYearId}&examTitleId=${examTitleId}&gradeId=${gradeId}`, { responseType: "json" });
+  }
+
   fetchPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, academicYearId: number, examTitleId: number, subjectTypeId: number, keyword: string): Observable<PaginationResponse> {
     return this.http.get<PaginationResponse>(`${environment.baseUrl}/exams/segment/search?page=${page}&order=${order}&academicYearId=${academicYearId}&examTitleId=${examTitleId}&subjectTypeId=${subjectTypeId}&keyword=${keyword}`, { responseType: "json" });
   }

@@ -1,7 +1,7 @@
 <div class="hrow">
     <h4>ဖြေဆိုရန်ရောက်ရှိသည့်စာသင်သားစာရင်း</h4>
 </div>
-<div class="container-fluid ttable">
+<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
     <div class="row">
         <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
@@ -55,10 +55,10 @@
             </div>
         </form>
     </div>
-    <div class="row">
-        <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;">Export to
-            Excel</button>
-        <table class="table table-bordered exptable table-responsive" id="myTable" matSort
+    <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;">Export to
+        Excel</button>
+    <div class="row table-responsive" style="overflow-y: hidden; margin-top: 50px">
+        <table class="table table-bordered exptable" id="myTable" matSort
             (matSortChange)="sortData($event)">
             <thead>
                 <tr>
@@ -86,8 +86,8 @@
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
-        <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-            (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
     </div>
+    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+        (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
 </div>
