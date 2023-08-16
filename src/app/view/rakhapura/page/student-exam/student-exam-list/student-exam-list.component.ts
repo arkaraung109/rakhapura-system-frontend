@@ -1,11 +1,13 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
 import { showError } from 'src/app/common/showError';
+import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { AcademicYear } from 'src/app/model/AcademicYear';
 import { ApiResponse } from 'src/app/model/ApiResponse';
 import { ApplicationUser } from 'src/app/model/ApplicationUser';
@@ -81,7 +83,8 @@ export class StudentExamListComponent implements OnInit {
     private publicExamResultService: PublicExamResultService,
     private userService: UserService,
     private toastrService: ToastrService,
-    private router: Router
+    private router: Router,
+    private matDialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -125,7 +128,7 @@ export class StudentExamListComponent implements OnInit {
         this.tableHeader = res.tableHeader;
 
         if (res.elements.length != 0) {
-          this.alreadyPublished = res.elements[0].attendance.studentClass.published;
+          this.alreadyPublished = res.elements[0].attendance.exam.published;
         }
         for (let i = 0; i < res.elements.length; i++) {
           if (res.elements[i].status != 'fail') {
@@ -175,24 +178,34 @@ export class StudentExamListComponent implements OnInit {
   }
 
   publishResults() {
-    if (this.alreadyPublished) {
-      this.toastrService.warning("You cannot publish these results anymore.", "Already Published");
-    } else {
-      let academicYearId = this.form.get('academicYear')!.value;
-      let examTitleId = this.form.get('examTitle')!.value;
-      let gradeId = this.form.get('grade')!.value;
-      this.publicExamResultService.publishResult(academicYearId, examTitleId, gradeId, this.idList).subscribe({
-        next: (res: ApiResponse) => {
-          if (res.status == HttpStatusCode.Created) {
-            localStorage.setItem("status", "published");
-            this.reset();
-          }
-        },
-        error: (err) => {
-          showError(this.toastrService, this.router, err);
+    const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
+      width: '300px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (this.alreadyPublished) {
+          this.toastrService.warning("You cannot publish these results anymore.", "Already Published");
+        } else {
+          let academicYearId = this.form.get('academicYear')!.value;
+          let examTitleId = this.form.get('examTitle')!.value;
+          let gradeId = this.form.get('grade')!.value;
+          this.publicExamResultService.publishResult(academicYearId, examTitleId, gradeId, this.idList).subscribe({
+            next: (res: ApiResponse) => {
+              if (res.status == HttpStatusCode.Created) {
+                localStorage.setItem("status", "published");
+                this.reset();
+              }
+            },
+            error: (err) => {
+              showError(this.toastrService, this.router, err);
+            }
+          });
         }
-      });
-    }
+      } else {
+        this.matDialog.closeAll();
+      }
+    });
   }
 
   setDataInCurrentPage(res: CustomPaginationResponse) {

@@ -67,8 +67,7 @@
     </div>
     <hr>
     <div class="row table-responsive" style="overflow-y: hidden;">
-        <table class="table table-bordered exptable" id="myTable" matSort
-            (matSortChange)="sortData($event)"
+        <table class="table table-bordered exptable" id="myTable" matSort (matSortChange)="sortData($event)"
             [ngStyle]="{'width': userInfo.role.name === 'EXAM_MARK_ENTRY' ? '100%' : userInfo.role.name === 'ADMIN' ? '70%' : '30%'}"
             style="margin: 20px auto 50px;">
             <caption style="text-align: center; color: red">
@@ -78,15 +77,11 @@
                 <tr>
                     <th style="width: 80px" mat-sort-header="index">စဉ်</th>
                     <th style="width: 200px" mat-sort-header="subjectType">ဘာသာရပ်ကြီးစာမေးပွဲ</th>
-                    <th style="width: 100px" mat-sort-header="mark"
-                        *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">ရမှတ်</th>
-                    <th style="width: 100px" mat-sort-header="passMark"
-                        *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">အောင်မှတ်
+                    <th style="width: 100px" mat-sort-header="mark">ရမှတ်</th>
+                    <th style="width: 100px" mat-sort-header="passMark">အောင်မှတ်
                     </th>
-                    <th style="width: 100px" mat-sort-header="markPercentage"
-                        *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">ပေးမှတ်</th>
-                    <th style="width: 100px" mat-sort-header="result"
-                        *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">အောင်/ရှုံး
+                    <th style="width: 100px" mat-sort-header="markPercentage">ပေးမှတ်</th>
+                    <th style="width: 100px" mat-sort-header="result">အောင်/ရှုံး
                     </th>
                     <th style="width: 200px" *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY'">စာရင်းသွင်းခြင်း</th>
                     <th style="width: 200px" *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY'">စာရင်းပြင်ခြင်း</th>
@@ -97,22 +92,20 @@
                 <tr *ngFor="let element of sortedData">
                     <td>{{element.index}}</td>
                     <td>{{element.exam.subjectType.name}}</td>
-                    <td
-                        *ngIf="(userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN') && element.mark == '-'">
+                    <td *ngIf="element.mark == '-'">
                         -</td>
-                    <td *ngIf="(userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN') && element.mark != '-'"
+                    <td *ngIf="element.mark != '-'"
                         [ngStyle]="{'color': element.mark < element.exam.passMark ? 'red' : 'green'}">
                         <b>{{element.mark}}</b>
                     </td>
-                    <td *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">
+                    <td>
                         {{element.exam.passMark}}</td>
-                    <td *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">
+                    <td>
                         {{element.exam.markPercentage}}</td>
-                    <td
-                        *ngIf="(userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN') && element.mark == '-'">
+                    <td *ngIf="element.mark == '-'">
                         -</td>
-                    <td *ngIf="(userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN') && element.mark != '-'"
-                        [ngStyle]="{'color': element.result === 'ရှုံး' ? 'red' : 'green'}"><b>{{element.result}}</b>
+                    <td *ngIf="element.mark != '-'" [ngStyle]="{'color': element.result === 'ရှုံး' ? 'red' : 'green'}">
+                        <b>{{element.result}}</b>
                     </td>
                     <td *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY'"><a style="cursor: pointer"
                             (click)="navigateToSaveForm(element.id, element.exam.id)">အမှတ်စာရင်းသွင်းရန်</a></td>

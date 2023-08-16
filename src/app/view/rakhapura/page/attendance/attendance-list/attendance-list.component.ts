@@ -7,6 +7,7 @@ import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
 import { showError } from 'src/app/common/showError';
 import { AcademicYear } from 'src/app/model/AcademicYear';
+import { ApplicationUser } from 'src/app/model/ApplicationUser';
 import { CustomPaginationResponse } from 'src/app/model/CustomPaginationResponse';
 import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
@@ -15,6 +16,7 @@ import { AcademicYearService } from 'src/app/service/academic-year.service';
 import { AttendanceService } from 'src/app/service/attendance.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
+import { UserService } from 'src/app/service/user.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({
@@ -26,6 +28,7 @@ export class AttendanceListComponent implements OnInit {
 
   searched = false;
   valid = false;
+  userInfo!: ApplicationUser;
   pageData: CustomPaginationResponse = new CustomPaginationResponse();
   currentPage: number = 1;
   sortedData: any[] = [];
@@ -61,9 +64,10 @@ export class AttendanceListComponent implements OnInit {
     private examTitleService: ExamTitleService,
     private gradeService: GradeService,
     private attendanceService: AttendanceService,
+    private userService: UserService,
+    private toastrService: ToastrService,
     private route: ActivatedRoute,
     private router: Router,
-    private toastrService: ToastrService,
   ) { }
 
   ngOnInit(): void {
@@ -105,6 +109,8 @@ export class AttendanceListComponent implements OnInit {
       this.form.get('grade')!.setValue(+this.searchedGrade);
       this.form.get('keyword')!.setValue(this.keyword);
     }
+
+    this.userInfo = this.userService.fetchUserProfileInfo();
   }
 
   sortData(sort: Sort) {

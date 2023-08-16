@@ -134,17 +134,21 @@ export class CertificateCreateComponent implements OnInit {
           if (data.length == 0) {
             this.toastrService.warning("There is no exam for this academic year, this exam title and this grade.", "Not Found");
           } else {
-            this.certificateService.generate(requestBody).subscribe({
-              next: (response) => {
-                let file = new Blob([response], { type: "application/x-zip-compressed" });
-                let filename = 'certificates_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.zip';
-                saveAs(file, filename);
-                this.toastrService.success("Successfully Generated.");
-              },
-              error: (err) => {
-                showError(this.toastrService, this.router, err);
-              }
-            });
+            if(!data[0].published) {
+              this.toastrService.warning("There is no published exam for this academic year, this exam title and this grade.", "Not Found");
+            } else {
+              this.certificateService.generate(requestBody).subscribe({
+                next: (response) => {
+                  let file = new Blob([response], { type: "application/x-zip-compressed" });
+                  let filename = 'certificates_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.zip';
+                  saveAs(file, filename);
+                  this.toastrService.success("Successfully Generated.");
+                },
+                error: (err) => {
+                  showError(this.toastrService, this.router, err);
+                }
+              });
+            }
           }
         });
       } else {

@@ -33,6 +33,7 @@ export class AttendanceDetailComponent implements OnInit {
   keyword!: string;
   totalPassMark: number = 0;
   totalMarkPercentage: number = 0;
+  alreadyPublished = false;
 
   constructor(
     private examService: ExamService,
@@ -61,6 +62,13 @@ export class AttendanceDetailComponent implements OnInit {
     });
     this.attendanceService.fetchByPresentStudentClass(this.studentClassId).subscribe(data => {
       this.sortedData = [...data];
+
+      if(this.sortedData.length != 0) {
+        if(this.sortedData[0].exam.published) {
+          this.alreadyPublished = true;
+        }
+      }
+      
       for (let i = 0; i < this.sortedData.length; i++) {
         this.studentExamService.fetchTotalMark(this.sortedData[i].id).subscribe(mark => {
           this.sortedData[i].index = i + 1;
@@ -128,7 +136,7 @@ export class AttendanceDetailComponent implements OnInit {
   }
 
   navigateToSaveForm(attendanceId: string, examId: number) {
-    if (this.studentClass.published) {
+    if (this.alreadyPublished) {
       this.toastrService.warning("You cannot save anymore.", "Already Published Exam Results");
     } else {
       this.studentExamService.fetchByAttendance(attendanceId).subscribe({
@@ -175,7 +183,7 @@ export class AttendanceDetailComponent implements OnInit {
   }
 
   navigateToEditForm(attendanceId: string, examId: number) {
-    if (this.studentClass.published) {
+    if (this.alreadyPublished) {
       this.toastrService.warning("You cannot update anymore.", "Already Published Exam Results");
     } else {
       this.studentExamService.fetchByAttendance(attendanceId).subscribe({

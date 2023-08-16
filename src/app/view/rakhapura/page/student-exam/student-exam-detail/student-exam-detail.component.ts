@@ -40,6 +40,7 @@ export class StudentExamDetailComponent implements OnInit {
   searchedGrade!: number;
   keyword!: string;
   totalMark: number = 0;
+  alreadyPublished = false;
 
   constructor(
     private examService: ExamService,
@@ -74,6 +75,12 @@ export class StudentExamDetailComponent implements OnInit {
 
     this.studentExamService.fetchByAttendance(this.attendanceId).subscribe(data => {
       this.sortedData = [...data];
+      
+      if(this.sortedData.length != 0) {
+        if(this.sortedData[0].examSubject.exam.published) {
+          this.alreadyPublished = true;
+        }
+      }
       for (let i = 0; i < this.sortedData.length; i++) {
         this.studentExamModerateService.fetchFilteredByExamSubjectAndAttendance(this.sortedData[i].examSubject.id, this.attendanceId).subscribe(studentExamModerate => {
           this.sortedData[i].index = i + 1;
@@ -137,7 +144,7 @@ export class StudentExamDetailComponent implements OnInit {
       if (result) {
         let requestBody: StudentExam = new StudentExam();
         requestBody.id = studentExamId;
-        if (this.studentClass.published) {
+        if (this.alreadyPublished) {
           this.toastrService.warning("You cannot moderate this.", "Already Published Exam Results");
         } else {
           this.studentExamModerateService.moderate(requestBody).subscribe({

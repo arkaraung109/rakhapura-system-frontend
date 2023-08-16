@@ -104,11 +104,10 @@
     </div>
     <hr *ngIf="valid">
     <button class="btn btn-search" (click)="exportToExcel()" style="float: right; margin-bottom: 10px;"
-        *ngIf="dataList.length != 0 && valid">Export to
+        *ngIf="valid">Export to
         Excel</button>
     <div class="row table-responsive" *ngIf="valid" style="overflow-y: hidden; margin-top: 70px">
-        <table class="table table-bordered exptable" id="myTable" matSort
-        (matSortChange)="sortData($event)">
+        <table class="table table-bordered exptable" id="myTable" matSort (matSortChange)="sortData($event)">
             <thead>
                 <tr>
                     <th style="width: 80px; text-align: center;" mat-sort-header="index">စဉ်</th>
@@ -116,7 +115,8 @@
                     <th style="width: 100px; text-align: center;" mat-sort-header="name">အမည်</th>
                     <th style="width: 100px; text-align: center;" mat-sort-header="fatherName">အဖအမည်</th>
                     <th *ngFor="let customExam of tableHeader.customExamList">{{customExam.exam.subjectType.name}}</th>
-                    <th style="width: 80px">Action</th>
+                    <th style="width: 80px"
+                        *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -130,7 +130,9 @@
                         <i class="fa fa-check" *ngIf="attendedExam.present" style="color: green"></i>
                         <i class="fa fa-times" *ngIf="!attendedExam.present" style="color: red"></i>
                     </td>
-                    <td class="center"><i class="fa fa-eye" (click)="viewAttendanceDetail(element.attendance.studentClass.id)"></i>
+                    <td class="center"
+                        *ngIf="userInfo.role.name === 'EXAM_MARK_ENTRY' || userInfo.role.name === 'ADMIN'"><i
+                            class="fa fa-eye" (click)="viewAttendanceDetail(element.attendance.studentClass.id)"></i>
                     </td>
                 </tr>
             </tbody>
@@ -138,5 +140,6 @@
     </div>
     <h2 style="color: red" *ngIf="dataList.length == 0 && valid">No record found!</h2>
     <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-        *ngIf="dataList.length != 0 && valid" (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
+        *ngIf="dataList.length != 0 && valid"
+        (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
 </div>
