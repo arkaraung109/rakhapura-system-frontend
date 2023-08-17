@@ -36,8 +36,6 @@
                             <div class="col-sm-6"></div>
                             <div *ngIf="submitted || markList.controls[i].get('mark')!.invalid && markList.controls[i].get('mark')!.touched"
                                 class="col-sm-6" style="color: red">
-                                <div *ngIf="markList.controls[i].get('mark')!.errors?.['required']">Field is required
-                                </div>
                                 <div *ngIf="markList.controls[i].get('mark')!.errors?.['rangeError']">Must be between 0
                                     and {{examSubjectList[i].markPercentage}} (full mark)
                                 </div>

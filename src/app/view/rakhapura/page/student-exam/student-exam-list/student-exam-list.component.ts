@@ -98,11 +98,6 @@ export class StudentExamListComponent implements OnInit {
       this.gradeList = data;
     });
 
-    if (localStorage.getItem("status") === "published") {
-      this.toastrService.success("Successfully Published.");
-    }
-
-    localStorage.removeItem("status");
     this.userInfo = this.userService.fetchUserProfileInfo();
   }
 
@@ -193,8 +188,7 @@ export class StudentExamListComponent implements OnInit {
           this.publicExamResultService.publishResult(academicYearId, examTitleId, gradeId, this.idList).subscribe({
             next: (res: ApiResponse) => {
               if (res.status == HttpStatusCode.Created) {
-                localStorage.setItem("status", "published");
-                this.reset();
+                this.toastrService.success("Successfully Published.");
               }
             },
             error: (err) => {

@@ -77,7 +77,7 @@ export class AwardCreateComponent implements OnInit {
       this.regionList = data;
     });
 
-    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedRegion, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -150,7 +150,7 @@ export class AwardCreateComponent implements OnInit {
               let message = "Successfully Created ";
               message += size > 1 ? size + " Records" : size + " Record";
               this.toastrService.success(message);
-              this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+              this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedRegion, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
                   this.setDataInCurrentPage(res);
                   this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -247,7 +247,7 @@ export class AwardCreateComponent implements OnInit {
       return;
     }
 
-    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedRegion, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -270,7 +270,7 @@ export class AwardCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedRegion, this.keyword).subscribe({
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedRegion, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         if (res.totalElements == 0) { this.currentPage = 0 }
         this.pageData = res;

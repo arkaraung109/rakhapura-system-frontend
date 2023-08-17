@@ -165,11 +165,11 @@ export class StudentCardCreateComponent implements OnInit {
                 let filename = 'student_card_' + format(new Date(), 'dd-MM-yyyy HH:mm:ss') + '.zip';
                 saveAs(file, filename);
                 this.toastrService.success("Successfully Generated.");
-                this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
+                this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
                   next: (res: PaginationResponse) => {
                     if (this.currentPage > res.totalPages && res.totalPages != 0) {
                       this.currentPage = res.totalPages;
-                      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
+                      this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
                         next: (response: PaginationResponse) => {
                           this.setDataInCurrentPage(response);
                           this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -255,7 +255,7 @@ export class StudentCardCreateComponent implements OnInit {
 
     this.valid = true;
     this.resetForm();
-    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -278,7 +278,7 @@ export class StudentCardCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
+    this.studentCardService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade).subscribe({
       next: (res: PaginationResponse) => {
         if (res.totalElements == 0) { this.currentPage = 0 }
         this.pageData = res;

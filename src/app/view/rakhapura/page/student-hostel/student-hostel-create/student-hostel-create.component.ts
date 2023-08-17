@@ -88,7 +88,7 @@ export class StudentHostelCreateComponent implements OnInit {
       this.hostelList = data;
     });
 
-    this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
+    this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -159,11 +159,11 @@ export class StudentHostelCreateComponent implements OnInit {
               let message = "Successfully Created ";
               message += size > 1 ? size + " Records" : size + " Record";
               this.toastrService.success(message);
-              this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
+              this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
-                    this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
+                    this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
                       next: (response: PaginationResponse) => {
                         this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });

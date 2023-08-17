@@ -19,8 +19,8 @@ export class AttendanceService {
     return this.http.get<Attendance[]>(`${environment.baseUrl}/attendances/student-class/present/${id}`, { responseType: "json" });
   }
 
-  fetchNotPresentPageSegmentBySearching(page: number, order: PaginationOrder = PaginationOrder.DESC, academicYearId: number, examTitleId: number, subjectTypeId: number, keyword: string): Observable<PaginationResponse> {
-    return this.http.get<PaginationResponse>(`${environment.baseUrl}/attendances/segment/not-present/search?page=${page}&order=${order}&academicYearId=${academicYearId}&examTitleId=${examTitleId}&subjectTypeId=${subjectTypeId}&keyword=${keyword}`, { responseType: "json" });
+  fetchNotPresentPageSegmentBySearching(page: number, academicYearId: number, examTitleId: number, subjectTypeId: number, keyword: string): Observable<PaginationResponse> {
+    return this.http.get<PaginationResponse>(`${environment.baseUrl}/attendances/segment/not-present/search?page=${page}&academicYearId=${academicYearId}&examTitleId=${examTitleId}&subjectTypeId=${subjectTypeId}&keyword=${keyword}`, { responseType: "json" });
   }
 
   fetchPresentPageSegmentBySearching(page: number, academicYearId: number, examTitleId: number, gradeId: number, keyword: string): Observable<CustomPaginationResponse> {

@@ -69,7 +69,7 @@ export class StudentExamCreateComponent implements OnInit {
       this.examSubjectList = data;
       this.examSubjectList.forEach(es => {
         let markGroup = this.fb.group({
-          mark: new FormControl('', [Validators.required, maxMarkValidator(es.markPercentage)])
+          mark: new FormControl('', [maxMarkValidator(es.markPercentage)])
         });
         this.markList.push(markGroup);
       });

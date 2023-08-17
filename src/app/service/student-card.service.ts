@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environment/environment';
 import { PaginationOrder } from '../common/PaginationOrder';
 import { PaginationResponse } from '../model/PaginationResponse';
-import { DataResponse } from '../model/DataResponse';
 import { StudentCard } from '../model/StudentCard';
 
 @Injectable({

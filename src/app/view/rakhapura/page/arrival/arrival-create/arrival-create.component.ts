@@ -81,7 +81,7 @@ export class ArrivalCreateComponent implements OnInit {
       this.classList = data;
     });
 
-    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -146,11 +146,11 @@ export class ArrivalCreateComponent implements OnInit {
               let message = "Successfully Arrived ";
               message += size > 1 ? size + " Records" : size + " Record";
               this.toastrService.success(message);
-              this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+              this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
-                    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+                    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, false, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
                       next: (response: PaginationResponse) => {
                         this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });

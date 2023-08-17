@@ -74,7 +74,7 @@ export class AttendanceCreateComponent implements OnInit {
       this.subjectTypeList = data;
     });
 
-    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
       },
@@ -137,11 +137,11 @@ export class AttendanceCreateComponent implements OnInit {
               let message = "Successfully Make As Present ";
               message += size > 1 ? size + " Records" : size + " Record";
               this.toastrService.success(message);
-              this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+              this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
                 next: (res: PaginationResponse) => {
                   if (this.currentPage > res.totalPages && res.totalPages != 0) {
                     this.currentPage = res.totalPages;
-                    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+                    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
                       next: (response: PaginationResponse) => {
                         this.setDataInCurrentPage(response);
                         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -227,7 +227,7 @@ export class AttendanceCreateComponent implements OnInit {
       return;
     }
 
-    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         this.setDataInCurrentPage(res);
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
@@ -245,7 +245,7 @@ export class AttendanceCreateComponent implements OnInit {
   enterPaginationEvent(currentPageEnterValue: number) {
     this.currentPage = currentPageEnterValue;
 
-    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
         if (res.totalElements == 0) { this.currentPage = 0 }
         this.pageData = res;
