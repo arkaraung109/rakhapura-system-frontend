@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AcademicYearComponent } from './page/academic-year/academic-year.component';
-import { ProfileComponent } from './page/profile/profile.component';
 import { UserPermission } from 'src/app/common/UserPermission';
 import { AuthGuard } from 'src/app/interceptor/auth.guard';
 import { GradeComponent } from './page/grade/grade.component';
@@ -24,20 +23,42 @@ import { StudentExamModerateComponent } from './page/student-exam-moderate/stude
 import { CertificateComponent } from './page/certificate/certificate.component';
 import { AwardComponent } from './page/award/award.component';
 import { PunishmentComponent } from './page/punishment/punishment.component';
+import { ProfileComponent } from './page/profile/profile.component';
+import { AppUserComponent } from './page/app-user/app-user.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'profile',
-    pathMatch : 'full'
+    redirectTo: 'profile/detail',
+    pathMatch: 'full'
   },
   {
     path: 'profile',
     component: ProfileComponent,
     canActivate: [AuthGuard],
     data: {
-      allowedRoles: [UserPermission.ADMIN, UserPermission.EXAM_ENTRY, UserPermission.STUDENT_ENTRY, UserPermission.HOSTEL_ATTENDANCE_ENTRY, UserPermission.ATTENDANCE_ENTRY, UserPermission.EXAM_MARK_ENTRY]
-    }
+      allowedRoles: [UserPermission.ANONYMOUS]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/profile/profile.module').then(m => m.ProfileModule)
+      },
+    ]
+  },
+  {
+    path: 'app-user',
+    component: AppUserComponent,
+    canActivateChild: [AuthGuard],
+    data: {
+      allowedRoles: [UserPermission.ADMIN]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./page/app-user/app-user.module').then(m => m.AppUserModule)
+      },
+    ]
   },
   {
     path: 'academic-year',

@@ -19,9 +19,29 @@ export class MenuService {
         title: 'အသုံးပြုသူအချက်အလက်',
         items: [
           {
-            title: 'ကိုယ်‌ရေးအချက်အလက်',
-            url: '/app/profile',
+            title: 'အချက်အလက်ကြည့်ခြင်း',
+            url: '/app/profile/detail',
             permissions: [{ name: UserPermission.ANONYMOUS }]
+          },
+          {
+            title: 'အချက်အလက်ပြင်ခြင်း',
+            url: '/app/profile/edit',
+            permissions: [{ name: UserPermission.ANONYMOUS }]
+          }
+        ]
+      },
+      {
+        title: 'System အသုံးပြုသူ',
+        items: [
+          {
+            title: 'အသစ်သွင်းခြင်း',
+            url: '/app/app-user/create',
+            permissions: [{ name: UserPermission.ADMIN }]
+          },
+          {
+            title: 'စာရင်းကြည့်ခြင်း',
+            url: '/app/app-user/list',
+            permissions: [{ name: UserPermission.ADMIN }]
           }
         ]
       },

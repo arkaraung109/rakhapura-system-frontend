@@ -5,7 +5,6 @@ import { RakhapuraRoutingModule } from './rakhapura-routing.module';
 import { MenuComponent } from './menu/menu.component';
 import { SideBarComponent } from './side-bar/side-bar.component';
 import { HeaderComponent } from './header/header.component';
-import { ProfileComponent } from './page/profile/profile.component';
 import { RakhapuraComponent } from './rakhapura.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -31,13 +30,14 @@ import { StudentExamModerateModule } from './page/student-exam-moderate/student-
 import { CertificateModule } from './page/certificate/certificate.module';
 import { AwardModule } from './page/award/award.module';
 import { PunishmentModule } from './page/punishment/punishment.module';
+import { ProfileModule } from './page/profile/profile.module';
+import { AppUserModule } from './page/app-user/app-user.module';
 
 @NgModule({
   declarations: [
     MenuComponent,
     SideBarComponent,
     HeaderComponent,
-    ProfileComponent,
     RakhapuraComponent,
   ],
   imports: [
@@ -47,6 +47,8 @@ import { PunishmentModule } from './page/punishment/punishment.module';
     FormsModule,
     ReactiveFormsModule,
     ShareModule,
+    ProfileModule,
+    AppUserModule,
     AcademicYearModule,
     GradeModule,
     ExamTitleModule,

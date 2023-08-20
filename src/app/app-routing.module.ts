@@ -42,7 +42,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/app/profile',
+        redirectTo: '/app/profile/detail',
         pathMatch: 'full'
       },
       {

@@ -34,14 +34,14 @@ export class SigninComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getJwtToken();
-    if(token) {
+    if (token) {
       this.router.navigate(['/']);
     }
   }
 
   submit() {
     this.submitted = true;
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
 
@@ -58,9 +58,9 @@ export class SigninComponent implements OnInit {
           error: (err) => {
             if (err.status == HttpStatusCode.NotFound) {
               this.userNotFoundMsg = "User does not exist.";
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");
@@ -69,21 +69,25 @@ export class SigninComponent implements OnInit {
         });
       },
       error: (err) => {
-        if(err.status == HttpStatusCode.NotFound) {
+        if (err.status == HttpStatusCode.NotFound) {
           this.userNotFoundMsg = "User does not exist.";
           this.wrongPasswordMsg = "";
-        } else if(err.status == HttpStatusCode.Unauthorized) {
+        } else if (err.status == HttpStatusCode.Unauthorized) {
           this.userNotFoundMsg = "";
           this.wrongPasswordMsg = "Password is wrong.";
-        } else if(err.status >= 400 && err.status < 500) {
-          this.toastrService.error("Something went wrong.", "Client Error");
-        } else if(err.status >= 500) {
+        } else if (err.status >= 400 && err.status < 500) {
+          if (err.status == HttpStatusCode.Locked) {
+            this.toastrService.error("Please contact administrator.", "Account Disabled");
+          } else {
+            this.toastrService.error("Something went wrong.", "Client Error");
+          }
+        } else if (err.status >= 500) {
           this.toastrService.error("Please contact administrator.", "Server Error");
         } else {
           this.toastrService.error("Something went wrong.", "Unknown Error");
         }
       }
-    });  
+    });
   }
 
   back() {

@@ -1,0 +1,161 @@
+<div class="container-fluid hrow">
+  <div class="row">
+    <h4>ကိုယ်ရေးအချက်အလက်ပြင်ခြင်း</h4>
+  </div>
+</div>
+<div class="container-fluid">
+  <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+    autocomplete="off">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-sm-4">
+            <label>First Name<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="firstName" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('firstName')!.invalid && form.get('firstName')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('firstName')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('firstName')!.errors?.['maxlength']">Must not exceed 300 characters</div>
+            <div *ngIf="form.get('firstName')!.errors?.['pattern']">Must match with valid pattern</div>
+            <div *ngIf="form.get('firstName')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Last Name<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="lastName" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('lastName')!.invalid && form.get('lastName')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('lastName')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('lastName')!.errors?.['maxlength']">Must not exceed 300 characters</div>
+            <div *ngIf="form.get('lastName')!.errors?.['pattern']">Must match with valid pattern</div>
+            <div *ngIf="form.get('lastName')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Username<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="loginUserName" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('loginUserName')!.invalid && form.get('loginUserName')!.touched"
+            class="col-sm-6" style="color: red">
+            <div *ngIf="form.get('loginUserName')!.errors?.['required']">Field is required</div>
+            <div *ngIf="form.get('loginUserName')!.errors?.['maxlength']">Must not exceed 100 characters</div>
+            <div *ngIf="form.get('loginUserName')!.errors?.['pattern']">Must match with valid pattern</div>
+            <div *ngIf="form.get('loginUserName')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Role<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <select formControlName="role" class="fcontrol">
+              <option [ngValue]="''">Choose</option>
+              <option *ngFor="let r of roleList" [ngValue]="r.id">
+                {{r.name}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('role')!.invalid && form.get('role')!.touched" class="col-sm-6"
+            style="color: red">
+            <div *ngIf="form.get('role')!.errors?.['required']">Field is required</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Old Password<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="oldPassword" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('oldPassword')!.invalid && form.get('oldPassword')!.touched"
+            class="col-sm-6" style="color: red">
+            <div *ngIf="form.get('oldPassword')!.errors?.['required']">Field is required</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>New Password<span>*</span><i class="fa fa-random" style="margin-left: 30px; cursor: pointer;"
+                (click)="generateRandomPassword()"></i></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="newPassword" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('newPassword')!.invalid && form.get('newPassword')!.touched"
+            class="col-sm-6" style="color: red">
+            <div *ngIf="form.get('newPassword')!.errors?.['pattern']">Must match with password pattern</div>
+            <div *ngIf="form.get('newPassword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+            <div *ngIf="form.get('newPassword')!.errors?.['containSpace']">Must not contain spaces</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Confirm Password<span>*</span></label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" formControlName="confirmPassword" class="fcontrol" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div *ngIf="submitted || form.get('confirmPassword')!.invalid && form.get('confirmPassword')!.touched"
+            class="col-sm-6" style="color: red">
+            <div *ngIf="form.get('confirmPassword')!.errors?.['pattern']">Must match with password pattern</div>
+            <div *ngIf="form.get('confirmPassword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
+            <div *ngIf="form.get('confirmPassword')!.errors?.['containSpace']">Must not contain spaces</div>
+            <div *ngIf="form.errors?.['notMatch']">Must match with new password</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="alert alert-success col-sm-10">
+            <h5>Password Policies:</h5>
+            A digit must occur at least once.<br>
+            A lowercase alphabet must occur at least once.<br>
+            An uppercase alphabet that must occur at least once.<br>
+            A special character that must occur at least once.<br>
+            White spaces are not allowed.<br>
+            At least 8 characters and at most 30 characters
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-4"></div>
+      <div class="col-xs-4 col-sm-6">
+        <button type="submit" class="bsearch btn">Update</button>
+        <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+        <button type="button" class="bsearch btn" (click)="back()">Back</button>
+      </div>
+      <div class="col-xs-4"></div>
+    </div>
+  </form>
+</div>

@@ -115,9 +115,6 @@ export class StudentEditComponent implements OnInit {
     this.regionService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.regionList = data;
     });
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-    });
     this.studentService.fetchById(this.id).subscribe(data => {
       this.form.get('name')!.setValue(data.name);
       this.form.get('dob')!.setValue(format(parse(data.dob, "dd-MM-yyyy", new Date()), "yyyy-MM-dd"));
@@ -169,7 +166,7 @@ export class StudentEditComponent implements OnInit {
             }
           },
           error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
+            if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
@@ -178,9 +175,9 @@ export class StudentEditComponent implements OnInit {
               this.toastrService.warning("Record does not exist.", "Not Found");
             } else if (err.status == HttpStatusCode.Conflict) {
               this.toastrService.warning("Record already exists.", "Duplication");
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");
@@ -210,25 +207,14 @@ export class StudentEditComponent implements OnInit {
   }
 
   back() {
-    if (this.searchedRegion == 0 && this.keyword === '') {
-      this.router.navigate(['app/student/list'], {
-        queryParams: {
-          currentPage: this.currentPage,
-          searchedRegion: this.searchedRegion,
-          keyword: this.keyword
-        },
-        skipLocationChange: true
-      });
-    } else {
-      this.router.navigate(['app/student/list'], {
-        queryParams: {
-          currentPage: this.currentPage,
-          searchedRegion: this.searchedRegion,
-          keyword: this.keyword
-        },
-        skipLocationChange: true
-      });
-    }
+    this.router.navigate(['app/student/list'], {
+      queryParams: {
+        currentPage: this.currentPage,
+        searchedRegion: this.searchedRegion,
+        keyword: this.keyword
+      },
+      skipLocationChange: true
+    });
   }
 
 }
