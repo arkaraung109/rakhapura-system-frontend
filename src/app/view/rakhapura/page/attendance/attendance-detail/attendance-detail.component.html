@@ -1,75 +1,73 @@
 <div class="hrow">
     <h4>ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</h4>
 </div>
-<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
+<div class="container-fluid">
     <div class="row">
-        <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>ခုံနံပါတ်</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <label>{{studentClass.regNo}}</label>
-                    </div>
+        <div class="col-sm-3"></div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="row">
+                <div class="col-xs-6">
+                    <label>ခုံနံပါတ်</label>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>စာသင်သားအမည်</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <label>{{studentClass.student.name}}</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>အဖအမည်</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <label>{{studentClass.student.fatherName}}</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>စာသင်နှစ်</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <label>{{studentClass.studentClass.academicYear.name}}</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>စာမေးပွဲခေါင်းစဉ်</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <label>{{studentClass.examTitle.name}}</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>အတန်း</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <label>{{studentClass.studentClass.grade.name}}</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-4"></div>
-                    <div class="col-xs-4 col-sm-6">
-                        <button type="button" class="bsearch btn" (click)="back()">Back</button>
-                    </div>
-                    <div class="col-xs-4"></div>
+                <div class="col-xs-6">
+                    <label>{{studentClass.regNo}}</label>
                 </div>
             </div>
-            <div class="col-md-3"></div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <label>စာသင်သားအမည်</label>
+                </div>
+                <div class="col-xs-6">
+                    <label>{{studentClass.student.name}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <label>အဖအမည်</label>
+                </div>
+                <div class="col-xs-6">
+                    <label>{{studentClass.student.fatherName}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <label>စာသင်နှစ်</label>
+                </div>
+                <div class="col-xs-6">
+                    <label>{{studentClass.studentClass.academicYear.name}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <label>စာမေးပွဲခေါင်းစဉ်</label>
+                </div>
+                <div class="col-xs-6">
+                    <label>{{studentClass.examTitle.name}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <label>အတန်း</label>
+                </div>
+                <div class="col-xs-6">
+                    <label>{{studentClass.studentClass.grade.name}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4">
+                    <button type="button" class="bsearch btn" (click)="back()">Back</button>
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
         </div>
+        <div class="col-sm-3"></div>
     </div>
     <hr>
-    <div class="row table-responsive" style="overflow-y: hidden;">
-        <table class="table table-bordered exptable" id="myTable" matSort (matSortChange)="sortData($event)"
+    <div class="table-responsive" style="overflow-y: hidden;">
+        <table class="table table-bordered table-hover exptable" id="myTable" matSort (matSortChange)="sortData($event)"
             [ngStyle]="{'width': userInfo.role.name === 'EXAM_MARK_ENTRY' ? '100%' : userInfo.role.name === 'ADMIN' ? '70%' : '30%'}"
-            style="margin: 20px auto 50px;">
+            style="margin: auto">
             <caption style="text-align: center; color: red">
                 <h4>ဖြေဆိုခဲ့သောဘာသာရပ်ကြီးစာမေးပွဲများ</h4>
             </caption>

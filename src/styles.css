@@ -7,6 +7,11 @@ body{
 	font-size:12px !important;
 }
 
+.star {
+	color: red;
+	margin-left: 5px;
+}
+
 .lnav{
 	overflow: hidden;
 	position: fixed;
@@ -197,9 +202,10 @@ i{
 	text-align: left;
 }
 .exptable th{
-	text-align: center;
-	background: #eff5f5;
-	color:#3300ff;
+	text-align: left;
+	vertical-align: middle;
+	background: #e6e0fb;
+	color:black;
 }
 
 /*data table css start*/

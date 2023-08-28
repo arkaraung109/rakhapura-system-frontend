@@ -58,7 +58,6 @@ export class StudentHostelCreateComponent implements OnInit {
     academicYear: new FormControl(0),
     grade: new FormControl(0),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -264,7 +263,28 @@ export class StudentHostelCreateComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('examTitle')!.setValue(0);
+    this.form.get('academicYear')!.setValue(0);
+    this.form.get('grade')!.setValue(0);
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.isCheckAll = false;
+    this.currentPage = 1;
+    this.idList = [];
+    this.searchedExamTitle = 0;
+    this.searchedAcademicYear = 0;
+    this.searchedGrade = 0;
+    this.keyword = "";
+
+    this.studentHostelService.fetchNotPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

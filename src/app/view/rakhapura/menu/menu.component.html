@@ -1,8 +1,7 @@
 <li class="collapsible" (click)="toggleMenuCategory()">
-    <i *ngIf="this.menu.title !== 'အသုံးပြုသူအချက်အလက်'" class="fa fa-cog"></i>
-    <i *ngIf="this.menu.title === 'အသုံးပြုသူအချက်အလက်'" class="fa fa-user"></i>
+    <i *ngIf="this.menu.title !== 'အသုံးပြုသူ အချက်အလက်'" class="fa fa-cog"></i>
+    <i *ngIf="this.menu.title === 'အသုံးပြုသူ အချက်အလက်'" class="fa fa-user"></i>
     {{this.menu.title}}
-    <!-- <i class="fa fa-angle-double-right"></i> -->
 </li>
 <div class="menu-item" #menuContent>
     <a [routerLink]="[menuItem.url]" *ngFor="let menuItem of menuItems">&nbsp;&nbsp;{{menuItem.title}}</a>

@@ -1,66 +1,67 @@
 <div class="hrow">
-    <h4>ဘာသာရပ်ခွဲစာမေးပွဲအမှတ်ပေးစာရင်း</h4>
+    <h4>ဘာသာရပ်ခွဲစာမေးပွဲစာရင်း</h4>
 </div>
-<div class="container-fluid ttable" style="padding: 0px 15px 5px 15px">
-    <div class="row">
-        <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
-            enctype="multipart/form-data" autocomplete="off">
-            <div class="row">
-                <div class="col-sm-2">
-                    <select formControlName="academicYear" class="fcontrol" style="margin: 20px 0px;">
-                        <option [ngValue]="0">စာသင်နှစ်အားလုံး</option>
-                        <option *ngFor="let a of academicYearList" [ngValue]="a.id">
-                            {{a.name}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-2">
-                    <select formControlName="examTitle" class="fcontrol" style="margin: 20px 0px;">
-                        <option [ngValue]="0">စာမေးပွဲခေါင်းစဉ်အားလုံး</option>
-                        <option *ngFor="let e of examTitleList" [ngValue]="e.id">
-                            {{e.name}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <select formControlName="subjectType" class="fcontrol" style="margin: 20px 0px;">
-                        <option [ngValue]="0">ဘာသာရပ်ကြီးစာမေးပွဲအားလုံး</option>
-                        <option *ngFor="let st of subjectTypeList" [ngValue]="st.id">
-                            {{st.name}} ({{st.grade.name}})
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-2">
-                    <select formControlName="subject" class="fcontrol" style="margin: 20px 0px;">
-                        <option [ngValue]="0">ဘာသာရပ်ခွဲအားလုံး</option>
-                        <option *ngFor="let s of subjectList" [ngValue]="s.id">
-                            {{s.name}}
-                        </option>
-                    </select>
+<div class="container-fluid">
+    <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
+            <div class="col-sm-3 margin-bottom">
+                <select formControlName="academicYear" class="form-control">
+                    <option [ngValue]="0">စာသင်နှစ်အားလုံး</option>
+                    <option *ngFor="let a of academicYearList" [ngValue]="a.id">
+                        {{a.name}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-sm-3 margin-bottom">
+                <select formControlName="examTitle" class="form-control">
+                    <option [ngValue]="0">စာမေးပွဲခေါင်းစဉ်အားလုံး</option>
+                    <option *ngFor="let e of examTitleList" [ngValue]="e.id">
+                        {{e.name}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-sm-3 margin-bottom">
+                <select formControlName="subjectType" class="form-control">
+                    <option [ngValue]="0">ဘာသာရပ်ကြီးစာမေးပွဲအားလုံး</option>
+                    <option *ngFor="let st of subjectTypeList" [ngValue]="st.id">
+                        {{st.name}} ({{st.grade.name}})
+                    </option>
+                </select>
+            </div>
+            <div class="col-sm-3 margin-bottom">
+                <select formControlName="subject" class="form-control">
+                    <option [ngValue]="0">ဘာသာရပ်ခွဲအားလုံး</option>
+                    <option *ngFor="let s of subjectList" [ngValue]="s.id">
+                        {{s.name}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <input type="text" formControlName="keyword" class="form-control" autocomplete="off"
+                    placeholder="Filter Search" />
+            </div>
+            <div class="col-sm-3 btn-right">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-info">Search</button>
+                    <button type="button" class="btn btn-danger" (click)="reset()">Reset</button>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-2">
-                    <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;"
-                        autocomplete="off" placeholder="Filter Search" />
-                </div>
-                <div class="col-sm-2">
-                    <button type="submit" class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
-                    <button type="button" class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
-                        style="color: red">
-                        <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
-                        <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-                    </div>
+        </div>
+        <div class="row" id="error">
+            <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-12">
+                <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start
+                    with space
                 </div>
             </div>
-        </form>
-    </div>
-    <div class="row table-responsive" style="overflow-y: hidden;">
-        <table class="table table-bordered exptable" id="myTable" matSort
+        </div>
+    </form>
+</div>
+<div class="container-fluid">
+    <div class="table-responsive" style="overflow-y: hidden;">
+        <table class="table table-bordered table-hover exptable" id="myTable" matSort
             (matSortChange)="sortData($event)">
             <thead>
                 <tr>
@@ -103,5 +104,5 @@
     </div>
     <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
     <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-        (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
+        (enterPaginationEvent)="enterPaginationEvent($event)" *ngIf="sortedData.length != 0"></app-page-navigator>
 </div>

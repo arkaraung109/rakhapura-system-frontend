@@ -4,244 +4,165 @@
   </div>
 </div>
 <div class="container-fluid">
-  <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
-    autocomplete="off">
-    <div class="row">
-      <div class="col-md-3"></div>
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-sm-4">
-            <label>စာသင်သားအမည်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="name" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('name')!.invalid && form.get('name')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('name')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('name')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('name')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('name')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>မွေးသက္ကရာဇ်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="date" formControlName="dob" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('dob')!.invalid && form.get('dob')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('dob')!.errors?.['required']">Field is required</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>ကျား/မ<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="radio" formControlName="sex" name="sex" id="male" [value]="'male'" style="margin-right: 10px;">
-            ကျား
-            <input type="radio" formControlName="sex" name="sex" id="female" [value]="'female'"
-              style="margin-right: 10px; margin-left: 20px">
-            မ
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('sex')!.invalid && form.get('sex')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('sex')!.errors?.['required']">Field is required</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>လူမျိုး<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="nationality" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('nationality')!.invalid && form.get('nationality')!.touched"
-            class="col-sm-6" style="color: red">
-            <div *ngIf="form.get('nationality')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('nationality')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('nationality')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('nationality')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>သာသနာရေးမှတ်ပုံတင်နံပါတ်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="nrc" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('nrc')!.invalid && form.get('nrc')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('nrc')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('nrc')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('nrc')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('nrc')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-            <div *ngIf="form.get('nrc')!.errors?.['containSpace']">Must not contain spaces</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>အဖအမည်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="fatherName" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('fatherName')!.invalid && form.get('fatherName')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('fatherName')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('fatherName')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('fatherName')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('fatherName')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>အမိအမည်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="motherName" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('motherName')!.invalid && form.get('motherName')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('motherName')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('motherName')!.errors?.['maxlength']">Must not exceed 30 characters</div>
-            <div *ngIf="form.get('motherName')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('motherName')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>နေရပ်လိပ်စာ<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <textarea formControlName="address" autocomplete="off" maxlength="300" rows="3"
-              style="width: 100%"></textarea>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('address')!.invalid && form.get('address')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('address')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('address')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('address')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('address')!.errors?.['startingWithWhiteSpace']">Must not start with space</div>
-            <div *ngIf="form.get('address')!.errors?.['linebreak']">Must not include line break</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>ပြည်နယ်/တိုင်း<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <select formControlName="region" class="fcontrol">
-              <option [ngValue]="''">Choose</option>
-              <option *ngFor="let r of regionList" [ngValue]="r.id">
-                {{r.name}}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('region')!.invalid && form.get('region')!.touched" class="col-sm-6"
-            style="color: red">
-            <div *ngIf="form.get('region')!.errors?.['required']">Field is required</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>ကျောင်းတိုက်အမည်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="monasteryName" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('monasteryName')!.invalid && form.get('monasteryName')!.touched"
-            class="col-sm-6" style="color: red">
-            <div *ngIf="form.get('monasteryName')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('monasteryName')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('monasteryName')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['startingWithWhiteSpace']">Must not start with space
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>ကျောင်းထိုင်ဆရာတော်အမည်<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="monasteryHeadmaster" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('monasteryHeadmaster')!.invalid && form.get('monasteryHeadmaster')!.touched"
-            class="col-sm-6" style="color: red">
-            <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['startingWithWhiteSpace']">Must not start with space
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <label>ကျောင်းတည်နေရာ(မြို့နယ်)<span>*</span></label>
-          </div>
-          <div class="col-sm-6">
-            <input type="text" formControlName="monasteryTownship" class="fcontrol" autocomplete="off" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div *ngIf="submitted || form.get('monasteryTownship')!.invalid && form.get('monasteryTownship')!.touched"
-            class="col-sm-6" style="color: red">
-            <div *ngIf="form.get('monasteryTownship')!.errors?.['required']">Field is required</div>
-            <div *ngIf="form.get('monasteryTownship')!.errors?.['maxlength']">Must not exceed 300 characters</div>
-            <div *ngIf="form.get('monasteryTownship')!.errors?.['pattern']">Must not include special characters</div>
-            <div *ngIf="form.get('monasteryTownship')!.errors?.['startingWithWhiteSpace']">Must not start with space
-            </div>
+  <div class="col-xs-1 col-sm-3 col-md-3"></div>
+  <div class="col-xs-10 col-sm-6 col-md-6">
+    <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
+      autocomplete="off">
+      <div class="form-group">
+        <label>စာသင်သားအမည်<span class="star">*</span></label>
+        <input type="text" formControlName="name" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('name')!.invalid && form.get('name')!.touched">
+          <div *ngIf="form.get('name')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('name')!.errors?.['maxlength']" class="txt-error">Must not exceed 300 characters</div>
+          <div *ngIf="form.get('name')!.errors?.['pattern']" class="txt-error">Must not include special characters</div>
+          <div *ngIf="form.get('name')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with space
           </div>
         </div>
       </div>
-      <div class="col-md-3"></div>
-    </div>
-    <div class="row">
-      <div class="col-xs-4"></div>
-      <div class="col-xs-4 col-sm-6">
-        <button type="submit" class="bsearch btn">Update</button>
-        <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
-        <button type="button" class="bsearch btn" (click)="back()">Back</button>
+      <div class="form-group">
+        <label>မွေးသက္ကရာဇ်<span class="star">*</span></label>
+        <input type="date" formControlName="dob" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('dob')!.invalid && form.get('dob')!.touched">
+          <div *ngIf="form.get('dob')!.errors?.['required']" class="txt-error">Field is required</div>
+        </div>
       </div>
-      <div class="col-xs-4"></div>
-    </div>
-  </form>
+      <div class="form-group">
+        <label style="margin-right: 50px">ကျား/မ<span class="star">*</span></label>
+        <input type="radio" formControlName="sex" name="sex" id="male" [value]="'male'" style="margin-right: 10px">
+        <label class="form-check-label" style="margin-right: 20px">ကျား</label>
+        <input type="radio" formControlName="sex" name="sex" id="female" [value]="'female'" style="margin-right: 10px">
+        <label class="form-check-label">မ</label>
+        <div *ngIf="submitted || form.get('sex')!.invalid && form.get('sex')!.touched">
+          <div *ngIf="form.get('sex')!.errors?.['required']" class="txt-error">Field is required</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>လူမျိုး<span class="star">*</span></label>
+        <input type="text" formControlName="nationality" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('nationality')!.invalid && form.get('nationality')!.touched">
+          <div *ngIf="form.get('nationality')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('nationality')!.errors?.['maxlength']" class="txt-error">Must not exceed 300 characters
+          </div>
+          <div *ngIf="form.get('nationality')!.errors?.['pattern']" class="txt-error">Must not include special
+            characters</div>
+          <div *ngIf="form.get('nationality')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with
+            space</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>သာသနာရေးမှတ်ပုံတင်နံပါတ်<span class="star">*</span></label>
+        <input type="text" formControlName="nrc" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('nrc')!.invalid && form.get('nrc')!.touched">
+          <div *ngIf="form.get('nrc')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('nrc')!.errors?.['maxlength']" class="txt-error">Must not exceed 300 characters</div>
+          <div *ngIf="form.get('nrc')!.errors?.['pattern']" class="txt-error">Must not include special characters</div>
+          <div *ngIf="form.get('nrc')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with space
+          </div>
+          <div *ngIf="form.get('nrc')!.errors?.['containSpace']" class="txt-error">Must not contain spaces</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>အဖအမည်<span class="star">*</span></label>
+        <input type="text" formControlName="fatherName" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('fatherName')!.invalid && form.get('fatherName')!.touched">
+          <div *ngIf="form.get('fatherName')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('fatherName')!.errors?.['maxlength']" class="txt-error">Must not exceed 300 characters
+          </div>
+          <div *ngIf="form.get('fatherName')!.errors?.['pattern']" class="txt-error">Must not include special characters
+          </div>
+          <div *ngIf="form.get('fatherName')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with
+            space</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>အမိအမည်<span class="star">*</span></label>
+        <input type="text" formControlName="motherName" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('motherName')!.invalid && form.get('motherName')!.touched">
+          <div *ngIf="form.get('motherName')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('motherName')!.errors?.['maxlength']" class="txt-error">Must not exceed 30 characters
+          </div>
+          <div *ngIf="form.get('motherName')!.errors?.['pattern']" class="txt-error">Must not include special characters
+          </div>
+          <div *ngIf="form.get('motherName')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with
+            space</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>နေရပ်လိပ်စာ<span class="star">*</span></label>
+        <textarea formControlName="address" autocomplete="off" maxlength="300" rows="3" class="form-control"
+          style="width: 100%"></textarea>
+        <div *ngIf="submitted || form.get('address')!.invalid && form.get('address')!.touched">
+          <div *ngIf="form.get('address')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('address')!.errors?.['maxlength']" class="txt-error">Must not exceed 300 characters</div>
+          <div *ngIf="form.get('address')!.errors?.['pattern']" class="txt-error">Must not include special characters
+          </div>
+          <div *ngIf="form.get('address')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with
+            space</div>
+          <div *ngIf="form.get('address')!.errors?.['linebreak']" class="txt-error">Must not include line break</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>ပြည်နယ်/တိုင်း<span class="star">*</span></label>
+        <select formControlName="region" class="form-control">
+          <option [ngValue]="''">Choose</option>
+          <option *ngFor="let r of regionList" [ngValue]="r.id">
+            {{r.name}}
+          </option>
+        </select>
+        <div *ngIf="submitted || form.get('region')!.invalid && form.get('region')!.touched">
+          <div *ngIf="form.get('region')!.errors?.['required']" class="txt-error">Field is required</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>ကျောင်းတိုက်အမည်<span class="star">*</span></label>
+        <input type="text" formControlName="monasteryName" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('monasteryName')!.invalid && form.get('monasteryName')!.touched">
+          <div *ngIf="form.get('monasteryName')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('monasteryName')!.errors?.['maxlength']" class="txt-error">Must not exceed 300 characters
+          </div>
+          <div *ngIf="form.get('monasteryName')!.errors?.['pattern']" class="txt-error">Must not include special
+            characters</div>
+          <div *ngIf="form.get('monasteryName')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start
+            with space</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>ကျောင်းထိုင်ဆရာတော်အမည်<span class="star">*</span></label>
+        <input type="text" formControlName="monasteryHeadmaster" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('monasteryHeadmaster')!.invalid && form.get('monasteryHeadmaster')!.touched">
+          <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['maxlength']" class="txt-error">Must not exceed 300
+            characters</div>
+          <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['pattern']" class="txt-error">Must not include special
+            characters
+          </div>
+          <div *ngIf="form.get('monasteryHeadmaster')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not
+            start with space
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>ကျောင်းတိုက်တည်နေရာ(မြို့နယ်)<span class="star">*</span></label>
+        <input type="text" formControlName="monasteryTownship" class="form-control" autocomplete="off" />
+        <div *ngIf="submitted || form.get('monasteryTownship')!.invalid && form.get('monasteryTownship')!.touched">
+          <div *ngIf="form.get('monasteryTownship')!.errors?.['required']" class="txt-error">Field is required</div>
+          <div *ngIf="form.get('monasteryTownship')!.errors?.['maxlength']" class="txt-error">Must not exceed 300
+            characters</div>
+          <div *ngIf="form.get('monasteryTownship')!.errors?.['pattern']" class="txt-error">Must not include special
+            characters</div>
+          <div *ngIf="form.get('monasteryTownship')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not
+            start with space
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="lbtn">
+          <button type="submit" class="bsearch btn">Update</button>
+          <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+          <button type="button" class="bsearch btn" (click)="back()">Back</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-xs-1 col-sm-3 col-md-3"></div>
 </div>

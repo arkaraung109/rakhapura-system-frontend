@@ -1,13 +1,13 @@
 <!-- left nav bar start -->
 <div class="row" style="text-align: center">
   <img src="assets/img/rlogo.jpg" /><br />
-  <span class="menubar" style="font-size: 30px; cursor: pointer" (click)="openNav()">
+  <span class="menubar" style="font-size: 22px; cursor: pointer; margin-top: 20px" (click)="openNav()">
     &#9776; Show Menu
   </span>
 </div>
 <div>
   <ul class="sidenav" #sidenav id="mySidenav">
-    <span href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</span>
+    <span href="javascript:void(0)" class="closebtn" (click)="closeNav()" style="margin-top: 10px; margin-right: -10px">&times;</span>
     <br>
     <app-menu *ngFor="let menuElement of menulist" [menu]="menuElement"></app-menu>
     <li class="collapsible">

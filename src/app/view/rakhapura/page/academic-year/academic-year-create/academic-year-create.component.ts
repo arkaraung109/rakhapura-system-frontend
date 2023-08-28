@@ -70,16 +70,16 @@ export class AcademicYearCreateComponent {
             }
           },
           error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
+            if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
               this.toastrService.error("This action is forbidden.", "Forbidden Access");
             } else if (err.status == HttpStatusCode.Conflict) {
               this.toastrService.warning("Record already exists.", "Duplication");
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");

@@ -16,7 +16,7 @@ export class MenuService {
   fetchMenuList(): Menu[] {
     const constantMenuList: Menu[] = [
       {
-        title: 'အသုံးပြုသူအချက်အလက်',
+        title: 'အသုံးပြုသူ အချက်အလက်',
         items: [
           {
             title: 'အချက်အလက်ကြည့်ခြင်း',
@@ -166,7 +166,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာမေးပွဲ',
+        title: 'ဘာသာရပ်ကြီးစာမေးပွဲ',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',
@@ -181,7 +181,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'ဘာသာရပ်ခွဲစာမေးပွဲအမှတ်ပေးစာရင်း',
+        title: 'ဘာသာရပ်ခွဲစာမေးပွဲ',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',
@@ -211,7 +211,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'ဖြေဆိုမည့်စာသင်သားများအား အခန်းနေရာချထားခြင်း',
+        title: 'အခန်း နေရာချထားခြင်း',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',
@@ -226,7 +226,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'ဖြေဆိုရန်ရောက်ရှိသည့်စာသင်သား',
+        title: 'ရောက်ရှိဖြေဆိုမည့် စာရင်း',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',
@@ -241,7 +241,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာသင်သားများအား တည်းခိုဆောင်နေရာချထားခြင်း',
+        title: 'တည်းခိုဆောင် နေရာချထားခြင်း',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',
@@ -256,7 +256,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာမေးပွဲကတ်ထုတ်ခြင်း',
+        title: 'စာမေးပွဲကတ် ထုတ်ခြင်း',
         items: [
           {
             title: 'ဖြေဆိုခွင့်ကတ်ထုတ်ခြင်း',
@@ -271,7 +271,7 @@ export class MenuService {
         ]
       },
       {
-        title: 'စာမေးပွဲဖြေဆိုခဲ့သည့်စာသင်သား',
+        title: 'ဖြေဆိုသူစာရင်း',
         items: [
           {
             title: 'အသစ်သွင်းခြင်း',

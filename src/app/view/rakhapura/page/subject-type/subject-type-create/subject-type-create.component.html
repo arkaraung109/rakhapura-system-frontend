@@ -4,61 +4,41 @@
     </div>
 </div>
 <div class="container-fluid">
-    <form [formGroup]="form" (ngSubmit)="save()" accept-charset="utf-8" htmlEscape="true" enctype="multipart/form-data"
-        autocomplete="off">
-        <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>အတန်း<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <select formControlName="grade" class="fcontrol">
-                            <option [ngValue]="''">Choose</option>
-                            <option *ngFor="let g of gradeList" [ngValue]="g.id">
-                                {{g.name}}
-                            </option>
-                        </select>
-                    </div>
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
+    <div class="col-xs-10 col-sm-6 col-md-6">
+        <form [formGroup]="form" (ngSubmit)="save()" accept-charset="utf-8" htmlEscape="true"
+            enctype="multipart/form-data" autocomplete="off">
+            <div class="form-group">
+                <label>အတန်း<span class="star">*</span></label>
+                <select formControlName="grade" class="form-control">
+                    <option [ngValue]="''">Choose</option>
+                    <option *ngFor="let g of gradeList" [ngValue]="g.id">
+                        {{g.name}}
+                    </option>
+                </select>
+                <div *ngIf="submitted || form.get('grade')!.invalid && form.get('grade')!.touched">
+                    <div *ngIf="form.get('grade')!.errors?.['required']" class="txt-error">Field is required</div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('grade')!.invalid && form.get('grade')!.touched" class="col-sm-6"
-                        style="color: red">
-                        <div *ngIf="form.get('grade')!.errors?.['required']">Field is required</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>ဘာသာရပ်ကြီး<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="text" formControlName="name" class="fcontrol" autocomplete="off" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('name')!.invalid && form.get('name')!.touched" class="col-sm-6"
-                        style="color: red">
-                        <div *ngIf="form.get('name')!.errors?.['required']">Field is required</div>
-                        <div *ngIf="form.get('name')!.errors?.['maxlength']">Must not exceed 200 characters</div>
-                        <div *ngIf="form.get('name')!.errors?.['pattern']">Must not include special characters</div>
-                        <div *ngIf="form.get('name')!.errors?.['startingWithWhiteSpace']">Must not start with space
-                        </div>
+            </div>
+            <div class="form-group">
+                <label>ဘာသာရပ်ကြီး<span class="star">*</span></label>
+                <input type="text" formControlName="name" class="form-control" autocomplete="off" />
+                <div *ngIf="submitted || form.get('name')!.invalid && form.get('name')!.touched">
+                    <div *ngIf="form.get('name')!.errors?.['required']" class="txt-error">Field is required</div>
+                    <div *ngIf="form.get('name')!.errors?.['maxlength']" class="txt-error">Must not exceed 200 characters</div>
+                    <div *ngIf="form.get('name')!.errors?.['pattern']" class="txt-error">Must not include special characters</div>
+                    <div *ngIf="form.get('name')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not start with space
                     </div>
                 </div>
             </div>
-            <div class="col-md-3"></div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4"></div>
-            <div class="col-xs-4 col-sm-6">
-                <button type="submit" class="bsearch btn">Save</button>
-                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
-                <button type="button" class="bsearch btn" (click)="back()">Back</button>
+            <div class="form-group">
+                <div class="lbtn">
+                    <button type="submit" class="bsearch btn">Save</button>
+                    <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+                    <button type="button" class="bsearch btn" (click)="back()">Back</button>
+                </div>
             </div>
-            <div class="col-xs-4"></div>
-        </div>
-    </form>
+        </form>
+    </div>
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
 </div>

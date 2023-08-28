@@ -1,6 +1,6 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -39,7 +39,6 @@ export class SubjectTypeListComponent implements OnInit {
   form: FormGroup = new FormGroup({
     grade: new FormControl(0),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -148,7 +147,22 @@ export class SubjectTypeListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('grade')!.setValue(0);
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.currentPage = 1;
+    this.searchedGrade = 0;
+    this.keyword = "";
+
+    this.subjectTypeService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedGrade, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   edit(id: number) {

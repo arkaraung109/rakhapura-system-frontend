@@ -272,7 +272,21 @@ export class StudentCardCreateComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.reset();
+    this.form.get('academicYear')!.setValue('');
+    this.form.get('examTitle')!.setValue('');
+    this.form.get('grade')!.setValue('');
+    this.submitted = false;
+    this.isCheckAll = false;
+    this.currentPage = 1;
+    this.idList = [];
+    this.searchedExamTitle = 0;
+    this.searchedAcademicYear = 0;
+    this.searchedGrade = 0;
+    this.valid = false;
+    this.pageData = new PaginationResponse();
+    this.sortedData = [];
+    this.dataList = [];
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

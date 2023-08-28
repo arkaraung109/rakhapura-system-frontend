@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MenuService } from 'src/app/service/menu.service';
 import { Menu } from '../../../model/Menu';
 import { Router } from '@angular/router';
@@ -16,6 +16,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   menulist!:Menu[];
 
   constructor(
+    private elRef: ElementRef,
     private renderer: Renderer2, 
     private menuService: MenuService, 
     private router: Router, 
@@ -56,14 +57,59 @@ export class SideBarComponent implements OnInit, AfterViewInit {
         styleVal
       );
     });
+
+    this.renderer.setStyle(
+      this.elRef.nativeElement.parentElement,
+      'height',
+      '100%'
+    );
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    const requiredStyles: any = {
+      'min-height': 'calc(100vh)',
+      'width': '100%'
+    };
+    Object.keys(requiredStyles).forEach(newStyle => {
+      let styleVal: string = requiredStyles[newStyle];
+      this.renderer.setStyle(
+        this.sideNavElement.nativeElement,
+        `${newStyle}`, 
+        styleVal
+      );
+    });
+    this.renderer.setStyle(
+      this.elRef.nativeElement.parentElement,
+      'height',
+      '100%'
+    );
   }
 
   closeNav() {
-    this.renderer.setStyle(
-      this.sideNavElement.nativeElement,
-      'width',
-      '0px'
-    );
+    if(window.innerWidth > 989) {
+      this.renderer.setStyle(
+        this.sideNavElement.nativeElement,
+        'width',
+        '0px'
+      );
+      this.renderer.setStyle(
+        this.elRef.nativeElement.parentElement,
+        'height',
+        '100%'
+      );
+    } else {
+      this.renderer.setStyle(
+        this.sideNavElement.nativeElement,
+        'width',
+        '0px'
+      );
+      this.renderer.setStyle(
+        this.elRef.nativeElement.parentElement,
+        'height',
+        '30%'
+      );
+    }
   }
 
   logout() {

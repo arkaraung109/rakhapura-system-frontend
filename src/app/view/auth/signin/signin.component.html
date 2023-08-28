@@ -6,59 +6,39 @@
     <h2>Please Login !</h2>
   </div>
   <div class="row">
-    <div class="col-sm-4"></div>
-    <div class="col-sm-4">
-      <form class="form-horizontal" [formGroup]="form" (ngSubmit)="submit()" method="POST" accept-charset="utf-8"
-        htmlEscape="true" enctype="multipart/form-data">
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
+    <div class="col-xs-10 col-sm-6 col-md-6">
+      <form [formGroup]="form" (ngSubmit)="submit()" method="POST" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data">
         <div class="form-group">
-          <div class="row">
-            <label class="control-label col-sm-4" for="email">Username:</label>
-            <div class="col-sm-8">
-              <input type="text" name="username" placeholder="Enter username" formControlName="userId"
-                class="form-control">
-            </div>
+          <div>
+            <label for="username">Username<span class="star">*</span></label>
+            <input type="text" formControlName="userId" class="form-control" id="username" placeholder="Enter username">
           </div>
-          <div class="row">
-            <div class="col-sm-4"></div>
-            <div *ngIf="submitted || form.get('userId')!.invalid && form.get('userId')!.touched" class="col-sm-8"
-              style="color: red">
-              <div *ngIf="form.get('userId')!.errors?.['required']">Field is required</div>
-              <div *ngIf="userNotFoundMsg != ''">{{userNotFoundMsg}}</div>
-            </div>
+          <div *ngIf="submitted || form.get('userId')!.invalid && form.get('userId')!.touched">
+            <div *ngIf="form.get('userId')!.errors?.['required']" class="txt-error">Field is required</div>
+            <div *ngIf="userNotFoundMsg != ''" class="txt-error">{{userNotFoundMsg}}</div>
           </div>
         </div>
         <div class="form-group">
-          <div class="row">
-            <label class="control-label col-sm-4" for="pwd">Password:</label>
-            <div class="col-sm-8">
-              <input type="password" formControlName="password" class="form-control" id="pwd"
-                placeholder="Enter password">
-            </div>
+          <div class="">
+            <label for="password">Password<span class="star">*</span></label>
+            <input type="password" formControlName="password" class="form-control" id="password"
+              placeholder="Enter password">
           </div>
-          <div class="row">
-            <div class="col-sm-4"></div>
-            <div *ngIf="submitted || form.get('password')!.invalid && form.get('password')!.touched" class="col-sm-8"
-              style="color: red">
-              <div *ngIf="form.get('password')!.errors?.['required']">Field is required</div>
-              <div *ngIf="wrongPasswordMsg != ''">{{wrongPasswordMsg}}</div>
-            </div>
+          <div *ngIf="submitted || form.get('password')!.invalid && form.get('password')!.touched">
+            <div *ngIf="form.get('password')!.errors?.['required']" class="txt-error">Field is required</div>
+            <div *ngIf="wrongPasswordMsg != ''" class="txt-error">{{wrongPasswordMsg}}</div>
           </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <div class="checkbox">
-              <label><input type="checkbox" name="remember">Remember me</label>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10 lbtn">
+          <div class="lbtn">
             <button type="submit" class="btn bsearch">Login</button>
             <button type="button" class="btn bsearch" (click)="back()">Back</button>
           </div>
         </div>
       </form>
     </div>
-    <div class="col-sm-4"></div>
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
   </div>
 </div>

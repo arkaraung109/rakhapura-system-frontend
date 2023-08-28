@@ -55,7 +55,6 @@ export class StudentClassListComponent implements OnInit {
     grade: new FormControl(0),
     class: new FormControl('All'),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -181,7 +180,28 @@ export class StudentClassListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('academicYear')!.setValue(0);
+    this.form.get('examTitle')!.setValue(0);
+    this.form.get('grade')!.setValue(0);
+    this.form.get('class')!.setValue("All");
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.currentPage = 1;
+    this.searchedExamTitle = 0;
+    this.searchedAcademicYear = 0;
+    this.searchedGrade = 0;
+    this.searchedClass = "All";
+    this.keyword = "";
+
+    this.studentClassService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

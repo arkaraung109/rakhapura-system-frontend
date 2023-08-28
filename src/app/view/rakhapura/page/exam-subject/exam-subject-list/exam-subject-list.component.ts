@@ -1,6 +1,6 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -54,7 +54,6 @@ export class ExamSubjectListComponent implements OnInit {
     subjectType: new FormControl(0),
     subject: new FormControl(0),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -180,7 +179,28 @@ export class ExamSubjectListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('academicYear')!.setValue(0);
+    this.form.get('examTitle')!.setValue(0);
+    this.form.get('subjectType')!.setValue(0);
+    this.form.get('subject')!.setValue(0);
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.currentPage = 1;
+    this.searchedAcademicYear = 0;
+    this.searchedExamTitle = 0;
+    this.searchedSubjectType = 0;
+    this.searchedSubject = 0;
+    this.keyword = "";
+
+    this.examSubjectService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.searchedSubject, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

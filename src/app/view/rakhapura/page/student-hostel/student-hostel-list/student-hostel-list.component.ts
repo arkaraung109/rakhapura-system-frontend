@@ -1,6 +1,6 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -57,7 +57,6 @@ export class StudentHostelListComponent implements OnInit {
     grade: new FormControl(0),
     hostel: new FormControl(0),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -184,7 +183,28 @@ export class StudentHostelListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('examTitle')!.setValue(0);
+    this.form.get('academicYear')!.setValue(0);
+    this.form.get('grade')!.setValue(0);
+    this.form.get('hostel')!.setValue(0);
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.currentPage = 1;
+    this.searchedExamTitle = 0;
+    this.searchedAcademicYear = 0;
+    this.searchedGrade = 0;
+    this.searchedHostel = 0;
+    this.keyword = "";
+
+    this.studentHostelService.fetchPresentPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedHostel, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

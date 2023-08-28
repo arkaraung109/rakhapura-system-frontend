@@ -11,10 +11,12 @@ export function dateComparisonValidator(firstControl: any, secondControl: any): 
         }
         else {
             returnObj.required = false;
-            if (firstValue > secondValue) {
-                returnObj.isGreaterThan = true;
-            } else {
-                returnObj.isGreaterThan = false;
+            if (secondValue != '') {
+                if (firstValue > secondValue) {
+                    returnObj.isGreaterThan = true;
+                } else {
+                    returnObj.isGreaterThan = false;
+                }
             }
         }
 

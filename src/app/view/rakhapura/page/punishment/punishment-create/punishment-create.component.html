@@ -1,161 +1,136 @@
 <div class="hrow">
     <h4>စာသင်သားများကျူးလွန်ထားသော ပြစ်ဒဏ်ပေးစာရင်းသွင်းခြင်း</h4>
 </div>
-<div class="container-fluid ttable">
-    <div class="row">
-        <form [formGroup]="submitForm" (ngSubmit)="submit()" accept-charset="utf-8" htmlEscape="true"
+<div class="container-fluid">
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
+    <div class="col-xs-10 col-sm-6 col-md-6">
+        <form id="submitForm" [formGroup]="submitForm" (ngSubmit)="submit()" accept-charset="utf-8" htmlEscape="true"
             enctype="multipart/form-data" autocomplete="off">
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-6">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label>ကျူးလွန်သည့်ပြစ်ဒဏ်<span>*</span></label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="text" formControlName="punishment" class="fcontrol" autocomplete="off" />
-                        </div>
+            <div class="form-group">
+                <label>ကျူးလွန်သည့်ပြစ်ဒဏ်<span class="star">*</span></label>
+                <input type="text" formControlName="punishment" class="form-control" autocomplete="off" />
+                <div
+                    *ngIf="submittedForm || submitForm.get('punishment')!.invalid && submitForm.get('punishment')!.touched">
+                    <div *ngIf="submitForm.get('punishment')!.errors?.['required']" class="txt-error">Field is required
                     </div>
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div *ngIf="submittedForm || submitForm.get('punishment')!.invalid && submitForm.get('punishment')!.touched"
-                            class="col-sm-6" style="color: red">
-                            <div *ngIf="submitForm.get('punishment')!.errors?.['required']">Field is required</div>
-                            <div *ngIf="submitForm.get('punishment')!.errors?.['maxlength']">Must not exceed 150
-                                characters</div>
-                            <div *ngIf="submitForm.get('punishment')!.errors?.['pattern']">Must not include special
-                                characters
-                            </div>
-                            <div *ngIf="submitForm.get('punishment')!.errors?.['startingWithWhiteSpace']">Must not start
-                                with space
-                            </div>
-                        </div>
+                    <div *ngIf="submitForm.get('punishment')!.errors?.['maxlength']" class="txt-error">Must not exceed
+                        150
+                        characters</div>
+                    <div *ngIf="submitForm.get('punishment')!.errors?.['pattern']" class="txt-error">Must not include
+                        special
+                        characters
                     </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label>အကြောင်းအရာ<span>*</span></label>
-                        </div>
-                        <div class="col-sm-6">
-                            <textarea formControlName="description" autocomplete="off" maxlength="300" rows="3"
-                                style="width: 100%"></textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div *ngIf="submittedForm || submitForm.get('description')!.invalid && submitForm.get('description')!.touched"
-                            class="col-sm-6" style="color: red">
-                            <div *ngIf="submitForm.get('description')!.errors?.['required']">Field is required</div>
-                            <div *ngIf="submitForm.get('description')!.errors?.['maxlength']">Must not exceed 300
-                                characters
-                            </div>
-                            <div *ngIf="submitForm.get('description')!.errors?.['pattern']">Must not include special
-                                characters
-                            </div>
-                            <div *ngIf="submitForm.get('description')!.errors?.['startingWithWhiteSpace']">Must not
-                                start with
-                                space</div>
-                            <div *ngIf="submitForm.get('description')!.errors?.['linebreak']">Must not include line
-                                break
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label>ကျူးလွန်သည့်နေ့စွဲ<span>*</span></label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="date" formControlName="eventDate" class="fcontrol" autocomplete="off" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div *ngIf="submittedForm || submitForm.get('eventDate')!.invalid && submitForm.get('eventDate')!.touched"
-                            class="col-sm-6" style="color: red">
-                            <div *ngIf="submitForm.get('eventDate')!.errors?.['required']">Field is required</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label>ပြစ်ဒဏ်ပေးစတင်သည့်နေ့စွဲ<span>*</span></label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="date" formControlName="startDate" class="fcontrol" autocomplete="off" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div *ngIf="submittedForm || submitForm.get('startDate')!.touched" class="col-sm-6"
-                            style="color: red">
-                            <div *ngIf="submitForm.errors?.['required']">Field is required</div>
-                            <div *ngIf="submitForm.errors?.['isGreaterThan']">Must be equal to or less than end date
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label>ပြစ်ဒဏ်ပေးပြီးဆုံးသည့်နေ့စွဲ<span>*</span></label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="date" formControlName="endDate" class="fcontrol" autocomplete="off" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div *ngIf="submittedForm || submitForm.get('endDate')!.invalid && submitForm.get('endDate')!.touched"
-                            class="col-sm-6" style="color: red">
-                            <div *ngIf="submitForm.get('endDate')!.errors?.['required']">Field is required</div>
-                        </div>
+                    <div *ngIf="submitForm.get('punishment')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must
+                        not start
+                        with space
                     </div>
                 </div>
-                <div class="col-md-3"></div>
             </div>
-            <div class="row">
-                <div class="col-xs-4"></div>
-                <div class="col-xs-4 col-sm-6">
+            <div class="form-group">
+                <label>အကြောင်းအရာ<span class="star">*</span></label>
+                <textarea formControlName="description" autocomplete="off" maxlength="300" rows="3" class="form-control"
+                    style="width: 100%"></textarea>
+                <div
+                    *ngIf="submittedForm || submitForm.get('description')!.invalid && submitForm.get('description')!.touched">
+                    <div *ngIf="submitForm.get('description')!.errors?.['required']" class="txt-error">Field is required
+                    </div>
+                    <div *ngIf="submitForm.get('description')!.errors?.['maxlength']" class="txt-error">Must not exceed
+                        300
+                        characters
+                    </div>
+                    <div *ngIf="submitForm.get('description')!.errors?.['pattern']" class="txt-error">Must not include
+                        special
+                        characters
+                    </div>
+                    <div *ngIf="submitForm.get('description')!.errors?.['startingWithWhiteSpace']" class="txt-error">
+                        Must not
+                        start with
+                        space</div>
+                    <div *ngIf="submitForm.get('description')!.errors?.['linebreak']" class="txt-error">Must not include
+                        line
+                        break
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ကျူးလွန်သည့်နေ့စွဲ<span class="star">*</span></label>
+                <input type="date" formControlName="eventDate" class="form-control" autocomplete="off" />
+                <div
+                    *ngIf="submittedForm || submitForm.get('eventDate')!.invalid && submitForm.get('eventDate')!.touched">
+                    <div *ngIf="submitForm.get('eventDate')!.errors?.['required']" class="txt-error">Field is required
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ပြစ်ဒဏ်ပေးစတင်သည့်နေ့စွဲ<span class="star">*</span></label>
+                <input type="date" formControlName="startDate" class="form-control" autocomplete="off" />
+                <div *ngIf="submittedForm || submitForm.get('startDate')!.touched">
+                    <div *ngIf="submitForm.errors?.['required']" class="txt-error">Field is required</div>
+                    <div *ngIf="submitForm.errors?.['isGreaterThan']" class="txt-error">Must be equal to or less than
+                        end date
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ပြစ်ဒဏ်ပေးပြီးဆုံးသည့်နေ့စွဲ<span class="star">*</span></label>
+                <input type="date" formControlName="endDate" class="form-control" autocomplete="off" />
+                <div *ngIf="submittedForm || submitForm.get('endDate')!.invalid && submitForm.get('endDate')!.touched">
+                    <div *ngIf="submitForm.get('endDate')!.errors?.['required']" class="txt-error">Field is required
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="lbtn">
                     <button type="submit" class="bsearch btn">Submit</button>
                     <button type="button" class="bsearch btn" (click)="resetForm()">Reset</button>
                 </div>
-                <div class="col-xs-4"></div>
             </div>
         </form>
     </div>
-    <hr>
-    <div class="row">
-        <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
-            enctype="multipart/form-data" autocomplete="off">
-            <div class="col-sm-2">
-                <select formControlName="region" class="fcontrol" style="margin: 20px 0px;">
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
+</div>
+<hr>
+<div class="container-fluid">
+    <form [formGroup]="form" (ngSubmit)="search()" accept-charset="utf-8" htmlEscape="true"
+        enctype="multipart/form-data" autocomplete="off">
+        <div class="row">
+            <div class="col-sm-3 margin-bottom">
+                <select formControlName="region" class="form-control">
                     <option [ngValue]="0">ပြည်နယ်/တိုင်းအားလုံး</option>
                     <option *ngFor="let r of regionList" [ngValue]="r.id">
                         {{r.name}}
                     </option>
                 </select>
             </div>
-            <div class="col-sm-2">
-                <input type="text" formControlName="keyword" class="fcontrol" style="margin: 20px 0px;"
-                    autocomplete="off" placeholder="Filter Search" />
+            <div class="col-sm-3">
+                <input type="text" formControlName="keyword" class="form-control" autocomplete="off"
+                    placeholder="Filter Search" />
             </div>
-            <div class="col-sm-2">
-                <button type="submit" class="btn btn-search" style="margin-top: 10px; margin-right:10px">Search</button>
-                <button type="button" class="btn btn-search" style="margin-top: 10px;" (click)="reset()">Reset</button>
-            </div>
-            <div class="row">
-                <div class="col-sm-4"></div>
-                <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-6"
-                    style="color: red">
-                    <div *ngIf="form.get('keyword')!.errors?.['pattern']">Must not include special characters</div>
-                    <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']">Must not start with space
-                    </div>
+            <div class="col-sm-3 btn-right">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-info">Search</button>
+                    <button type="button" class="btn btn-danger" (click)="reset()">Reset</button>
                 </div>
             </div>
-        </form>
-    </div>
-    <div class="row table-responsive" style="overflow-y: hidden;">
-        <table class="table table-bordered exptable" id="myTable" matSort
+        </div>
+        <div class="row" id="error">
+            <div class="col-sm-3"></div>
+            <div *ngIf="submitted || form.get('keyword')!.invalid && form.get('keyword')!.touched" class="col-sm-9">
+                <div *ngIf="form.get('keyword')!.errors?.['startingWithWhiteSpace']" class="txt-error">Must not
+                    start
+                    with space
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container-fluid">
+    <div class="table-responsive" style="overflow-y: hidden;">
+        <table class="table table-bordered table-hover exptable" id="myTable" matSort
             (matSortChange)="sortData($event)">
             <thead>
                 <tr>
-                    <th style="width: 50px">
+                    <th style="min-width: 50px; width: 50px">
                         <input type="checkbox" class="fcontrol" (change)="checkUncheckAll()" [(ngModel)]="isCheckAll">
                     </th>
                     <th style="width: 80px" mat-sort-header="index">စဉ်</th>
@@ -181,8 +156,8 @@
                 </tr>
             </tbody>
         </table>
-        <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
-        <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
-            (enterPaginationEvent)="enterPaginationEvent($event)"></app-page-navigator>
     </div>
+    <h2 style="color: red" *ngIf="sortedData.length == 0">No record found!</h2>
+    <app-page-navigator [currentPage]="currentPage" [totalPageCount]="pageData.totalPages"
+        (enterPaginationEvent)="enterPaginationEvent($event)" *ngIf="sortedData.length != 0"></app-page-navigator>
 </div>

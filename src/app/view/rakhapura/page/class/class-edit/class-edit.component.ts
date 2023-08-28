@@ -22,7 +22,7 @@ import { HttpStatusCode } from '@angular/common/http';
 export class ClassEditComponent implements OnInit {
 
   submitted = false;
-  yearList!: AcademicYear[];
+  academicYearList!: AcademicYear[];
   gradeList!: Grade[];
   id!: number;
   currentPage!: number;
@@ -66,7 +66,7 @@ export class ClassEditComponent implements OnInit {
     });
 
     this.academicYearService.fetchAllByAuthorizedStatus().subscribe(data => {
-      this.yearList = data;
+      this.academicYearList = data;
     });
     this.gradeService.fetchAllByAuthorizedStatus().subscribe(data => {
       this.gradeList = data;

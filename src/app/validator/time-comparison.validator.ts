@@ -11,10 +11,12 @@ export function timeComparisonValidator(firstControl: any, secondControl: any): 
         }
         else {
             returnObj.required = false;
-            if (firstValue >= secondValue) {
-                returnObj.isEqualToOrGreaterThan = true;
-            } else {
-                returnObj.isEqualToOrGreaterThan = false;
+            if (secondValue != '') {
+                if (firstValue >= secondValue) {
+                    returnObj.isEqualToOrGreaterThan = true;
+                } else {
+                    returnObj.isEqualToOrGreaterThan = false;
+                }
             }
         }
 

@@ -5,6 +5,10 @@ export const maxMarkValidator = (maxMark: number): ValidatorFn => {
         let controlValue = control.value;
         let isControlValueNumber = /^\d+$/.test(controlValue) && !isNaN(Number(controlValue));
 
+        if(controlValue == '') {
+            return null;
+        }
+
         if (!isControlValueNumber) {
             return { rangeError: true };
         }

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { format } from 'date-fns';
@@ -50,7 +50,6 @@ export class ArrivalListComponent implements OnInit {
     grade: new FormControl(0),
     class: new FormControl('All'),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -152,7 +151,28 @@ export class ArrivalListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('examTitle')!.setValue(0);
+    this.form.get('academicYear')!.setValue(0);
+    this.form.get('grade')!.setValue(0);
+    this.form.get('class')!.setValue("All");
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.currentPage = 1;
+    this.searchedExamTitle = 0;
+    this.searchedAcademicYear = 0;
+    this.searchedGrade = 0;
+    this.searchedClass = "All";
+    this.keyword = "";
+
+    this.arrivalService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, true, this.searchedExamTitle, this.searchedAcademicYear, this.searchedGrade, this.searchedClass, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

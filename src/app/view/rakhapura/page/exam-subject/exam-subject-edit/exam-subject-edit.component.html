@@ -1,136 +1,89 @@
 <div class="container-fluid hrow">
     <div class="row">
-        <h4>ဘာသာရပ်ခွဲစာမေးပွဲအမှတ်ပေးစာရင်းပြင်ခြင်း</h4>
+        <h4>ဘာသာရပ်ခွဲစာမေးပွဲစာရင်းပြင်ခြင်း</h4>
     </div>
 </div>
 <div class="container-fluid">
-    <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true"
-        enctype="multipart/form-data" autocomplete="off">
-        <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>စာသင်နှစ်<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <select formControlName="academicYear" (change)="change()" class="fcontrol">
-                            <option [ngValue]="''">Choose</option>
-                            <option *ngFor="let a of academicYearList" [ngValue]="a.id">
-                                {{a.name}}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('academicYear')!.invalid && form.get('academicYear')!.touched"
-                        class="col-sm-6" style="color: red">
-                        <div *ngIf="form.get('academicYear')!.errors?.['required']">Field is required</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>စာမေးပွဲခေါင်းစဉ်<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <select formControlName="examTitle" (change)="change()" class="fcontrol">
-                            <option [ngValue]="''">Choose</option>
-                            <option *ngFor="let e of examTitleList" [ngValue]="e.id">
-                                {{e.name}}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('examTitle')!.invalid && form.get('examTitle')!.touched"
-                        class="col-sm-6" style="color: red">
-                        <div *ngIf="form.get('examTitle')!.errors?.['required']">Field is required</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>ဘာသာရပ်ကြီးစာမေးပွဲ<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <select formControlName="subjectType" class="fcontrol">
-                            <option [ngValue]="''">Choose</option>
-                            <option *ngFor="let st of subjectTypeList" [ngValue]="st.id">
-                                {{st.name}} ({{st.grade.name}})
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('subjectType')!.invalid && form.get('subjectType')!.touched"
-                        class="col-sm-6" style="color: red">
-                        <div *ngIf="form.get('subjectType')!.errors?.['required']">Field is required</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>ဘာသာရပ်ခွဲအမည်<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <select formControlName="subject" class="fcontrol">
-                            <option [ngValue]="''">Choose</option>
-                            <option *ngFor="let s of subjectList" [ngValue]="s.id">
-                                {{s.name}}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('subject')!.invalid && form.get('subject')!.touched"
-                        class="col-sm-6" style="color: red">
-                        <div *ngIf="form.get('subject')!.errors?.['required']">Field is required</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>ဘာသာရပ်ခွဲအောင်မှတ်<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="text" formControlName="passMark" class="fcontrol" autocomplete="off" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('passMark')!.touched" class="col-sm-6" style="color: red">
-                        <div *ngIf="form.errors?.['requiredPassMarkError']">Field is required</div>
-                        <div *ngIf="form.errors?.['passMarkRangeError']">Must be between 1 and 100</div>
-                        <div *ngIf="form.errors?.['lessThanError']">Must be less than mark percentage</div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label>ဘာသာရပ်ခွဲပေးမှတ်<span>*</span></label>
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="text" formControlName="markPercentage" class="fcontrol" autocomplete="off" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div *ngIf="submitted || form.get('markPercentage')!.touched" class="col-sm-6" style="color: red">
-                        <div *ngIf="form.errors?.['requiredMarkPercentageError']">Field is required</div>
-                        <div *ngIf="form.errors?.['markPercentageRangeError']">Must be between 1 and 100</div>
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
+    <div class="col-xs-10 col-sm-6 col-md-6">
+        <form [formGroup]="form" (ngSubmit)="update()" accept-charset="utf-8" htmlEscape="true"
+            enctype="multipart/form-data" autocomplete="off">
+            <div class="form-group">
+                <label>စာသင်နှစ်<span class="star">*</span></label>
+                <select formControlName="academicYear" (change)="change()" class="form-control">
+                    <option [ngValue]="''">Choose</option>
+                    <option *ngFor="let a of academicYearList" [ngValue]="a.id">
+                        {{a.name}}
+                    </option>
+                </select>
+                <div *ngIf="submitted || form.get('academicYear')!.invalid && form.get('academicYear')!.touched">
+                    <div *ngIf="form.get('academicYear')!.errors?.['required']" class="txt-error">Field is required
                     </div>
                 </div>
             </div>
-            <div class="col-md-3"></div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4"></div>
-            <div class="col-xs-4 col-sm-6">
-                <button type="submit" class="bsearch btn">Update</button>
-                <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
-                <button type="button" class="bsearch btn" (click)="back()">Back</button>
+            <div class="form-group">
+                <label>စာမေးပွဲခေါင်းစဉ်<span class="star">*</span></label>
+                <select formControlName="examTitle" (change)="change()" class="form-control">
+                    <option [ngValue]="''">Choose</option>
+                    <option *ngFor="let e of examTitleList" [ngValue]="e.id">
+                        {{e.name}}
+                    </option>
+                </select>
+                <div *ngIf="submitted || form.get('examTitle')!.invalid && form.get('examTitle')!.touched">
+                    <div *ngIf="form.get('examTitle')!.errors?.['required']" class="txt-error">Field is required</div>
+                </div>
             </div>
-            <div class="col-xs-4"></div>
-        </div>
-    </form>
+            <div class="form-group">
+                <label>ဘာသာရပ်ကြီးစာမေးပွဲ<span class="star">*</span></label>
+                <select formControlName="subjectType" class="form-control">
+                    <option [ngValue]="''">Choose</option>
+                    <option *ngFor="let st of subjectTypeList" [ngValue]="st.id">
+                        {{st.name}} ({{st.grade.name}})
+                    </option>
+                </select>
+                <div *ngIf="submitted || form.get('subjectType')!.invalid && form.get('subjectType')!.touched">
+                    <div *ngIf="form.get('subjectType')!.errors?.['required']" class="txt-error">Field is required</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ထည့်သွင်းမည့်ဘာသာရပ်ခွဲ<span class="star">*</span></label>
+                <select formControlName="subject" class="form-control">
+                    <option [ngValue]="''">Choose</option>
+                    <option *ngFor="let s of subjectList" [ngValue]="s.id">
+                        {{s.name}}
+                    </option>
+                </select>
+                <div *ngIf="submitted || form.get('subject')!.invalid && form.get('subject')!.touched">
+                    <div *ngIf="form.get('subject')!.errors?.['required']" class="txt-error">Field is required</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ဘာသာရပ်ခွဲအောင်မှတ်<span class="star">*</span></label>
+                <input type="text" formControlName="passMark" class="form-control" autocomplete="off" />
+                <div *ngIf="submitted || form.get('passMark')!.touched">
+                    <div *ngIf="form.errors?.['requiredPassMarkError']" class="txt-error">Field is required</div>
+                    <div *ngIf="form.errors?.['passMarkRangeError']" class="txt-error">Must be between 1 and 100</div>
+                    <div *ngIf="form.errors?.['lessThanError']" class="txt-error">Must be less than mark percentage
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ဘာသာရပ်ခွဲပေးမှတ်<span class="star">*</span></label>
+                <input type="text" formControlName="markPercentage" class="form-control" autocomplete="off" />
+                <div *ngIf="submitted || form.get('markPercentage')!.touched">
+                    <div *ngIf="form.errors?.['requiredMarkPercentageError']" class="txt-error">Field is required</div>
+                    <div *ngIf="form.errors?.['markPercentageRangeError']" class="txt-error">Must be between 1 and 100
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="lbtn">
+                    <button type="submit" class="bsearch btn">Update</button>
+                    <button type="button" class="bsearch btn" (click)="reset()">Reset</button>
+                    <button type="button" class="bsearch btn" (click)="back()">Back</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-xs-1 col-sm-3 col-md-3"></div>
 </div>

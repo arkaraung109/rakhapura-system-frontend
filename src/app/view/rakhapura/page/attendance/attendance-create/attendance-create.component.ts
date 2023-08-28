@@ -1,11 +1,10 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { PaginationOrder } from 'src/app/common/PaginationOrder';
 import { showError } from 'src/app/common/showError';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { AcademicYear } from 'src/app/model/AcademicYear';
@@ -48,7 +47,6 @@ export class AttendanceCreateComponent implements OnInit {
     academicYear: new FormControl(0),
     subjectType: new FormControl(0),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -239,7 +237,28 @@ export class AttendanceCreateComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('examTitle')!.setValue(0);
+    this.form.get('academicYear')!.setValue(0);
+    this.form.get('subjectType')!.setValue(0);
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.isCheckAll = false;
+    this.currentPage = 1;
+    this.idList = [];
+    this.searchedExamTitle = 0;
+    this.searchedAcademicYear = 0;
+    this.searchedSubjectType = 0;
+    this.keyword = "";
+
+    this.attendanceService.fetchNotPresentPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedSubjectType, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

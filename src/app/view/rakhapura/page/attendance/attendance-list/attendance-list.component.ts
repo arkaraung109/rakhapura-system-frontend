@@ -54,7 +54,6 @@ export class AttendanceListComponent implements OnInit {
       Validators.required
     ]),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -166,7 +165,22 @@ export class AttendanceListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.reset();
+    this.form.get('academicYear')!.setValue('');
+    this.form.get('examTitle')!.setValue('');
+    this.form.get('grade')!.setValue('');
+    this.form.get('keyword')!.setValue("");
+    this.searched = false;
+    this.currentPage = 1;
+    this.searchedAcademicYear = 0;
+    this.searchedExamTitle = 0;
+    this.searchedGrade = 0;
+    this.keyword = "";
+    this.valid = false;
+    this.pageData = new CustomPaginationResponse();
+    this.sortedData = [];
+    this.dataList = [];
+    this.tableHeader = new TableHeader();
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {

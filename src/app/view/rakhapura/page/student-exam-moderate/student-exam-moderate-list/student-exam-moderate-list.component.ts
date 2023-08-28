@@ -59,7 +59,6 @@ export class StudentExamModerateListComponent implements OnInit {
       Validators.required
     ]),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -126,7 +125,33 @@ export class StudentExamModerateListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.reset();
+    this.form.get('academicYear')!.setValue('');
+    this.form.get('examTitle')!.setValue('');
+    this.form.get('grade')!.setValue('');
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.currentPage = 1;
+    this.searchedAcademicYear = 0;
+    this.searchedExamTitle = 0;
+    this.searchedGrade = 0;
+    this.keyword = "";
+    this.valid = false;
+    this.pageData = new CustomPaginationResponse();
+    this.dataList = [];
+    this.examList = [];
+    this.examSubjectList = [];
+    this.givenMarkList = [];
+    this.attendanceList = [];
+    this.studentExamList = [];
+    this.totalPassMark = 0;
+    this.totalMarkPercentage = 0;
+    this.totalMark = 0;
+    this.totalAnswered = 0;
+    this.totalPassed = 0;
+    this.totalModerated = 0;
+    this.totalFailed = 0;
+    this.tableHeader = new TableHeader();
   }
 
   exportToExcel() {

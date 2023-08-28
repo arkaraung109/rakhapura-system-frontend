@@ -65,7 +65,6 @@ export class PunishmentCreateComponent implements OnInit {
   form: FormGroup = new FormGroup({
     region: new FormControl(0),
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -270,7 +269,24 @@ export class PunishmentCreateComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.get('region')!.setValue(0);
+    this.form.get('keyword')!.setValue("");
+    this.submitted = false;
+    this.isCheckAll = false;
+    this.currentPage = 1;
+    this.idList = [];
+    this.searchedRegion = 0;
+    this.keyword = "";
+
+    this.studentService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.ASC, this.searchedRegion, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   resetForm() {

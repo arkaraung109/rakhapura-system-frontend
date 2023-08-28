@@ -2,13 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { format } from 'date-fns';
-import { saveAs } from 'file-saver-es';
 import { ToastrService } from 'ngx-toastr';
 import { showError } from 'src/app/common/showError';
 import { AcademicYear } from 'src/app/model/AcademicYear';
-import { ApplicationUser } from 'src/app/model/ApplicationUser';
-import { CustomPaginationResponse } from 'src/app/model/CustomPaginationResponse';
 import { ExamTitle } from 'src/app/model/ExamTitle';
 import { Grade } from 'src/app/model/Grade';
 import { PaginationResponse } from 'src/app/model/PaginationResponse';
@@ -16,7 +12,6 @@ import { AcademicYearService } from 'src/app/service/academic-year.service';
 import { ExamTitleService } from 'src/app/service/exam-title.service';
 import { GradeService } from 'src/app/service/grade.service';
 import { PublicExamResultService } from 'src/app/service/public-exam-result.service';
-import { StudentExamService } from 'src/app/service/student-exam.service';
 import { whiteSpaceValidator } from 'src/app/validator/white-space.validator';
 
 @Component({
@@ -88,7 +83,7 @@ export class PublicExamResultComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    
+
     this.valid = true;
     this.publicExamResultService.fetchPageSegmentBySearching(this.currentPage, this.searchedAcademicYear, this.searchedExamTitle, this.searchedGrade, this.keyword).subscribe({
       next: (res: PaginationResponse) => {

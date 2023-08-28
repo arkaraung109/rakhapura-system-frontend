@@ -1,6 +1,6 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -34,7 +34,6 @@ export class AcademicYearListComponent implements OnInit {
 
   form: FormGroup = new FormGroup({
     keyword: new FormControl('', [
-      Validators.pattern("^[^<>~`!{}|@^*=?%$\"\\\\]*$"),
       whiteSpaceValidator()
     ])
   });
@@ -58,7 +57,7 @@ export class AcademicYearListComponent implements OnInit {
 
     this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
-        this.setDataInCurrentPage(res); 
+        this.setDataInCurrentPage(res);
       },
       error: (err) => {
         showError(this.toastrService, this.router, err);
@@ -109,7 +108,7 @@ export class AcademicYearListComponent implements OnInit {
 
     this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
       next: (res: PaginationResponse) => {
-        this.setDataInCurrentPage(res); 
+        this.setDataInCurrentPage(res);
         this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
       },
       error: (err) => {
@@ -119,7 +118,19 @@ export class AcademicYearListComponent implements OnInit {
   }
 
   reset() {
-    location.reload();
+    this.form.reset();
+    this.submitted = false;
+    this.currentPage = 1;
+    this.keyword = "";
+    this.academicYearService.fetchPageSegmentBySearching(this.currentPage, PaginationOrder.DESC, this.keyword).subscribe({
+      next: (res: PaginationResponse) => {
+        this.setDataInCurrentPage(res);
+        this.sort.sort({ id: 'id', start: 'desc', disableClear: false });
+      },
+      error: (err) => {
+        showError(this.toastrService, this.router, err);
+      }
+    });
   }
 
   enterPaginationEvent(currentPageEnterValue: number) {
@@ -195,16 +206,16 @@ export class AcademicYearListComponent implements OnInit {
             }
           },
           error: (err) => {
-            if(err.status == HttpStatusCode.Unauthorized) {
+            if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
             } else if (err.status == HttpStatusCode.Forbidden) {
               this.toastrService.error("This action is forbidden.", "Forbidden Access");
             } else if (err.status == HttpStatusCode.NotAcceptable) {
               this.toastrService.warning("You cannot delete this.", "Already Authorized");
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");
@@ -242,12 +253,12 @@ export class AcademicYearListComponent implements OnInit {
           error: (err) => {
             if (err.status == HttpStatusCode.Forbidden) {
               this.toastrService.error("This action is forbidden.", "Forbidden Access");
-            } else if(err.status == HttpStatusCode.Unauthorized) {
+            } else if (err.status == HttpStatusCode.Unauthorized) {
               localStorage.clear();
               this.router.navigate(['/error', HttpStatusCode.Unauthorized]);
-            } else if(err.status >= 400 && err.status < 500) {
+            } else if (err.status >= 400 && err.status < 500) {
               this.toastrService.error("Something went wrong.", "Client Error");
-            } else if(err.status >= 500) {
+            } else if (err.status >= 500) {
               this.toastrService.error("Please contact administrator.", "Server Error");
             } else {
               this.toastrService.error("Something went wrong.", "Unknown Error");
