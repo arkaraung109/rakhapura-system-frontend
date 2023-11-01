@@ -32,6 +32,7 @@ import { AwardModule } from './page/award/award.module';
 import { PunishmentModule } from './page/punishment/punishment.module';
 import { ProfileModule } from './page/profile/profile.module';
 import { AppUserModule } from './page/app-user/app-user.module';
+import { SpinnerComponent } from './page/spinner/spinner.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { AppUserModule } from './page/app-user/app-user.module';
     SideBarComponent,
     HeaderComponent,
     RakhapuraComponent,
+    SpinnerComponent,
   ],
   imports: [
     CommonModule,

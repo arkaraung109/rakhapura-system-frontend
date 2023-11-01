@@ -21,9 +21,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
 import { SaveAnotherDialogComponent } from './save-another-dialog/save-another-dialog.component';
 import { AnonymousModule } from './view/anonymous/anonymous.module';
+import { SpinnerComponent } from './view/spinner/spinner.component';
 
 @NgModule({
-  declarations: [AppComponent, ErrorComponent, ConfirmDialogComponent, SaveAnotherDialogComponent],
+  declarations: [AppComponent, ErrorComponent, ConfirmDialogComponent, SaveAnotherDialogComponent, SpinnerComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
